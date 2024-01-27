@@ -11,4 +11,8 @@ public class Board {
         return lines.contains(upper) && lines.contains(lower) &&
                 lines.contains(left) && lines.contains(right);
     }
+
+    private boolean isLastMove(){
+
+    }
 }
