@@ -1,6 +1,6 @@
 public class Player {
-    private String name;
-    private Color color;
+    private final String name;
+    private final Color color;
     private int score;
 
     public Player(String name, Color color) {
