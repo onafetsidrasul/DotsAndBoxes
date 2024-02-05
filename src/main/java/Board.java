@@ -12,8 +12,12 @@ public class Board {
                 lines.contains(left) && lines.contains(right);
     }
 
-    private boolean isLastMove(){
+    private boolean isLastMove() {
         //just to make the first test pass
         return true;
+    }
+
+    public void addMove(Line line) {
+        this.lines.add(line);
     }
 }
