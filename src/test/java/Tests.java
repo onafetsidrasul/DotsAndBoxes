@@ -28,5 +28,10 @@ public class Tests {
         Game testGame = new Game(new Player("p1", Color.RED), new Player("p2", Color.BLUE));
         assertEquals("p1", testGame.getCurrentPlayer().getName());
     }
-
+    @Test
+    void playersCorrectlySwitch(){
+        Game testGame = new Game(new Player("p1", Color.RED), new Player("p2", Color.BLUE));
+        testGame.makeNextMove(new Line(0,0,0,1));
+        assertEquals("p2", testGame.getCurrentPlayer().getName());
+    }
 }
