@@ -23,9 +23,11 @@ public class Board {
                 lines.stream().anyMatch(line -> line.equalsIgnoringPlayer(right));
     }
 
-    private boolean isLastMove() {
-        //just to make the first test pass
-        return true;
+    private boolean isBoardFull() {
+        // since we check the validity of every line drawn onto the board we can check if the board has been completely filled
+        // (i.e. the games has ended) by simply checking if the number of lines is 2*n*m - n - m which is the amount of possible lines
+        // for a n*m board
+        return lines.size() == (2*x_dimension*y_dimension)-x_dimension-y_dimension;
     }
 
     public void addMove(Line line) {
