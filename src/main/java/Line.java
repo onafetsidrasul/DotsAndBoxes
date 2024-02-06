@@ -1,6 +1,6 @@
 public record Line(Player player, int x1, int y1, int x2, int y2) {
     public Line {
-        if (Math.pow((x2 - x1), 0.5) + Math.pow((y2 - y1), 0.5) > 1) {
+        if (Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2) != 1) {
             throw new IllegalArgumentException("Illegal line");
         }
     }
