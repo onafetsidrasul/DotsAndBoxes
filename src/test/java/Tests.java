@@ -15,7 +15,7 @@ public class Tests {
     void BoxCompletedTrue() {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
-        Board board = new Board();
+        Board board = new Board(5,5);
         board.addMove(new Line(player1, 0, 0, 1, 0));
         board.addMove(new Line(player2, 1, 0, 1, 1));
         board.addMove(new Line(player1, 1, 1, 0, 1));
