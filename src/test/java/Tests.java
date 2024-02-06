@@ -1,7 +1,6 @@
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class Tests {
     @Test
@@ -23,4 +22,11 @@ public class Tests {
         board.addMove(new Line(player2, 0, 1, 0, 0));
         assertTrue(board.checkCompletedBox(0, 0));
     }
+
+    @Test
+    void player1StartsFirst(){
+        Game testGame = new Game(new Player("p1", Color.RED), new Player("p2", Color.BLUE));
+        assertEquals("p1", testGame.getCurrentPlayer().getName());
+    }
+
 }

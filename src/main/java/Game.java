@@ -15,11 +15,14 @@ public class Game {
     }
 
     public Player getCurrentPlayer() {
-        //just to make the first test pass
-        return player1;
+        // we chose to make the player1 start first every time
+        if(moves.isEmpty())
+            return this.player1;
+        else return moves.get(moves.size()-1).player().equals(this.player1) ? this.player2 : this.player1;
     }
 
     public void makeNextMove(Line line) {
+
     }
 
 }

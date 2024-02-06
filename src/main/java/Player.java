@@ -17,4 +17,11 @@ public class Player {
         player.score++;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public Color getColor() {
+        return color;
+    }
 }
