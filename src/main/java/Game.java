@@ -10,7 +10,7 @@ public class Game {
     public Game(Player player1, Player player2) {
         this.player1 = Objects.requireNonNull(player1);
         this.player2 = Objects.requireNonNull(player2);
-        this.gameBoard = new Board();
+        this.gameBoard = new Board(5, 5);   // fixed dimension for now, add parametrized version later
         this.moves = new ArrayList<>();
     }
 

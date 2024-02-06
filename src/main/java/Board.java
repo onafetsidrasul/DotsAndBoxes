@@ -2,8 +2,11 @@ import java.util.HashSet;
 import java.util.Set;
 public class Board {
     private Set<Line> lines;
+    private int x_dimension, y_dimension;
 
-    public Board() {
+    public Board(int xDimension, int yDimension) {
+        x_dimension = xDimension;
+        y_dimension = yDimension;
         this.lines = new HashSet<>();
     }
 
@@ -27,5 +30,13 @@ public class Board {
 
     public void addMove(Line line) {
         this.lines.add(line);
+    }
+
+    public int getX_dimension() {
+        return x_dimension;
+    }
+
+    public int getY_dimension() {
+        return y_dimension;
     }
 }
