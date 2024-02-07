@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class Tests {
     @Test
-    void DoNotAllowLinesLongerThan1() {
+    void LinesLongerThan1AreNotAllowed() {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(player1, player2);
@@ -12,11 +12,20 @@ public class Tests {
     }
 
     @Test
-    void DoNotAllowDiagonalLines() {
+    void DiagonalLinesAreNotAllowed() {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(player1, player2);
         assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(0,0,1,2)));
+    }
+
+    @Test
+    void OverwritingLinesIsNotAllowed(){
+        Player player1 = new Player("A", Color.RED);
+        Player player2 = new Player("B", Color.BLUE);
+        Game testGame = new Game(player1, player2);
+        testGame.makeNextMove(new Line( 0, 0, 1, 0));
+        assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(0,0,1,0)));
     }
 
     @Test
