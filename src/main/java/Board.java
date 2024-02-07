@@ -1,26 +1,27 @@
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 public class Board {
-    private Set<Line> lines;
+    private Map<Integer, Line> lines;
     private int x_dimension, y_dimension;
 
     public Board(int xDimension, int yDimension) {
         x_dimension = xDimension;
         y_dimension = yDimension;
-        this.lines = new HashSet<>();
+        this.lines = new HashMap<>();
     }
 
-    public boolean checkCompletedBox(int x, int y) {
+    public boolean isBoxCompleted(int x, int y) {
         //box identified by the upper left point
-        Line upper = new Line(x, y, x+1, y);
-        Line lower = new Line(x, y+1, x+1, y+1);
-        Line left = new Line(x, y, x, y+1);
-        Line right = new Line(x+1, y, x+1, y+1);
+        Integer upperSideHash = new Line(x, y, x+1, y).hashCode();
+        Integer lowerSideHash = new Line(x, y+1, x+1, y+1).hashCode();
+        Integer leftSideHash = new Line(x, y, x, y+1).hashCode();
+        Integer rightSideHash = new Line(x+1, y, x+1, y+1).hashCode();
 
-        return lines.stream().anyMatch(line -> line.equalsIgnoringPlayer(upper)) &&
-                lines.stream().anyMatch(line -> line.equalsIgnoringPlayer(lower)) &&
-                lines.stream().anyMatch(line -> line.equalsIgnoringPlayer(left)) &&
-                lines.stream().anyMatch(line -> line.equalsIgnoringPlayer(right));
+
+        return lines.containsKey(upperSideHash) &&
+                lines.containsKey(lowerSideHash) &&
+                lines.containsKey(leftSideHash) &&
+                lines.containsKey(rightSideHash);
     }
 
     private boolean isBoardFull() {
@@ -30,10 +31,11 @@ public class Board {
         return lines.size() == (2*x_dimension*y_dimension)-x_dimension-y_dimension;
     }
 
-    public void addMove(Line line) {
+    public void addLine(Line line) {
         if (Math.pow((line.x2() - line.x1()), 2) + Math.pow((line.y2() - line.y1()), 2) != 1) {
             throw new IllegalArgumentException("Illegal line");
-        } else this.lines.add(line);
+        } else this.lines.put(new Line(null, line).hashCode(), line);
+        // the hashcode is calculated based on the line stripped of its color in order to avoid putting to lines of different colors in the same place
     }
 
     public int getX_dimension() {
