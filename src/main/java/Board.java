@@ -33,9 +33,10 @@ public class Board {
 
     public void addLine(Line line) {
         if (Math.pow((line.x2() - line.x1()), 2) + Math.pow((line.y2() - line.y1()), 2) != 1) {
-            throw new IllegalArgumentException("Illegal line");
-        } else this.lines.put(new Line(null, line).hashCode(), line);
+            throw new IllegalArgumentException("Line is too long!");
+        } else if(this.lines.put(new Line(null, line).hashCode(), line) != null) throw new IllegalArgumentException("Line already exists!");
         // the hashcode is calculated based on the line stripped of its color in order to avoid putting to lines of different colors in the same place
+
     }
 
     public int getX_dimension() {
