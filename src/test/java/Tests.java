@@ -20,6 +20,22 @@ public class Tests {
     }
 
     @Test
+    void LinesThatStartOutOfBoundsAreNotAllowed(){
+        Player player1 = new Player("A", Color.RED);
+        Player player2 = new Player("B", Color.BLUE);
+        Game testGame = new Game(player1, player2);
+        assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(6,5,5,5)));
+    }
+
+    @Test
+    void LinesThatEndOutOfBoundsAreNotAllowed(){
+        Player player1 = new Player("A", Color.RED);
+        Player player2 = new Player("B", Color.BLUE);
+        Game testGame = new Game(player1, player2);
+        assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(0,0,-1,0)));
+    }
+
+    @Test
     void OverwritingLinesIsNotAllowed(){
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
