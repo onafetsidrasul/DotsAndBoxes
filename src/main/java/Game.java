@@ -22,9 +22,10 @@ public class Game {
     }
 
     public void makeNextMove(Line line) {
-        Line move = new Line(getCurrentPlayer(), line.x1(), line.y1(), line.x2(), line.y2());
-        gameBoard.addMove(move);
-        //moves.add(move);
+        Line lineCandidate = new Line(getCurrentPlayer().getColor(), line.x1(), line.y1(), line.x2(), line.y2());
+        Move moveCandidate = new Move(getCurrentPlayer(), new Line(null,lineCandidate).hashCode());
+        gameBoard.addLine(lineCandidate);
+        moves.add(moveCandidate);
     }
 
 }
