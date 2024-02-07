@@ -2,7 +2,7 @@ import java.util.HashMap;
 import java.util.Map;
 public class Board {
     private Map<Integer, Line> lines;
-    private int x_dimension, y_dimension;
+    private final int x_dimension, y_dimension;
 
     public Board(int xDimension, int yDimension) {
         x_dimension = xDimension;
