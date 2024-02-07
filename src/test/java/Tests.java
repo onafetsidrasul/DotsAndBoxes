@@ -8,12 +8,15 @@ public class Tests {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(player1, player2);
-        assert
-        assertThrows(Exception, testGame.makeNextMove(new Line(0,0,0,2)));
+        assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(0,0,0,2)));
     }
 
     @Test
-    void DoNotAllowDiagonalLines() { assertThrows(Exception.class, () -> new Line(0, 0, 1, 1));
+    void DoNotAllowDiagonalLines() {
+        Player player1 = new Player("A", Color.RED);
+        Player player2 = new Player("B", Color.BLUE);
+        Game testGame = new Game(player1, player2);
+        assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(0,0,1,2)));
     }
 
     @Test
