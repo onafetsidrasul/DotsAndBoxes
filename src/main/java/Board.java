@@ -31,7 +31,9 @@ public class Board {
     }
 
     public void addMove(Line line) {
-        this.lines.add(line);
+        if (Math.pow((line.x2() - line.x1()), 2) + Math.pow((line.y2() - line.y1()), 2) != 1) {
+            throw new IllegalArgumentException("Illegal line");
+        } else this.lines.add(line);
     }
 
     public int getX_dimension() {
