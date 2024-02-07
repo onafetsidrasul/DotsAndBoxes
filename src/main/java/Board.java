@@ -32,11 +32,18 @@ public class Board {
     }
 
     public void addLine(Line line) {
-        if (Math.pow((line.x2() - line.x1()), 2) + Math.pow((line.y2() - line.y1()), 2) != 1) {
+        if (Math.pow((line.x2() - line.x1()), 2) + Math.pow((line.y2() - line.y1()), 2) != 1)
             throw new IllegalArgumentException("Line is too long!");
-        } else if(this.lines.put(new Line(null, line).hashCode(), line) != null) throw new IllegalArgumentException("Line already exists!");
-        // the hashcode is calculated based on the line stripped of its color in order to avoid putting to lines of different colors in the same place
 
+        if (line.x1() < 0 || line.x1() >= x_dimension || line.y1() < 0 || line.y1() >= y_dimension)
+            throw new IllegalArgumentException("Line starts outside the bounds of the board!");
+
+        if(line.x2() < 0 || line.x2() >= x_dimension || line.y2() < 0 || line.y2() >= y_dimension)
+            throw new IllegalArgumentException("Line ends outside the bounds of the board!");
+
+        if (this.lines.put(new Line(null, line).hashCode(), line) != null)
+            // the hashcode is calculated based on the line stripped of its color in order to avoid putting to lines of different colors in the same place
+            throw new IllegalArgumentException("Line already exists!");
     }
 
     public int getX_dimension() {
