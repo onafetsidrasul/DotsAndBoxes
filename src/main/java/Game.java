@@ -5,7 +5,7 @@ public class Game {
 
     Player player1, player2;
     Board gameBoard;
-    ArrayList<Line> moves;
+    ArrayList<Move> moves;
 
     public Game(Player player1, Player player2) {
         this.player1 = Objects.requireNonNull(player1);
@@ -24,7 +24,7 @@ public class Game {
     public void makeNextMove(Line line) {
         Line move = new Line(getCurrentPlayer(), line.x1(), line.y1(), line.x2(), line.y2());
         gameBoard.addMove(move);
-        moves.add(move);
+        //moves.add(move);
     }
 
 }
