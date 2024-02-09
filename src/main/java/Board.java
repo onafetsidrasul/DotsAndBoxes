@@ -1,26 +1,27 @@
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 public class Board {
-    private Set<Line> lines;
-    private int x_dimension, y_dimension;
+    private Map<Integer, Line> lines;
+    private final int x_dimension, y_dimension;
 
     public Board(int xDimension, int yDimension) {
         x_dimension = xDimension;
         y_dimension = yDimension;
-        this.lines = new HashSet<>();
+        this.lines = new HashMap<>();
     }
 
-    public boolean checkCompletedBox(int x, int y) {
+    public boolean isBoxCompleted(int x, int y) {
         //box identified by the upper left point
-        Line upper = new Line(x, y, x+1, y);
-        Line lower = new Line(x, y+1, x+1, y+1);
-        Line left = new Line(x, y, x, y+1);
-        Line right = new Line(x+1, y, x+1, y+1);
+        Integer upperSideHash = new Line(x, y, x+1, y).hashCode();
+        Integer lowerSideHash = new Line(x, y+1, x+1, y+1).hashCode();
+        Integer leftSideHash = new Line(x, y, x, y+1).hashCode();
+        Integer rightSideHash = new Line(x+1, y, x+1, y+1).hashCode();
 
-        return lines.stream().anyMatch(line -> line.equalsIgnoringPlayer(upper)) &&
-                lines.stream().anyMatch(line -> line.equalsIgnoringPlayer(lower)) &&
-                lines.stream().anyMatch(line -> line.equalsIgnoringPlayer(left)) &&
-                lines.stream().anyMatch(line -> line.equalsIgnoringPlayer(right));
+
+        return lines.containsKey(upperSideHash) &&
+                lines.containsKey(lowerSideHash) &&
+                lines.containsKey(leftSideHash) &&
+                lines.containsKey(rightSideHash);
     }
 
     private boolean isBoardFull() {
@@ -30,8 +31,19 @@ public class Board {
         return lines.size() == (2*x_dimension*y_dimension)-x_dimension-y_dimension;
     }
 
-    public void addMove(Line line) {
-        this.lines.add(line);
+    public void addLine(Line line) {
+        if (Math.pow((line.x2() - line.x1()), 2) + Math.pow((line.y2() - line.y1()), 2) != 1)
+            throw new IllegalArgumentException("Line is too long!");
+
+        if (line.x1() < 0 || line.x1() >= x_dimension || line.y1() < 0 || line.y1() >= y_dimension)
+            throw new IllegalArgumentException("Line starts outside the bounds of the board!");
+
+        if(line.x2() < 0 || line.x2() >= x_dimension || line.y2() < 0 || line.y2() >= y_dimension)
+            throw new IllegalArgumentException("Line ends outside the bounds of the board!");
+
+        if (this.lines.put(new Line(null, line).hashCode(), line) != null)
+            // the hashcode is calculated based on the line stripped of its color in order to avoid putting to lines of different colors in the same place
+            throw new IllegalArgumentException("Line already exists!");
     }
 
     public int getX_dimension() {
