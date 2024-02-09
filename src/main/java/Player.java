@@ -9,12 +9,12 @@ public class Player {
         this.score = 0;
     }
 
-    public int getScore(Player player) {
-        return player.score;
+    public int getScore() {
+        return score;
     }
 
-    public void increaseScore(Player player) {
-        player.score++;
+    public void increaseScore() {
+        score++;
     }
 
     public String getName() {
