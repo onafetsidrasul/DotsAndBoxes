@@ -49,13 +49,12 @@ public class Tests {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(player1, player2);
-        testGame.makeNextMove(new Line( 0, 0, 1, 0));
-        testGame.makeNextMove(new Line( 0, 1, 1, 1));
-        testGame.makeNextMove(new Line( 0, 0, 0, 1));
-        testGame.makeNextMove(new Line( 1, 0, 1, 1));
+        testGame.makeNextMove(new Line(0, 0, 1, 0));
+        testGame.makeNextMove(new Line(0, 1, 1, 1));
+        testGame.makeNextMove(new Line(0, 0, 0, 1));
+        testGame.makeNextMove(new Line(1, 0, 1, 1));
         assertTrue(testGame.gameBoard.isBoxCompleted(0, 0));
     }
-
     @Test
     void player1StartsFirst(){
         Game testGame = new Game(new Player("A", Color.RED), new Player("B", Color.BLUE));
@@ -69,4 +68,23 @@ public class Tests {
         testGame.makeNextMove(new Line(0,0,0,1));
         assertEquals("B", testGame.getCurrentPlayer().getName());
     }
+
+    @Test
+    void TwoBoxesCompletedByTwoPlayers() {
+        Player player1 = new Player("A", Color.RED);
+        Player player2 = new Player("B", Color.BLUE);
+        Game testGame = new Game(player1, player2);
+        testGame.makeNextMove(new Line( 0, 0, 1, 0));
+        testGame.makeNextMove(new Line( 0, 1, 1, 1));
+        testGame.makeNextMove(new Line( 0, 0, 0, 1));
+        testGame.makeNextMove(new Line( 1, 0, 1, 1));
+        testGame.updateScore();
+        testGame.makeNextMove(new Line( 0, 1, 0, 2));
+        testGame.makeNextMove(new Line( 0, 2, 1, 2));
+        testGame.makeNextMove(new Line( 1, 1, 1, 2));
+        testGame.updateScore();
+        assertEquals(1, player1.getScore());
+        assertEquals(1, player2.getScore());
+    }
+
 }

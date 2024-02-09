@@ -17,7 +17,6 @@ public class Board {
         Integer leftSideHash = new Line(x, y, x, y+1).hashCode();
         Integer rightSideHash = new Line(x+1, y, x+1, y+1).hashCode();
 
-
         return lines.containsKey(upperSideHash) &&
                 lines.containsKey(lowerSideHash) &&
                 lines.containsKey(leftSideHash) &&
