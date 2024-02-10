@@ -10,12 +10,12 @@ public class Board {
         this.lines = new HashMap<>();
     }
 
-    public boolean isBoxCompleted(int x, int y) {
+        public boolean isBoxCompleted(Point p) {
         //box identified by the upper left point
-        Integer upperSideHash = new Line(x, y, x+1, y).hashCode();
-        Integer lowerSideHash = new Line(x, y+1, x+1, y+1).hashCode();
-        Integer leftSideHash = new Line(x, y, x, y+1).hashCode();
-        Integer rightSideHash = new Line(x+1, y, x+1, y+1).hashCode();
+        Integer upperSideHash = new Line(p.x(), p.y(), p.x()+1, p.y()).hashCode();
+        Integer lowerSideHash = new Line(p.x(), p.y()+1, p.x()+1, p.y()+1).hashCode();
+        Integer leftSideHash = new Line(p.x(), p.y(), p.x(), p.y()+1).hashCode();
+        Integer rightSideHash = new Line(p.x()+1, p.y(), p.x()+1, p.y()+1).hashCode();
 
         return lines.containsKey(upperSideHash) &&
                 lines.containsKey(lowerSideHash) &&

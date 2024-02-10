@@ -39,7 +39,8 @@ public class Game {
     public void updateScore() {
         for (int i = 0; i < gameBoard.getX_dimension(); i++) {
             for (int j = 0; j < gameBoard.getY_dimension(); j++) {
-                if (gameBoard.isBoxCompleted(i, j) && !completedBoxes.contains(new Point(i,j))) {
+                Point currentPoint= new Point(i,j);
+                if (gameBoard.isBoxCompleted(currentPoint) && !completedBoxes.contains(currentPoint)) {
                     getLastPlayer().increaseScore();
                     completedBoxes.add(new Point(i,j));
                 }

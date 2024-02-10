@@ -53,7 +53,7 @@ public class Tests {
         testGame.makeNextMove(new Line(0, 1, 1, 1));
         testGame.makeNextMove(new Line(0, 0, 0, 1));
         testGame.makeNextMove(new Line(1, 0, 1, 1));
-        assertTrue(testGame.gameBoard.isBoxCompleted(0, 0));
+        assertTrue(testGame.gameBoard.isBoxCompleted(new Point(0,0)));
     }
     @Test
     void player1StartsFirst(){
