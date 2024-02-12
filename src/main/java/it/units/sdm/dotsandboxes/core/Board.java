@@ -1,3 +1,5 @@
+package it.units.sdm.dotsandboxes.core;
+
 import java.util.HashMap;
 import java.util.Map;
 public class Board {
@@ -24,7 +26,7 @@ public class Board {
                 lines.containsKey(rightSideHash);
     }
 
-    private boolean isBoardFull() {
+    public boolean isBoardFull() {
         // since we check the validity of every line drawn onto the board we can check if the board has been completely filled
         // (i.e. the games has ended) by simply checking if the number of lines is 2*n*m - n - m which is the amount of possible lines
         // for a n*m board
@@ -38,12 +40,21 @@ public class Board {
         if (line.x1() < 0 || line.x1() >= x_dimension || line.y1() < 0 || line.y1() >= y_dimension)
             throw new IllegalArgumentException("Line starts outside the bounds of the board!");
 
-        if(line.x2() < 0 || line.x2() >= x_dimension || line.y2() < 0 || line.y2() >= y_dimension)
+        if (line.x2() < 0 || line.x2() >= x_dimension || line.y2() < 0 || line.y2() >= y_dimension)
             throw new IllegalArgumentException("Line ends outside the bounds of the board!");
+
+        /* Normalize the line, i.e. order the points with ascending coordinate values.
+        *  Without doing this, two equivalent lines A -> B and B -> A would be considered
+        *  different and both valid in the same board. */
+        if (line.x1() > line.x2() || line.y1() > line.y2()) {
+            line = new Line(line.color(), line.x2(), line.y2(), line.x1(), line.y1());
+        }
 
         if (this.lines.put(new Line(null, line).hashCode(), line) != null)
             // the hashcode is calculated based on the line stripped of its color in order to avoid putting to lines of different colors in the same place
             throw new IllegalArgumentException("Line already exists!");
+
+
     }
 
     public int getX_dimension() {
@@ -52,5 +63,9 @@ public class Board {
 
     public int getY_dimension() {
         return y_dimension;
+    }
+
+    public Map<Integer, Line> getLines() {
+        return lines;
     }
 }

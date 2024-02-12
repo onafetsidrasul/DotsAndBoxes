@@ -2,18 +2,34 @@ plugins {
     id 'java'
 }
 
-group = 'org.example'
-version = '1.0-SNAPSHOT'
+group = 'it.units.sdm'
+version = '0.1-alpha'
 
 repositories {
     mavenCentral()
 }
 
+ext {
+    set('springShellVersion', '3.2.0')
+}
+
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation 'com.diogonunes:JColor:5.5.1'
+    implementation 'de.codeshelf.consoleui:consoleui:0.0.13'
 }
 
 test {
     useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "it.units.sdm.dotsandboxes.Main"
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
 }

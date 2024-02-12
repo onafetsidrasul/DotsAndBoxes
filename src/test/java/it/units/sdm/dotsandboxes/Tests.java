@@ -1,3 +1,9 @@
+package it.units.sdm.dotsandboxes;
+
+import it.units.sdm.dotsandboxes.core.Color;
+import it.units.sdm.dotsandboxes.core.Game;
+import it.units.sdm.dotsandboxes.core.Line;
+import it.units.sdm.dotsandboxes.core.Player;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,7 +59,7 @@ public class Tests {
         testGame.makeNextMove(new Line( 0, 1, 1, 1));
         testGame.makeNextMove(new Line( 0, 0, 0, 1));
         testGame.makeNextMove(new Line( 1, 0, 1, 1));
-        assertTrue(testGame.gameBoard.isBoxCompleted(0, 0));
+        assertTrue(testGame.getGameBoard().isBoxCompleted(0, 0));
     }
 
     @Test

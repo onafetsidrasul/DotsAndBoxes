@@ -1,3 +1,5 @@
+package it.units.sdm.dotsandboxes.core;
+
 public class Player {
     private final String name;
     private final Color color;
@@ -23,5 +25,14 @@ public class Player {
 
     public Color getColor() {
         return color;
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "name='" + name + '\'' +
+                ", color=" + color +
+                ", score=" + score +
+                '}';
     }
 }
