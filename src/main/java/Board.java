@@ -10,7 +10,7 @@ public class Board {
         this.lines = new HashMap<>();
     }
 
-        public boolean isBoxCompleted(Point p) {
+    public boolean isBoxCompleted(Point p) {
         //box identified by the upper left point
         Integer upperSideHash = new Line(p.x(), p.y(), p.x()+1, p.y()).hashCode();
         Integer lowerSideHash = new Line(p.x(), p.y()+1, p.x()+1, p.y()+1).hashCode();
