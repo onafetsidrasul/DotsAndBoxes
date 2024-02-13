@@ -12,12 +12,4 @@ public record Line(Color color, Point p1, Point p2) {
         // overwrites the color of the supplied line
         this(color, line.p1(), line.p2());
     }
-
-    @Override
-    public int hashCode() {
-        int result = color != null ? color.hashCode() : 0;
-        result = 31 * result + p1.hashCode();
-        result = 17 * result + p2.hashCode();
-        return result;
-    }
 }
