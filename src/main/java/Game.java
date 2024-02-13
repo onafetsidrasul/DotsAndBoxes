@@ -39,28 +39,12 @@ public class Game {
     public void updateScore() {
         for (int i = 0; i < gameBoard.getX_dimension(); i++) {
             for (int j = 0; j < gameBoard.getY_dimension(); j++) {
-                Point currentPoint = new Point(i, j);
+                Point currentPoint= new Point(i,j);
                 if (gameBoard.isBoxCompleted(currentPoint) && !completedBoxes.contains(currentPoint)) {
                     getLastPlayer().increaseScore();
-                    completedBoxes.add(new Point(i, j));
+                    completedBoxes.add(new Point(i,j));
                 }
             }
         }
     }
-
-    public boolean gameOver(){
-        return this.gameBoard.isBoardFull();
-    }
-
-    public Player winner(){
-        if (gameOver()){
-            if (player1.getScore()> player2.getScore())
-                return player1;
-            else if (player2.getScore()> player1.getScore())
-                return player2;
-            else return null;
-        }
-        return null;
-    }
-
 }
