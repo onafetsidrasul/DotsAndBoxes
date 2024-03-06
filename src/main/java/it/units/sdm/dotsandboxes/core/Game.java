@@ -1,9 +1,7 @@
 package it.units.sdm.dotsandboxes.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Game {
 
@@ -25,21 +23,25 @@ public class Game {
         this(Arrays.asList(player1, player2), boardX, boardY);
     }
 
-    public Game(Player player1, Player player2) {
-        this(player1, player2, 5, 5);
+    public int getCurrentPlayerIndex(){
+        return players.indexOf(moves.get(moves.size()-1).player());
+    }
+    public int getNextPlayerIndex(){
+        return (getCurrentPlayerIndex() + 1) % players.size();
     }
 
     public Player getNextPlayer() {
         // we chose to make the player1 start first every time
         if(moves.isEmpty())
-            return this.players.getFirst();
-        int lastPlayerIndex = players.indexOf(moves.getLast().player());
-        int nextPlayerIndex = (lastPlayerIndex + 1) % players.size();
-        return this.players.get(nextPlayerIndex);
+            return this.players.get(0);
+        return this.players.get(getNextPlayerIndex());
     }
 
     public Player getCurrentPlayer() {
-        return this.moves.getLast().player();
+        // we chose to make the player1 start first every time
+        if(moves.isEmpty())
+            return null;
+        return this.players.get(getCurrentPlayerIndex());
     }
 
     public void makeNextMove(Line line) {
@@ -68,4 +70,17 @@ public class Game {
             }
         }
     }
+
+    public List<Player> winner(){
+        if (hasEnded()){
+            return players.stream()
+                    .collect(Collectors.groupingBy(Player::getScore))
+                    .entrySet().stream()
+                    .max(Comparator.comparingInt(Map.Entry::getKey))
+                    .map(Map.Entry::getValue)
+                    .orElse(null);
+        }
+        return null;
+    }
+
 }
