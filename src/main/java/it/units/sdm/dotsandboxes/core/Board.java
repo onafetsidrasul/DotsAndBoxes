@@ -3,7 +3,7 @@ package it.units.sdm.dotsandboxes.core;
 import java.util.HashMap;
 import java.util.Map;
 public class Board {
-    private Map<Integer, Line> lines;
+    private final Map<Integer, Line> lines;
     private final int x_dimension, y_dimension;
 
     public Board(int xDimension, int yDimension) {
@@ -12,13 +12,12 @@ public class Board {
         this.lines = new HashMap<>();
     }
 
-    public boolean isBoxCompleted(int x, int y) {
+        public boolean isBoxCompleted(Point p) {
         //box identified by the upper left point
-        Integer upperSideHash = new Line(x, y, x+1, y).hashCode();
-        Integer lowerSideHash = new Line(x, y+1, x+1, y+1).hashCode();
-        Integer leftSideHash = new Line(x, y, x, y+1).hashCode();
-        Integer rightSideHash = new Line(x+1, y, x+1, y+1).hashCode();
-
+        Integer upperSideHash = new Line(p.x(), p.y(), p.x()+1, p.y()).hashCode();
+        Integer lowerSideHash = new Line(p.x(), p.y()+1, p.x()+1, p.y()+1).hashCode();
+        Integer leftSideHash = new Line(p.x(), p.y(), p.x(), p.y()+1).hashCode();
+        Integer rightSideHash = new Line(p.x()+1, p.y(), p.x()+1, p.y()+1).hashCode();
 
         return lines.containsKey(upperSideHash) &&
                 lines.containsKey(lowerSideHash) &&
@@ -34,20 +33,18 @@ public class Board {
     }
 
     public void addLine(Line line) {
-        if (Math.pow((line.x2() - line.x1()), 2) + Math.pow((line.y2() - line.y1()), 2) != 1)
+        if (Math.pow((line.p2().x() - line.p1().x()), 2) + Math.pow((line.p2().y() - line.p1().y()), 2) != 1)
             throw new IllegalArgumentException("Line is too long!");
 
-        if (line.x1() < 0 || line.x1() >= x_dimension || line.y1() < 0 || line.y1() >= y_dimension)
-            throw new IllegalArgumentException("Line starts outside the bounds of the board!");
-
-        if (line.x2() < 0 || line.x2() >= x_dimension || line.y2() < 0 || line.y2() >= y_dimension)
-            throw new IllegalArgumentException("Line ends outside the bounds of the board!");
+        if (line.p1().x() < 0 || line.p1().x() >= x_dimension || line.p1().y() < 0 || line.p1().y() >= y_dimension ||
+            line.p2().x() < 0 || line.p2().x() >= x_dimension || line.p2().y() < 0 || line.p2().y() >= y_dimension)
+            throw new IllegalArgumentException("Line sits outside the bounds of the board!");
 
         /* Normalize the line, i.e. order the points with ascending coordinate values.
         *  Without doing this, two equivalent lines A -> B and B -> A would be considered
         *  different and both valid in the same board. */
-        if (line.x1() > line.x2() || line.y1() > line.y2()) {
-            line = new Line(line.color(), line.x2(), line.y2(), line.x1(), line.y1());
+        if (line.p1().x() > line.p2().x() || line.p1().y() > line.p2().y()) {
+            line = new Line(line.color(), line.p2(), line.p1());
         }
 
         if (this.lines.put(new Line(null, line).hashCode(), line) != null)

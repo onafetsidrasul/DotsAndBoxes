@@ -1,9 +1,6 @@
 package it.units.sdm.dotsandboxes;
 
-import it.units.sdm.dotsandboxes.core.Color;
-import it.units.sdm.dotsandboxes.core.Game;
-import it.units.sdm.dotsandboxes.core.Line;
-import it.units.sdm.dotsandboxes.core.Player;
+import it.units.sdm.dotsandboxes.core.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,7 +10,7 @@ public class Tests {
     void LinesLongerThan1AreNotAllowed() {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
-        Game testGame = new Game(player1, player2);
+        Game testGame = new Game(player1, player2, 5, 5);
         assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(0,0,0,2)));
     }
 
@@ -21,7 +18,7 @@ public class Tests {
     void DiagonalLinesAreNotAllowed() {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
-        Game testGame = new Game(player1, player2);
+        Game testGame = new Game(player1, player2, 5, 5);
         assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(0,0,1,2)));
     }
 
@@ -29,7 +26,7 @@ public class Tests {
     void LinesThatStartOutOfBoundsAreNotAllowed(){
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
-        Game testGame = new Game(player1, player2);
+        Game testGame = new Game(player1, player2, 5, 5);
         assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(6,5,5,5)));
     }
 
@@ -37,7 +34,7 @@ public class Tests {
     void LinesThatEndOutOfBoundsAreNotAllowed(){
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
-        Game testGame = new Game(player1, player2);
+        Game testGame = new Game(player1, player2, 5, 5);
         assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(0,0,-1,0)));
     }
 
@@ -45,7 +42,7 @@ public class Tests {
     void OverwritingLinesIsNotAllowed(){
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
-        Game testGame = new Game(player1, player2);
+        Game testGame = new Game(player1, player2, 5, 5);
         testGame.makeNextMove(new Line( 0, 0, 1, 0));
         assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(0,0,1,0)));
     }
@@ -54,25 +51,43 @@ public class Tests {
     void upperLeftBoxIsCompleted() {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
-        Game testGame = new Game(player1, player2);
-        testGame.makeNextMove(new Line( 0, 0, 1, 0));
-        testGame.makeNextMove(new Line( 0, 1, 1, 1));
-        testGame.makeNextMove(new Line( 0, 0, 0, 1));
-        testGame.makeNextMove(new Line( 1, 0, 1, 1));
-        assertTrue(testGame.getGameBoard().isBoxCompleted(0, 0));
+        Game testGame = new Game(player1, player2,5,5);
+        testGame.makeNextMove(new Line(0, 0, 1, 0));
+        testGame.makeNextMove(new Line(0, 1, 1, 1));
+        testGame.makeNextMove(new Line(0, 0, 0, 1));
+        testGame.makeNextMove(new Line(1, 0, 1, 1));
+        assertTrue(testGame.getGameBoard().isBoxCompleted(new Point(0, 0)));
     }
-
     @Test
     void player1StartsFirst(){
-        Game testGame = new Game(new Player("A", Color.RED), new Player("B", Color.BLUE));
-        assertEquals("A", testGame.getCurrentPlayer().getName());
+        Game testGame = new Game(new Player("A", Color.RED), new Player("B", Color.BLUE),5,5);
+        assertEquals("A", testGame.getNextPlayer().getName());
     }
     @Test
     void playersCorrectlySwitch(){
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
-        Game testGame = new Game(player1, player2);
+        Game testGame = new Game(player1, player2,5,5);
         testGame.makeNextMove(new Line(0,0,0,1));
-        assertEquals("B", testGame.getCurrentPlayer().getName());
+        assertEquals("B", testGame.getNextPlayer().getName());
     }
+
+    @Test
+    void TwoBoxesCompletedByTwoPlayers() {
+        Player player1 = new Player("A", Color.RED);
+        Player player2 = new Player("B", Color.BLUE);
+        Game testGame = new Game(player1, player2,5,5);
+        testGame.makeNextMove(new Line( 0, 0, 1, 0));
+        testGame.makeNextMove(new Line( 0, 1, 1, 1));
+        testGame.makeNextMove(new Line( 0, 0, 0, 1));
+        testGame.makeNextMove(new Line( 1, 0, 1, 1));
+        testGame.updateScore();
+        testGame.makeNextMove(new Line( 0, 1, 0, 2));
+        testGame.makeNextMove(new Line( 0, 2, 1, 2));
+        testGame.makeNextMove(new Line( 1, 1, 1, 2));
+        testGame.updateScore();
+        assertEquals(1, player1.getScore());
+        assertEquals(1, player2.getScore());
+    }
+
 }

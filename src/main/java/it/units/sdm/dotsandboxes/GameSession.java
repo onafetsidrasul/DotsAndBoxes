@@ -25,15 +25,15 @@ public class GameSession {
         }
         int[] dimensions = controller.getBoardDimensions();
 
-        final Game game = new Game(dimensions, players);
+        final Game game = new Game(players, dimensions[0], dimensions[1]);
         while (!game.hasEnded()) {
-            final Line line = controller.waitForLine(game.getCurrentPlayer());
+            final Line line = controller.waitForLine(game.getNextPlayer());
             try {
-                game.makeNextMove(new Line(line.x1(), line.y1(), line.x2(), line.y2()));
+                game.makeNextMove(new Line(line.p1(), line.p2()));
             } catch (RuntimeException e) {
                 continue;
             }
-            controller.updatePlayer(game.getCurrentPlayer());
+            controller.updatePlayer(game.getNextPlayer());
             /* FIXME: should we be passing the board object for updating the board UI? */
             controller.updateBoard(game.getGameBoard());
         }
