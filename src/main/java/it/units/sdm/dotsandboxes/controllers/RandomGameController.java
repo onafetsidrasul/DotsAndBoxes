@@ -6,6 +6,7 @@ import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -69,7 +70,7 @@ public class RandomGameController implements IGameController {
     }
 
     @Override
-    public void endGame(Player winner) {
+    public void endGame(List<Player> winner) {
 
     }
 

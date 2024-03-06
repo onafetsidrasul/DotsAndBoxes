@@ -148,7 +148,7 @@ public class ShellGameController implements IGameController {
     }
 
     @Override
-    public void endGame(Player winner) {
-        System.out.println("The winner is " + winner.getName());
+    public void endGame(List<Player> winner) {
+        System.out.println("The winner is " + winner);
     }
 }

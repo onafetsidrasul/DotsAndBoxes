@@ -2,6 +2,8 @@ package it.units.sdm.dotsandboxes.controllers;
 
 import it.units.sdm.dotsandboxes.core.*;
 
+import java.util.List;
+
 public interface IGameController {
 
     /**
@@ -63,5 +65,5 @@ public interface IGameController {
      *
      * @param winner the winning player
      */
-    void endGame(Player winner);
+    void endGame(List<Player> winner);
 }

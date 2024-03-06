@@ -23,30 +23,30 @@ public class Game {
         this(Arrays.asList(player1, player2), boardX, boardY);
     }
 
-    public int getCurrentPlayerIndex(){
+    public int getLastPlayerIndex(){
         return players.indexOf(moves.get(moves.size()-1).player());
     }
-    public int getNextPlayerIndex(){
-        return (getCurrentPlayerIndex() + 1) % players.size();
-    }
-
-    public Player getNextPlayer() {
-        // we chose to make the player1 start first every time
-        if(moves.isEmpty())
-            return this.players.get(0);
-        return this.players.get(getNextPlayerIndex());
+    public int getCurrentPlayerIndex(){
+        return (getLastPlayerIndex() + 1) % players.size();
     }
 
     public Player getCurrentPlayer() {
         // we chose to make the player1 start first every time
         if(moves.isEmpty())
-            return null;
+            return this.players.get(0);
         return this.players.get(getCurrentPlayerIndex());
     }
 
+    public Player getLastPlayer() {
+        // we chose to make the player1 start first every time
+        if(moves.isEmpty())
+            return null;
+        return this.players.get(getLastPlayerIndex());
+    }
+
     public void makeNextMove(Line line) {
-        Line lineCandidate = new Line(getNextPlayer().getColor(), line.p1(), line.p2());
-        Move moveCandidate = new Move(getNextPlayer(), new Line(null, lineCandidate).hashCode());
+        Line lineCandidate = new Line(getCurrentPlayer().getColor(), line.p1(), line.p2());
+        Move moveCandidate = new Move(getCurrentPlayer(), new Line(null, lineCandidate).hashCode());
         gameBoard.addLine(lineCandidate);
         moves.add(moveCandidate);
     }
@@ -64,7 +64,7 @@ public class Game {
             for (int j = 0; j < gameBoard.getY_dimension(); j++) {
                 Point currentPoint= new Point(i,j);
                 if (gameBoard.isBoxCompleted(currentPoint) && !completedBoxes.contains(currentPoint)) {
-                    getCurrentPlayer().increaseScore();
+                    getLastPlayer().increaseScore();
                     completedBoxes.add(new Point(i,j));
                 }
             }
