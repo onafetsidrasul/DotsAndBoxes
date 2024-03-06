@@ -4,15 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Changes in Game, added winner and tested">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Adapted the code to accept the winner as a list, refactored GameSession">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/GameSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/GameSession.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/IGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/IGameController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomGameController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/ShellGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/ShellGameController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Board.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -219,7 +213,7 @@
       <option name="presentableId" value="Default" />
       <updated>1707118966466</updated>
       <workItem from="1709735432970" duration="52000" />
-      <workItem from="1709735496005" duration="3370000" />
+      <workItem from="1709735496005" duration="5650000" />
     </task>
     <task id="LOCAL-00001" summary="Changes in Game, added winner and tested">
       <option name="closed" value="true" />
@@ -229,7 +223,15 @@
       <option name="project" value="LOCAL" />
       <updated>1709736526955</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Adapted the code to accept the winner as a list, refactored GameSession">
+      <option name="closed" value="true" />
+      <created>1709740024738</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1709740024738</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -248,6 +250,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Changes in Game, added winner and tested" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes in Game, added winner and tested" />
+    <MESSAGE value="Adapted the code to accept the winner as a list, refactored GameSession" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adapted the code to accept the winner as a list, refactored GameSession" />
   </component>
 </project>

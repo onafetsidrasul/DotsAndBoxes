@@ -33,25 +33,35 @@ public class Board {
     }
 
     public void addLine(Line line) {
-        if (Math.pow((line.p2().x() - line.p1().x()), 2) + Math.pow((line.p2().y() - line.p1().y()), 2) != 1)
+        if (length(line) != 1)
             throw new IllegalArgumentException("Line is too long!");
-
-        if (line.p1().x() < 0 || line.p1().x() >= x_dimension || line.p1().y() < 0 || line.p1().y() >= y_dimension ||
-            line.p2().x() < 0 || line.p2().x() >= x_dimension || line.p2().y() < 0 || line.p2().y() >= y_dimension)
+        if (lineIsOutsideBoard(line))
             throw new IllegalArgumentException("Line sits outside the bounds of the board!");
-
-        /* Normalize the line, i.e. order the points with ascending coordinate values.
-        *  Without doing this, two equivalent lines A -> B and B -> A would be considered
-        *  different and both valid in the same board. */
-        if (line.p1().x() > line.p2().x() || line.p1().y() > line.p2().y()) {
-            line = new Line(line.color(), line.p2(), line.p1());
+        if (isNotNormalized(line)) {
+            line = normalizer(line);
         }
-
-        if (this.lines.put(new Line(null, line).hashCode(), line) != null)
-            // the hashcode is calculated based on the line stripped of its color in order to avoid putting to lines of different colors in the same place
+        if (lines.containsKey (new Line(null, line).hashCode())) {
             throw new IllegalArgumentException("Line already exists!");
+        }
+        // the hashcode is calculated based on the line stripped of its color in order to avoid putting to lines of different colors in the same place
+        lines.put(new Line(null, line).hashCode(), line);
+    }
 
+    private static double length(Line line) {
+        return Math.pow((line.p2().x() - line.p1().x()), 2) + Math.pow((line.p2().y() - line.p1().y()), 2);
+    }
 
+    private static boolean isNotNormalized(Line line) {
+        return line.p1().x() > line.p2().x() || line.p1().y() > line.p2().y();
+    }
+
+    private static Line normalizer(Line line) {
+        return new Line(line.color(), new Point(line.p2().x(), line.p2().y()), new Point(line.p1().x(), line.p1().y()));
+    }
+
+    private boolean lineIsOutsideBoard(Line line) {
+        return line.p1().x() < 0 || line.p1().x() >= x_dimension || line.p1().y() < 0 || line.p1().y() >= y_dimension ||
+                line.p2().x() < 0 || line.p2().x() >= x_dimension || line.p2().y() < 0 || line.p2().y() >= y_dimension;
     }
 
     public int getX_dimension() {
