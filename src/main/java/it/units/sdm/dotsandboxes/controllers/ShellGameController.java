@@ -3,6 +3,7 @@ package it.units.sdm.dotsandboxes.controllers;
 import de.codeshelf.consoleui.prompt.ConsolePrompt;
 import de.codeshelf.consoleui.prompt.InputResult;
 import de.codeshelf.consoleui.prompt.builder.PromptBuilder;
+import it.units.sdm.dotsandboxes.PromptForPlayerName;
 import it.units.sdm.dotsandboxes.core.Board;
 import it.units.sdm.dotsandboxes.core.Color;
 import it.units.sdm.dotsandboxes.core.Line;
@@ -16,11 +17,13 @@ import java.util.List;
 public class ShellGameController implements IGameController {
 
     private ConsolePrompt prompt;
+    private PromptForPlayerName playerNamePrompt;
 
     @Override
     public boolean initialize() {
         AnsiConsole.systemInstall();
         prompt = new ConsolePrompt();
+        playerNamePrompt = new PromptForPlayerName(prompt);
         return true;
     }
 
@@ -31,21 +34,7 @@ public class ShellGameController implements IGameController {
 
     @Override
     public String getPlayerName(int playerNumber, Color color) {
-        String name = "";
-        do {
-            String promptName = "name" + playerNumber;
-            try {
-                InputResult ir = (InputResult) prompt.prompt(
-                        prompt.getPromptBuilder().createInputPrompt()
-                                .name(promptName)
-                                .defaultValue("Player " + playerNumber)
-                                .message("Name for player #" + playerNumber)
-                                .addPrompt().build()
-                ).get(promptName);
-                name = ir.getInput();
-            } catch (IOException ignored) {}
-        } while (name == null || name.isEmpty());
-        return name;
+        return playerNamePrompt.getPlayerName(playerNumber);
     }
 
     @Override

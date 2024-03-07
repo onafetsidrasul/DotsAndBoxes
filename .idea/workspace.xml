@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Adapted the code to accept the winner as a list, refactored GameSession">
+    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Resolved an error that made overwrite the line even if the exception was thrown, refactor in board">
+      <change afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/PromptForPlayerName.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Board.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/ShellGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/ShellGameController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -213,7 +214,7 @@
       <option name="presentableId" value="Default" />
       <updated>1707118966466</updated>
       <workItem from="1709735432970" duration="52000" />
-      <workItem from="1709735496005" duration="5650000" />
+      <workItem from="1709735496005" duration="7035000" />
     </task>
     <task id="LOCAL-00001" summary="Changes in Game, added winner and tested">
       <option name="closed" value="true" />
@@ -231,7 +232,15 @@
       <option name="project" value="LOCAL" />
       <updated>1709740024738</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Resolved an error that made overwrite the line even if the exception was thrown, refactor in board">
+      <option name="closed" value="true" />
+      <created>1709747161362</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1709747161362</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -251,6 +260,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Changes in Game, added winner and tested" />
     <MESSAGE value="Adapted the code to accept the winner as a list, refactored GameSession" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adapted the code to accept the winner as a list, refactored GameSession" />
+    <MESSAGE value="Resolved an error that made overwrite the line even if the exception was thrown, refactor in board" />
+    <option name="LAST_COMMIT_MESSAGE" value="Resolved an error that made overwrite the line even if the exception was thrown, refactor in board" />
   </component>
 </project>
