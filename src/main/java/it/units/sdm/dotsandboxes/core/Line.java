@@ -20,7 +20,7 @@ public record Line(Color color, Point p1, Point p2) {
     }
 
     /**
-     * Provides a line with the same endpoint as the original one but a new color
+     * Returns a line with the same endpoint as the original one but a new color
      * @param color Color of the new line
      * @param line Line to color
      */
