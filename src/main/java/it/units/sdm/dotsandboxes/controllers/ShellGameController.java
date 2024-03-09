@@ -2,7 +2,7 @@ package it.units.sdm.dotsandboxes.controllers;
 
 import de.codeshelf.consoleui.prompt.ConsolePrompt;
 import de.codeshelf.consoleui.prompt.InputResult;
-import de.codeshelf.consoleui.prompt.builder.PromptBuilder;
+import it.units.sdm.dotsandboxes.BoardPrinter;
 import it.units.sdm.dotsandboxes.PromptForPlayerName;
 import it.units.sdm.dotsandboxes.core.Board;
 import it.units.sdm.dotsandboxes.core.Color;
@@ -11,7 +11,6 @@ import it.units.sdm.dotsandboxes.core.Player;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 public class ShellGameController implements IGameController {
@@ -45,51 +44,7 @@ public class ShellGameController implements IGameController {
     @Override
     public void updateBoard(Board board) {
         final int[] dimensions = getBoardDimensions();
-        final int width = dimensions[0], height = dimensions[1];
-        StringBuilder sb;
-        Line searched;
-
-        sb = new StringBuilder("   ");
-        for (int j = 0; j < width; j++) {
-            sb.append(" ").append(j).append("  ");
-        }
-        System.out.println(sb);
-
-        System.out.println("  ┏" + "━".repeat(width * 4 - 1) + "┓");
-        for (int i = 0; i < height; i++) {
-            sb = new StringBuilder(i + " ┃");
-            for (int j = 0; j < width; j++) {
-                sb.append(" ● ");
-                if (j < width - 1) {
-                    searched = new Line(j, i, j + 1, i);
-                    if (board.getLines().containsKey(searched.hashCode())) {
-                        sb.append(board.getLines().get(
-                                searched.hashCode()).color().getFormat().format("="));
-                    } else {
-                        sb.append(" ");
-                    }
-                }
-            }
-            System.out.println(sb + "┃");
-
-            if (i < height - 1) {
-                sb = new StringBuilder("  ┃");
-                for (int j = 0; j < width; j++) {
-                    searched = new Line(j, i, j, i + 1);
-                    if (board.getLines().containsKey(searched.hashCode())) {
-                        sb.append(board.getLines().get(
-                                searched.hashCode()).color().getFormat().format(" ‖ "));
-                    } else {
-                        sb.append("   ");
-                    }
-                    if (j < width - 1) {
-                        sb.append(" ");
-                    }
-                }
-                System.out.println(sb + "┃");
-            }
-        }
-        System.out.println("  ┗" + "━".repeat(width * 4 - 1) + "┛");
+        BoardPrinter.printBoard(board, dimensions);
     }
 
     @Override
