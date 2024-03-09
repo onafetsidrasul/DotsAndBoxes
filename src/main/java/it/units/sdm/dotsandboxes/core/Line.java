@@ -3,7 +3,7 @@ package it.units.sdm.dotsandboxes.core;
 /**
  *
  * Record that models a line on a Dots and Boxes board.
- * Lines do not formally have a direction as it's not required in the game,
+ * Lines do not formally have a direction as it's not required by the game,
  * although it can be inferred from the implicit order of the endpoints.
  *
  * @param color Color of the line
