@@ -18,8 +18,13 @@ public record Line(Color color, Point p1, Point p2) {
     public Line(Point p1, Point p2) {
         this(p1.x(), p1.y(), p2.x(), p2.y());
     }
+
+    /**
+     * Provides a line with the same endpoint as the original one but a new color
+     * @param color Color of the new line
+     * @param line Line to color
+     */
     public Line(Color color, Line line) {
-        // overwrites the color of the supplied line
         this(color, line.p1(), line.p2());
     }
 }
