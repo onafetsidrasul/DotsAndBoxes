@@ -19,13 +19,15 @@ public class GameSession {
         final List<Player> players = new ArrayList<>();
         managePlayers(controller, playerCount, players);
         final Game game = getGame(controller, players);
-        handlePlayerMove(controller, game);
+        while (!game.hasEnded()) {
+            handlePlayerMove(controller, game);
+        }
         controller.endGame(game.winner());
     }
 
     private static Game getGame(IGameController controller, List<Player> players) {
         int[] dimensions = controller.getBoardDimensions();
-        final Game game = new Game(players, dimensions[0], dimensions[1]);
+        final Game game = new Game(players, dimensions[0], dimensions[1] );
         controller.updateBoard(game.getGameBoard());
         return game;
     }
@@ -33,22 +35,20 @@ public class GameSession {
     private static void managePlayers(IGameController controller, int playerCount, List<Player> players) {
         for (int playerNumber = 1; playerNumber < playerCount + 1; playerNumber++) {
             final Color playerColor = Color.values()[playerNumber % Color.values().length];
-            players.add(new Player(controller.getPlayerName(playerNumber,playerColor), playerColor));
+            players.add(new Player(controller.getPlayerName(playerNumber), playerColor));
         }
     }
 
     private static void handlePlayerMove(IGameController controller, Game game) {
-        while (!game.hasEnded()) {
-            final Line line = controller.waitForLine(game.getLastPlayer());
-            try {
-                game.makeNextMove(new Line(line.p1().x(), line.p1().y(), line.p2().x(), line.p2().y()));
-            } catch (RuntimeException e) {
-                System.err.println("Exception: " + e.getMessage());
-            }
+        final Line line = controller.waitForLine(game.getCurrentPlayer());
+        try {
+            game.makeNextMove(new Line(line.p1().x(), line.p1().y(), line.p2().x(), line.p2().y()));
             game.updateScore();
-            controller.updatePlayer(game.getLastPlayer());
-            controller.updateBoard(game.getGameBoard());
+        } catch (RuntimeException e) {
+            System.err.println("Exception: " + e.getMessage());
         }
+        controller.updatePlayer(game.getLastPlayer());
+        controller.updateBoard(game.getGameBoard());
     }
 
 }

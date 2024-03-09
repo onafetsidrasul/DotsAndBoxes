@@ -30,7 +30,7 @@ public class RandomGameController implements IGameController {
     }
 
     @Override
-    public String getPlayerName(int playerNumber, Color color) {
+    public String getPlayerName(int playerNumber) {
         return "Giocatore " + playerNumber;
     }
 

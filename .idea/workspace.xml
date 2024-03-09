@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Refactoring">
-      <change afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/BoardPrinter.java" afterDir="false" />
+    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Refactoring introducing BoardPrinter">
+      <change afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/InputHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/GameSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/GameSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/IGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/IGameController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomGameController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/ShellGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/ShellGameController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -214,7 +217,7 @@
       <option name="presentableId" value="Default" />
       <updated>1707118966466</updated>
       <workItem from="1709735432970" duration="52000" />
-      <workItem from="1709735496005" duration="9945000" />
+      <workItem from="1709735496005" duration="11642000" />
     </task>
     <task id="LOCAL-00001" summary="Changes in Game, added winner and tested">
       <option name="closed" value="true" />
@@ -248,7 +251,15 @@
       <option name="project" value="LOCAL" />
       <updated>1709802462768</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Refactoring introducing BoardPrinter">
+      <option name="closed" value="true" />
+      <created>1709977179941</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1709977179941</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -270,6 +281,7 @@
     <MESSAGE value="Adapted the code to accept the winner as a list, refactored GameSession" />
     <MESSAGE value="Resolved an error that made overwrite the line even if the exception was thrown, refactor in board" />
     <MESSAGE value="Refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactoring" />
+    <MESSAGE value="Refactoring introducing BoardPrinter" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactoring introducing BoardPrinter" />
   </component>
 </project>
