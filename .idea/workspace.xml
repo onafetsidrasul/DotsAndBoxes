@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Introduced InputHandler, solved a prompt problem. Color is not required anymore since it is provided by GameSession">
+    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Made RandomGameController work">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomGameController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -213,7 +212,7 @@
       <option name="presentableId" value="Default" />
       <updated>1707118966466</updated>
       <workItem from="1709735432970" duration="52000" />
-      <workItem from="1709735496005" duration="14005000" />
+      <workItem from="1709735496005" duration="15997000" />
     </task>
     <task id="LOCAL-00001" summary="Changes in Game, added winner and tested">
       <option name="closed" value="true" />
@@ -263,7 +262,23 @@
       <option name="project" value="LOCAL" />
       <updated>1709992303991</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Made RandomGameController work">
+      <option name="closed" value="true" />
+      <created>1710059282218</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1710059282218</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Made RandomGameController work">
+      <option name="closed" value="true" />
+      <created>1710059331062</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1710059331062</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -287,6 +302,7 @@
     <MESSAGE value="Refactoring" />
     <MESSAGE value="Refactoring introducing BoardPrinter" />
     <MESSAGE value="Introduced InputHandler, solved a prompt problem. Color is not required anymore since it is provided by GameSession" />
-    <option name="LAST_COMMIT_MESSAGE" value="Introduced InputHandler, solved a prompt problem. Color is not required anymore since it is provided by GameSession" />
+    <MESSAGE value="Made RandomGameController work" />
+    <option name="LAST_COMMIT_MESSAGE" value="Made RandomGameController work" />
   </component>
 </project>

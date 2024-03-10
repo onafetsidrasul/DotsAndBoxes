@@ -63,6 +63,7 @@ public class RandomGameController implements IGameController {
             Line candidate;
             do { candidate = randomLine(dims); }
             while (drawnLines.contains(candidate));
+            drawnLines.add(candidate);
             return candidate;
         }else{
             Line candidate= inputHandler.waitForLine(currentPlayer);
