@@ -1,26 +1,29 @@
 package it.units.sdm.dotsandboxes.controllers;
 
+import de.codeshelf.consoleui.prompt.ConsolePrompt;
+import it.units.sdm.dotsandboxes.BoardPrinter;
+import it.units.sdm.dotsandboxes.InputHandler;
+import it.units.sdm.dotsandboxes.PromptForPlayerName;
 import it.units.sdm.dotsandboxes.core.Board;
-import it.units.sdm.dotsandboxes.core.Color;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
+import it.units.sdm.dotsandboxes.core.Point;
+import org.fusesource.jansi.AnsiConsole;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class RandomGameController implements IGameController {
 
     private final Set<Line> drawnLines = new HashSet<>();
-    private static final Random rnd = new Random();
+    private InputHandler inputHandler;
+    private PromptForPlayerName playerNamePrompt;
 
     @Override
     public boolean initialize() {
-        System.out.println("|=.=.=.=.=.=.=.=.=.=.=.=.=.|");
-        System.out.println("|.==== DOTS and BOXES =====|");
-        System.out.println("|==== terminal version ===.|");
-        System.out.println("|.=.=.=.=.=.=.=.=.=.=.=.=.=|");
+        AnsiConsole.systemInstall();
+        ConsolePrompt prompt = new ConsolePrompt();
+        inputHandler = new InputHandler(prompt);
+        playerNamePrompt = new PromptForPlayerName(prompt);
         return true;
     }
 
@@ -31,7 +34,10 @@ public class RandomGameController implements IGameController {
 
     @Override
     public String getPlayerName(int playerNumber) {
-        return "Giocatore " + playerNumber;
+        if (playerNumber == 2) {
+            return "Computer";
+        }
+        return playerNamePrompt.getPlayerName(playerNumber);
     }
 
     @Override
@@ -41,37 +47,60 @@ public class RandomGameController implements IGameController {
 
     @Override
     public void updateBoard(Board board) {
-
+        final int[] dimensions = getBoardDimensions();
+        BoardPrinter.printBoard(board, dimensions);
     }
 
     @Override
     public void updatePlayer(Player player) {
-
+        System.out.println(player);
     }
 
     @Override
-    public Line waitForLine(Player unused) {
-        int[] dims = getBoardDimensions();
-        int x1, y1, x2, y2;
-        Line candidate;
-        do {
-            x1 = (int) Math.floor(Math.random() * dims[0]);
-            y1 = (int) Math.floor(Math.random() * dims[1]);
-            do {
+    public Line waitForLine(Player currentPlayer) {
+        if (currentPlayer.getName().equals("Computer")) {
+            int[] dims = getBoardDimensions();
+            Line candidate;
+            do { candidate = randomLine(dims); }
+            while (drawnLines.contains(candidate));
+            return candidate;
+        }else{
+            Line candidate= inputHandler.waitForLine(currentPlayer);
+            drawnLines.add(candidate);
+            return candidate;
+        }
+    }
 
-                x2 = x1 + (Math.random() >= 0.5 ? 1 : -1);
-                y2 = y1 + (Math.random() >= 0.5 ? 1 : -1);
-            } while (x2 < 0 || x2 >= dims[0] || y2 < 0 || y2 >= dims[1]);
-            candidate = new Line(x1, y1, x2, y2);
-            System.out.println(candidate);
-        } while (drawnLines.contains(candidate));
-        drawnLines.add(candidate);
+    private static Line randomLine(int[] dims) {
+        Line candidate;
+        Point p1 = getFirstPoint(dims);
+        Point p2;
+        do {p2 = getSecondPoint(p1);
+        } while (!isValidPoint(p2.x(), p2.y(), dims));
+        candidate = new Line(p1.x(), p1.y(), p2.x(), p2.y());
         return candidate;
+    }
+
+    private static Point getFirstPoint(int[] dims) {
+        int x1 = (int) Math.floor(Math.random() * dims[0]);
+        int y1 = (int) Math.floor(Math.random() * dims[1]);
+        return new Point(x1, y1);
+    }
+
+    private static Point getSecondPoint(Point p){
+        if (Math.random()>=0.5){
+            return new Point(p.x(),p.y()+(Math.random() >= 0.5 ? 1 : -1));
+        }else{
+            return new Point(p.x()+(Math.random() >= 0.5 ? 1 : -1),p.y());
+        }
+    }
+
+    private static boolean isValidPoint(int x, int y, int[] dims) {
+        return x >= 0 && x < dims[0] && y >= 0 && y < dims[1];
     }
 
     @Override
     public void endGame(List<Player> winner) {
-
+        System.out.println("The winner is " + winner);
     }
-
 }
