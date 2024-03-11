@@ -13,7 +13,6 @@ import org.fusesource.jansi.AnsiConsole;
 import java.util.*;
 
 public class RandomGameController implements IGameController {
-
     private final Set<Line> drawnLines = new HashSet<>();
     private InputHandler inputHandler;
     private PromptForPlayerName playerNamePrompt;
@@ -61,12 +60,17 @@ public class RandomGameController implements IGameController {
         if (currentPlayer.getName().equals("Computer")) {
             int[] dims = getBoardDimensions();
             Line candidate;
-            do { candidate = randomLine(dims); }
-            while (drawnLines.contains(candidate));
+            do{
+                candidate = randomLine(dims);
+                if (Board.isNotNormalized(candidate))
+                    candidate=Board.normalizer(candidate);
+            } while (drawnLines.contains(candidate));
             drawnLines.add(candidate);
             return candidate;
         }else{
             Line candidate= inputHandler.waitForLine(currentPlayer);
+            if (Board.isNotNormalized(candidate))
+                candidate=Board.normalizer(candidate);
             drawnLines.add(candidate);
             return candidate;
         }

@@ -12,7 +12,7 @@ public class Board {
         this.lines = new HashMap<>();
     }
 
-        public boolean isBoxCompleted(Point p) {
+    public boolean isBoxCompleted(Point p) {
         //box identified by the upper left point
         Integer upperSideHash = new Line(p.x(), p.y(), p.x()+1, p.y()).hashCode();
         Integer lowerSideHash = new Line(p.x(), p.y()+1, p.x()+1, p.y()+1).hashCode();
@@ -51,11 +51,11 @@ public class Board {
         return Math.pow((line.p2().x() - line.p1().x()), 2) + Math.pow((line.p2().y() - line.p1().y()), 2);
     }
 
-    private static boolean isNotNormalized(Line line) {
+    public static boolean isNotNormalized(Line line) {
         return line.p1().x() > line.p2().x() || line.p1().y() > line.p2().y();
     }
 
-    private static Line normalizer(Line line) {
+    public static Line normalizer(Line line) {
         return new Line(line.color(), new Point(line.p2().x(), line.p2().y()), new Point(line.p1().x(), line.p1().y()));
     }
 

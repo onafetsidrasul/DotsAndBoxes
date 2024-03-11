@@ -4,8 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Made RandomGameController work">
+    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Fixed RandomGameController, now there are no overwritten lines from computer">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomGameController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Board.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Line.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Line.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/it/units/sdm/dotsandboxes/Tests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/units/sdm/dotsandboxes/Tests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,33 +60,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.Build DotsandBoxes.executor": "Run",
-    "Gradle.DotsandBoxes [:Main.main()].executor": "Run",
-    "Gradle.DotsandBoxes [dependencies].executor": "Run",
-    "Gradle.DotsandBoxes [jar].executor": "Run",
-    "Gradle.DotsandBoxes.executor": "Run",
-    "Gradle.Tests.executor": "Run",
-    "Gradle.Upgrade Gradle wrapper.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "stefano",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/stefanolusardi/DotsandBoxes",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Build DotsandBoxes.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.DotsandBoxes [:Main.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.DotsandBoxes [dependencies].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.DotsandBoxes [jar].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.DotsandBoxes.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Tests.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Upgrade Gradle wrapper.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;stefano&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/stefanolusardi/DotsandBoxes&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes" />
@@ -212,7 +216,9 @@
       <option name="presentableId" value="Default" />
       <updated>1707118966466</updated>
       <workItem from="1709735432970" duration="52000" />
-      <workItem from="1709735496005" duration="15997000" />
+      <workItem from="1709735496005" duration="17183000" />
+      <workItem from="1710084850394" duration="1134000" />
+      <workItem from="1710147031997" duration="6851000" />
     </task>
     <task id="LOCAL-00001" summary="Changes in Game, added winner and tested">
       <option name="closed" value="true" />
@@ -278,7 +284,15 @@
       <option name="project" value="LOCAL" />
       <updated>1710059331062</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Fix, now the Computer should not be able to overwrite to his own lines">
+      <option name="closed" value="true" />
+      <created>1710083349918</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1710083349918</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -303,6 +317,8 @@
     <MESSAGE value="Refactoring introducing BoardPrinter" />
     <MESSAGE value="Introduced InputHandler, solved a prompt problem. Color is not required anymore since it is provided by GameSession" />
     <MESSAGE value="Made RandomGameController work" />
-    <option name="LAST_COMMIT_MESSAGE" value="Made RandomGameController work" />
+    <MESSAGE value="Fix, now the Computer should not be able to overwrite to his own lines" />
+    <MESSAGE value="Fixed RandomGameController, now there are no overwritten lines from computer" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed RandomGameController, now there are no overwritten lines from computer" />
   </component>
 </project>
