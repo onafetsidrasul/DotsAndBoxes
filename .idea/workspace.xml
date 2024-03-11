@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Fixed RandomGameController, now there are no overwritten lines from computer">
+    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Fixed RandomGameController, now there are no overwritten lines from computer, removed dead code">
+      <change afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomLine.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomGameController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Board.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Line.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Line.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/it/units/sdm/dotsandboxes/Tests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/units/sdm/dotsandboxes/Tests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -51,6 +50,20 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "onafetsidrasul"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="e0fc8e4a-b248-45d4-a9ab-412c71bf0350" />
+        <option name="url" value="https://github.com/onafetsidrasul/DotsandBoxes.git" />
+      </UrlAndAccount>
+    </option>
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
@@ -218,7 +231,7 @@
       <workItem from="1709735432970" duration="52000" />
       <workItem from="1709735496005" duration="17183000" />
       <workItem from="1710084850394" duration="1134000" />
-      <workItem from="1710147031997" duration="6851000" />
+      <workItem from="1710147031997" duration="8488000" />
     </task>
     <task id="LOCAL-00001" summary="Changes in Game, added winner and tested">
       <option name="closed" value="true" />
@@ -292,7 +305,15 @@
       <option name="project" value="LOCAL" />
       <updated>1710083349918</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Fixed RandomGameController, now there are no overwritten lines from computer, removed dead code">
+      <option name="closed" value="true" />
+      <created>1710164668760</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1710164668760</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -319,6 +340,7 @@
     <MESSAGE value="Made RandomGameController work" />
     <MESSAGE value="Fix, now the Computer should not be able to overwrite to his own lines" />
     <MESSAGE value="Fixed RandomGameController, now there are no overwritten lines from computer" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed RandomGameController, now there are no overwritten lines from computer" />
+    <MESSAGE value="Fixed RandomGameController, now there are no overwritten lines from computer, removed dead code" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed RandomGameController, now there are no overwritten lines from computer, removed dead code" />
   </component>
 </project>
