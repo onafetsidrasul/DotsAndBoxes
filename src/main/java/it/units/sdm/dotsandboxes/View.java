@@ -3,7 +3,7 @@ package it.units.sdm.dotsandboxes;
 import it.units.sdm.dotsandboxes.core.Board;
 import it.units.sdm.dotsandboxes.core.Line;
 
-public class BoardPrinter {
+public class View {
     public static void printBoard(Board board, int[] dimensions) {
         int width = dimensions[0];
         int height = dimensions[1];

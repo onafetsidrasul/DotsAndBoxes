@@ -251,4 +251,17 @@ public class Tests {
         testGame.updateScore();
         assertEquals(List.of(player1), testGame.winner());
     }
+
+    @Test
+    void equals() {
+        Line a = new Line(0, 1, 0,0);
+        Line b = new Line(0, 0, 0,1);
+        if (Board.isNotNormalized(a)){
+            a=Board.normalizer(a);
+        }
+        if (Board.isNotNormalized(b)){
+            b=Board.normalizer(b);
+        }
+        assertEquals(a,b);
+    }
 }
