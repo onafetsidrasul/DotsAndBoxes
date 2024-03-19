@@ -1,7 +1,6 @@
 package it.units.sdm.dotsandboxes.core;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Game {
 
@@ -69,18 +68,6 @@ public class Game {
                 }
             }
         }
-    }
-
-    public List<Player> winner(){
-        if (hasEnded()){
-            return players.stream()
-                    .collect(Collectors.groupingBy(Player::getScore))
-                    .entrySet().stream()
-                    .max(Comparator.comparingInt(Map.Entry::getKey))
-                    .map(Map.Entry::getValue)
-                    .orElse(null);
-        }
-        return null;
     }
 
 }

@@ -7,7 +7,10 @@ import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GameSession {
 
@@ -22,7 +25,19 @@ public class GameSession {
         while (!game.hasEnded()) {
             handlePlayerMove(controller, game);
         }
-        controller.endGame(game.winner());
+        controller.endGame(winner(game,players));
+    }
+
+    public static List<Player> winner(Game game,List<Player> players) {
+        if (game.hasEnded()){
+            return players.stream()
+                    .collect(Collectors.groupingBy(Player::getScore))
+                    .entrySet().stream()
+                    .max(Comparator.comparingInt(Map.Entry::getKey))
+                    .map(Map.Entry::getValue)
+                    .orElse(null);
+        }
+        return null;
     }
 
     private static Game getGame(IGameController controller, List<Player> players) {

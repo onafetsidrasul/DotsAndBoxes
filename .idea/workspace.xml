@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Refactor">
+    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Moved some classes as methods of controllers, renaming">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/BoardPrinter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/View.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/PromptForPlayerName.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/RandomLine.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomGameController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/ShellGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/ShellGameController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/GameSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/GameSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Game.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/it/units/sdm/dotsandboxes/Tests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/units/sdm/dotsandboxes/Tests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -111,7 +108,7 @@
       <recent name="it.units.sdm.dotsandboxes.controllers" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.it.units.sdm.dotsandboxes.Main">
+  <component name="RunManager" selected="Gradle.Tests">
     <configuration name="it.units.sdm.dotsandboxes.Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="it.units.sdm.dotsandboxes.Main" />
       <module name="DotsandBoxes.main" />
@@ -237,7 +234,7 @@
       <workItem from="1710147031997" duration="10776000" />
       <workItem from="1710433456369" duration="774000" />
       <workItem from="1710522081313" duration="2699000" />
-      <workItem from="1710752138215" duration="3425000" />
+      <workItem from="1710752138215" duration="5383000" />
     </task>
     <task id="LOCAL-00001" summary="Changes in Game, added winner and tested">
       <option name="closed" value="true" />
@@ -327,7 +324,15 @@
       <option name="project" value="LOCAL" />
       <updated>1710166760097</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Moved some classes as methods of controllers, renaming">
+      <option name="closed" value="true" />
+      <created>1710838637112</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1710838637112</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -356,6 +361,7 @@
     <MESSAGE value="Fixed RandomGameController, now there are no overwritten lines from computer" />
     <MESSAGE value="Fixed RandomGameController, now there are no overwritten lines from computer, removed dead code" />
     <MESSAGE value="Refactor" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactor" />
+    <MESSAGE value="Moved some classes as methods of controllers, renaming" />
+    <option name="LAST_COMMIT_MESSAGE" value="Moved some classes as methods of controllers, renaming" />
   </component>
 </project>
