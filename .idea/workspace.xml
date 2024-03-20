@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Moved some classes as methods of controllers, renaming">
+    <list default="true" id="bb28bda4-ef1c-408b-8835-f72dd2e3e575" name="Changes" comment="Moved winner to GameSession">
+      <change afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/views/IGameViews.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/GameSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/GameSession.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/core/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/it/units/sdm/dotsandboxes/Tests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/units/sdm/dotsandboxes/Tests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/View.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/views/ShellView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/RandomGameController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/ShellGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/units/sdm/dotsandboxes/controllers/ShellGameController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +41,7 @@
       <list>
         <option value="module-info" />
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -108,7 +110,7 @@
       <recent name="it.units.sdm.dotsandboxes.controllers" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.Tests">
+  <component name="RunManager" selected="Application.it.units.sdm.dotsandboxes.Main">
     <configuration name="it.units.sdm.dotsandboxes.Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="it.units.sdm.dotsandboxes.Main" />
       <module name="DotsandBoxes.main" />
@@ -234,7 +236,8 @@
       <workItem from="1710147031997" duration="10776000" />
       <workItem from="1710433456369" duration="774000" />
       <workItem from="1710522081313" duration="2699000" />
-      <workItem from="1710752138215" duration="5383000" />
+      <workItem from="1710752138215" duration="5612000" />
+      <workItem from="1710945166738" duration="5144000" />
     </task>
     <task id="LOCAL-00001" summary="Changes in Game, added winner and tested">
       <option name="closed" value="true" />
@@ -332,7 +335,15 @@
       <option name="project" value="LOCAL" />
       <updated>1710838637112</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Moved winner to GameSession">
+      <option name="closed" value="true" />
+      <created>1710852483654</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1710852483654</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -362,6 +373,7 @@
     <MESSAGE value="Fixed RandomGameController, now there are no overwritten lines from computer, removed dead code" />
     <MESSAGE value="Refactor" />
     <MESSAGE value="Moved some classes as methods of controllers, renaming" />
-    <option name="LAST_COMMIT_MESSAGE" value="Moved some classes as methods of controllers, renaming" />
+    <MESSAGE value="Moved winner to GameSession" />
+    <option name="LAST_COMMIT_MESSAGE" value="Moved winner to GameSession" />
   </component>
 </project>
