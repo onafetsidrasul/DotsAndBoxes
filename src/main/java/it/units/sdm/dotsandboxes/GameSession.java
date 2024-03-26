@@ -5,41 +5,72 @@ import it.units.sdm.dotsandboxes.core.Color;
 import it.units.sdm.dotsandboxes.core.Game;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
+import it.units.sdm.dotsandboxes.views.IGameView;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GameSession {
 
-    public static void start(IGameController controller) {
+    private final IGameController controller;
+    private final IGameView view;
+    private Game game;
+
+    GameSession(IGameController controller, IGameView view){
+        this.controller=controller;
+        this.view=view;
+    }
+
+    public void start() {
         if (!controller.initialize()) {
             throw new RuntimeException("Game controller could not initialize!");
         }
-
         int playerCount = controller.getPlayerCount();
         final List<Player> players = new ArrayList<>();
+        managePlayers(playerCount, players);
+        game = getGame(players);
+        view.init(game.getGameBoard());
+        view.refresh();
+        while (!game.hasEnded()) {
+            handlePlayerMove(game);
+        }
+        controller.endGame(winner(players));
+    }
+
+    public static List<Player> winner(List<Player> players) {
+        return players.stream()
+                .collect(Collectors.groupingBy(Player::getScore))
+                .entrySet().stream()
+                .max(Comparator.comparingInt(Map.Entry::getKey))
+                .map(Map.Entry::getValue)
+                .orElse(null);
+    }
+
+    private Game getGame(List<Player> players) {
+        int[] dimensions = controller.getBoardDimensions();
+        return new Game(players, dimensions[0], dimensions[1] );
+    }
+
+    private void managePlayers(int playerCount, List<Player> players) {
         for (int playerNumber = 1; playerNumber < playerCount + 1; playerNumber++) {
             final Color playerColor = Color.values()[playerNumber % Color.values().length];
-            players.add(new Player(controller.getPlayerName(playerNumber, playerColor), playerColor));
+            players.add(new Player(controller.getPlayerName(playerNumber), playerColor));
         }
-        int[] dimensions = controller.getBoardDimensions();
+    }
 
-        final Game game = new Game(players, dimensions[0], dimensions[1]);
-        while (!game.hasEnded()) {
-            final Line line = controller.waitForLine(game.getNextPlayer());
-            try {
-                game.makeNextMove(new Line(line.p1(), line.p2()));
-            } catch (RuntimeException e) {
-                continue;
-            }
-            controller.updatePlayer(game.getNextPlayer());
-            /* FIXME: should we be passing the board object for updating the board UI? */
-            controller.updateBoard(game.getGameBoard());
+    private void handlePlayerMove(Game game) {
+        final Line line = controller.waitForLine(game.getCurrentPlayer());
+        try {
+            game.makeNextMove(new Line(line.p1().x(), line.p1().y(), line.p2().x(), line.p2().y()));
+            game.updateScore();
+        } catch (RuntimeException e) {
+            System.err.println("Exception: " + e.getMessage());
         }
-        controller.endGame(players.stream()
-                .max(Comparator.comparingInt(Player::getScore))
-                .orElseThrow());
+        controller.updatePlayer(game.getLastPlayer());
+        view.refresh();
     }
 
 }

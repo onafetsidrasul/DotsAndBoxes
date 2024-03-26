@@ -2,6 +2,8 @@ package it.units.sdm.dotsandboxes.controllers;
 
 import it.units.sdm.dotsandboxes.core.*;
 
+import java.util.List;
+
 public interface IGameController {
 
     /**
@@ -23,10 +25,9 @@ public interface IGameController {
      * Get the name to be assigned to the player with the passed number and color.
      *
      * @param playerNumber ordinal of the player being created
-     * @param color being assigned to the player being created
      * @return the string literal for the name to be assigned to the player being created
      */
-    String getPlayerName(int playerNumber, Color color);
+    String getPlayerName(int playerNumber);
 
     /**
      * Get the number of rows and columns of the game board being created, either asking for user input or
@@ -35,13 +36,6 @@ public interface IGameController {
      * @return an integer array containing two elements: int[2] { width, height }
      */
     int[] getBoardDimensions();
-
-    /**
-     * Notify the UI to update the game board being displayed.
-     *
-     * @param board the updated board instance
-     */
-    void updateBoard(Board board);
 
     /**
      * Notify the UI to update the player visualization for the passed player instance (score counter and such).
@@ -63,5 +57,5 @@ public interface IGameController {
      *
      * @param winner the winning player
      */
-    void endGame(Player winner);
+    void endGame(List<Player> winner);
 }

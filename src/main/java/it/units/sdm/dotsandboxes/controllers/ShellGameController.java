@@ -2,105 +2,54 @@ package it.units.sdm.dotsandboxes.controllers;
 
 import de.codeshelf.consoleui.prompt.ConsolePrompt;
 import de.codeshelf.consoleui.prompt.InputResult;
-import de.codeshelf.consoleui.prompt.builder.PromptBuilder;
-import it.units.sdm.dotsandboxes.core.Board;
-import it.units.sdm.dotsandboxes.core.Color;
+import it.units.sdm.dotsandboxes.views.ShellView;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 public class ShellGameController implements IGameController {
-
     private ConsolePrompt prompt;
+    private ShellView view;
 
     @Override
     public boolean initialize() {
         AnsiConsole.systemInstall();
         prompt = new ConsolePrompt();
+        view = new ShellView();
         return true;
     }
+    @Override
+    public int getPlayerCount() {return 2;}
 
     @Override
-    public int getPlayerCount() {
-        return 2;
-    }
-
-    @Override
-    public String getPlayerName(int playerNumber, Color color) {
+    public String getPlayerName(int playerNumber) {
         String name = "";
         do {
             String promptName = "name" + playerNumber;
             try {
-                InputResult ir = (InputResult) prompt.prompt(
-                        prompt.getPromptBuilder().createInputPrompt()
-                                .name(promptName)
-                                .defaultValue("Player " + playerNumber)
-                                .message("Name for player #" + playerNumber)
-                                .addPrompt().build()
-                ).get(promptName);
+                InputResult ir = getInputResult(playerNumber, promptName);
                 name = ir.getInput();
             } catch (IOException ignored) {}
         } while (name == null || name.isEmpty());
         return name;
     }
 
-    @Override
-    public int[] getBoardDimensions() {
-        return new int[] { 6, 6 };
+    private InputResult getInputResult(int playerNumber, String promptName) throws IOException {
+        return (InputResult) prompt.prompt(
+                prompt.getPromptBuilder().createInputPrompt()
+                        .name(promptName)
+                        .defaultValue("Player " + playerNumber)
+                        .message("Name for player #" + playerNumber)
+                        .addPrompt().build()
+        ).get(promptName);
     }
 
     @Override
-    public void updateBoard(Board board) {
-        final int[] dimensions = getBoardDimensions();
-        final int width = dimensions[0], height = dimensions[1];
-        StringBuilder sb;
-        Line searched;
-
-        sb = new StringBuilder("   ");
-        for (int j = 0; j < width; j++) {
-            sb.append(" ").append(j).append("  ");
-        }
-        System.out.println(sb);
-
-        System.out.println("  ┏" + "━".repeat(width * 4 - 1) + "┓");
-        for (int i = 0; i < height; i++) {
-            sb = new StringBuilder(i + " ┃");
-            for (int j = 0; j < width; j++) {
-                sb.append(" ● ");
-                if (j < width - 1) {
-                    searched = new Line(j, i, j + 1, i);
-                    if (board.getLines().containsKey(searched.hashCode())) {
-                        sb.append(board.getLines().get(
-                                searched.hashCode()).color().getFormat().format("="));
-                    } else {
-                        sb.append(" ");
-                    }
-                }
-            }
-            System.out.println(sb + "┃");
-
-            if (i < height - 1) {
-                sb = new StringBuilder("  ┃");
-                for (int j = 0; j < width; j++) {
-                    searched = new Line(j, i, j, i + 1);
-                    if (board.getLines().containsKey(searched.hashCode())) {
-                        sb.append(board.getLines().get(
-                                searched.hashCode()).color().getFormat().format(" ‖ "));
-                    } else {
-                        sb.append("   ");
-                    }
-                    if (j < width - 1) {
-                        sb.append(" ");
-                    }
-                }
-                System.out.println(sb + "┃");
-            }
-        }
-        System.out.println("  ┗" + "━".repeat(width * 4 - 1) + "┛");
+    public int[] getBoardDimensions() {
+        return new int[] { 5, 5 };
     }
 
     @Override
@@ -111,44 +60,67 @@ public class ShellGameController implements IGameController {
     @Override
     public Line waitForLine(Player currentPlayer) {
         Line candidate = null;
-        String input;
         do {
-            String promptName = "move";
-            try {
-                InputResult ir = (InputResult) prompt.prompt(
-                        prompt.getPromptBuilder().createInputPrompt()
-                                .name(promptName)
-                                .message("Move x1 y1 x2 y2")
-                                .addPrompt().build()
-                ).get(promptName);
-                input = ir.getInput();
-            } catch (IOException e) {
-                continue;
+            String input = getValidatedInput(currentPlayer);
+            if (input != null && !input.isEmpty()) {
+                candidate = CreateLine(input);
             }
-
-            if (input == null || input.isEmpty()) {
-                continue;
-            }
-            final String[] coords = input.split(" ");
-            if (coords.length < 4) {
-                continue;
-            }
-            int x1, y1, x2, y2;
-            try {
-                x1 = Integer.parseInt(coords[0]);
-                y1 = Integer.parseInt(coords[1]);
-                x2 = Integer.parseInt(coords[2]);
-                y2 = Integer.parseInt(coords[3]);
-            } catch (NumberFormatException e) {
-                continue;
-            }
-            candidate = new Line(x1, y1, x2, y2);
         } while (candidate == null);
         return candidate;
     }
 
+    private String getValidatedInput(Player currentPlayer) {
+        String input = null;
+        String promptName = "move";
+        try {
+            input = promptForMoveInput(currentPlayer, promptName);
+        } catch (IOException | RuntimeException e) {
+            System.err.println("An error occurred while prompting for input. Please try again");
+        }
+        return input;
+    }
+
+    private String promptForMoveInput(Player currentPlayer, String promptName) throws IOException {
+        String input;
+        InputResult ir = (InputResult) prompt.prompt(
+                prompt.getPromptBuilder().createInputPrompt()
+                        .name(promptName)
+                        .message(currentPlayer.getName()+", make a move x1 y1 x2 y2")
+                        .addPrompt().build()
+        ).get(promptName);
+        input = ir.getInput();
+        return input;
+    }
+
+    private Line CreateLine(String input) {
+        final String[] coords = input.split(" ");
+        if (coords.length != 4) {
+            System.err.println("Invalid input. Please enter four space-separated coordinates");
+            return null;
+        }
+        int[] parsedCoords = parseCoordinates(coords);
+        if (parsedCoords == null) {
+            return null;
+        }
+        return new Line(parsedCoords[0], parsedCoords[1], parsedCoords[2], parsedCoords[3]);
+    }
+
+    private int[] parseCoordinates(String[] coords) {
+        int x1, y1, x2, y2;
+        try {
+            x1 = Integer.parseInt(coords[0]);
+            y1 = Integer.parseInt(coords[1]);
+            x2 = Integer.parseInt(coords[2]);
+            y2 = Integer.parseInt(coords[3]);
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid input. Please enter valid integer coordinates");
+            return null;
+        }
+        return new int[]{x1, y1, x2, y2};
+    }
+
     @Override
-    public void endGame(Player winner) {
-        System.out.println("The winner is " + winner.getName());
+    public void endGame(List<Player> winner) {
+        System.out.println("The winner is " + winner);
     }
 }
