@@ -39,14 +39,14 @@ public class RandomGameController implements IGameController {
         do {
             String promptName = "name" + playerNumber;
             try {
-                InputResult ir = getInputResult(playerNumber, promptName);
+                InputResult ir = promptForPlayerName(playerNumber, promptName);
                 name = ir.getInput();
             } catch (IOException ignored) {}
         } while (name == null || name.isEmpty());
         return name;
     }
 
-    private InputResult getInputResult(int playerNumber, String promptName) throws IOException {
+    private InputResult promptForPlayerName(int playerNumber, String promptName) throws IOException {
         return (InputResult) prompt.prompt(
                 prompt.getPromptBuilder().createInputPrompt()
                         .name(promptName)
@@ -61,11 +61,6 @@ public class RandomGameController implements IGameController {
         return new int[] { 5, 5 };
     }
 
-    @Override
-    public void updateBoard(Board board) {
-        final int[] dimensions = getBoardDimensions();
-        view.printBoard(board,dimensions);
-    }
 
     @Override
     public void updatePlayer(Player player) {

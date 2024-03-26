@@ -3,7 +3,6 @@ package it.units.sdm.dotsandboxes.controllers;
 import de.codeshelf.consoleui.prompt.ConsolePrompt;
 import de.codeshelf.consoleui.prompt.InputResult;
 import it.units.sdm.dotsandboxes.views.ShellView;
-import it.units.sdm.dotsandboxes.core.Board;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
 import org.fusesource.jansi.AnsiConsole;
@@ -51,12 +50,6 @@ public class ShellGameController implements IGameController {
     @Override
     public int[] getBoardDimensions() {
         return new int[] { 5, 5 };
-    }
-
-    @Override
-    public void updateBoard(Board board) {
-        final int[] dimensions = getBoardDimensions();
-        view.printBoard(board, dimensions);
     }
 
     @Override

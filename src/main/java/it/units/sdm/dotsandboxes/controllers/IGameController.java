@@ -38,13 +38,6 @@ public interface IGameController {
     int[] getBoardDimensions();
 
     /**
-     * Notify the UI to update the game board being displayed.
-     *
-     * @param board the updated board instance
-     */
-    void updateBoard(Board board);
-
-    /**
      * Notify the UI to update the player visualization for the passed player instance (score counter and such).
      *
      * @param player the updated player instance

@@ -5,6 +5,7 @@ import it.units.sdm.dotsandboxes.core.Color;
 import it.units.sdm.dotsandboxes.core.Game;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
+import it.units.sdm.dotsandboxes.views.IGameView;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,47 +15,53 @@ import java.util.stream.Collectors;
 
 public class GameSession {
 
-    public static void start(IGameController controller) {
+    private final IGameController controller;
+    private final IGameView view;
+    private Game game;
+
+    GameSession(IGameController controller, IGameView view){
+        this.controller=controller;
+        this.view=view;
+    }
+
+    public void start() {
         if (!controller.initialize()) {
             throw new RuntimeException("Game controller could not initialize!");
         }
         int playerCount = controller.getPlayerCount();
         final List<Player> players = new ArrayList<>();
-        managePlayers(controller, playerCount, players);
-        final Game game = getGame(controller, players);
+        managePlayers(playerCount, players);
+        game = getGame(players);
+        view.init(game.getGameBoard());
+        view.refresh();
         while (!game.hasEnded()) {
-            handlePlayerMove(controller, game);
+            handlePlayerMove(game);
         }
-        controller.endGame(winner(game,players));
+        controller.endGame(winner(players));
     }
 
-    public static List<Player> winner(Game game,List<Player> players) {
-        if (game.hasEnded()){
-            return players.stream()
-                    .collect(Collectors.groupingBy(Player::getScore))
-                    .entrySet().stream()
-                    .max(Comparator.comparingInt(Map.Entry::getKey))
-                    .map(Map.Entry::getValue)
-                    .orElse(null);
-        }
-        return null;
+    public static List<Player> winner(List<Player> players) {
+        return players.stream()
+                .collect(Collectors.groupingBy(Player::getScore))
+                .entrySet().stream()
+                .max(Comparator.comparingInt(Map.Entry::getKey))
+                .map(Map.Entry::getValue)
+                .orElse(null);
     }
 
-    private static Game getGame(IGameController controller, List<Player> players) {
+    private Game getGame(List<Player> players) {
         int[] dimensions = controller.getBoardDimensions();
-        final Game game = new Game(players, dimensions[0], dimensions[1] );
-        controller.updateBoard(game.getGameBoard());
-        return game;
+        return new Game(players, dimensions[0], dimensions[1] );
     }
 
-    private static void managePlayers(IGameController controller, int playerCount, List<Player> players) {
+    private void managePlayers(int playerCount, List<Player> players) {
         for (int playerNumber = 1; playerNumber < playerCount + 1; playerNumber++) {
             final Color playerColor = Color.values()[playerNumber % Color.values().length];
             players.add(new Player(controller.getPlayerName(playerNumber), playerColor));
         }
     }
 
-    private static void handlePlayerMove(IGameController controller, Game game) {
+    private void handlePlayerMove(Game game) {
         final Line line = controller.waitForLine(game.getCurrentPlayer());
         try {
             game.makeNextMove(new Line(line.p1().x(), line.p1().y(), line.p2().x(), line.p2().y()));
@@ -63,7 +70,7 @@ public class GameSession {
             System.err.println("Exception: " + e.getMessage());
         }
         controller.updatePlayer(game.getLastPlayer());
-        controller.updateBoard(game.getGameBoard());
+        view.refresh();
     }
 
 }
