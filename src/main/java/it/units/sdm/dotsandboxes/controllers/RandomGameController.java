@@ -41,7 +41,8 @@ public class RandomGameController implements IGameController {
             try {
                 InputResult ir = promptForPlayerName(playerNumber, promptName);
                 name = ir.getInput();
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         } while (name == null || name.isEmpty());
         return name;
     }
@@ -58,7 +59,7 @@ public class RandomGameController implements IGameController {
 
     @Override
     public int[] getBoardDimensions() {
-        return new int[] { 5, 5 };
+        return new int[]{5, 5};
     }
 
 
@@ -72,16 +73,17 @@ public class RandomGameController implements IGameController {
         if (currentPlayer.getName().equals("Computer")) {
             int[] dims = getBoardDimensions();
             Line candidate;
-            do{ candidate= normalize(randomCandidate(dims));
+            do {
+                candidate = Line.normalize(randomCandidate(dims));
             } while (drawnLines.contains(candidate));
             drawnLines.add(candidate);
             return candidate;
-        }else{
+        } else {
             Line candidate = null;
             do {
                 String input = getValidatedInput(currentPlayer);
                 if (input != null && !input.isEmpty()) {
-                    candidate = normalize(createLine(input));
+                    candidate = Line.normalize(createLine(input));
                 }
             } while (candidate == null);
             drawnLines.add(candidate);
@@ -105,7 +107,7 @@ public class RandomGameController implements IGameController {
         InputResult ir = (InputResult) prompt.prompt(
                 prompt.getPromptBuilder().createInputPrompt()
                         .name(promptName)
-                        .message(currentPlayer.getName()+", make a move x1 y1 x2 y2")
+                        .message(currentPlayer.getName() + ", make a move x1 y1 x2 y2")
                         .addPrompt().build()
         ).get(promptName);
         input = ir.getInput();
@@ -143,7 +145,8 @@ public class RandomGameController implements IGameController {
         Line candidate;
         Point p1 = getFirstPoint(dims);
         Point p2;
-        do {p2 = getSecondPoint(p1);
+        do {
+            p2 = getSecondPoint(p1);
         } while (!isValidPoint(p2.x(), p2.y(), dims));
         candidate = new Line(p1.x(), p1.y(), p2.x(), p2.y());
         return candidate;
@@ -155,22 +158,16 @@ public class RandomGameController implements IGameController {
         return new Point(x1, y1);
     }
 
-    private static Point getSecondPoint(Point p){
-        if (Math.random()>=0.5){
-            return new Point(p.x(),p.y()+(Math.random() >= 0.5 ? 1 : -1));
-        }else{
-            return new Point(p.x()+(Math.random() >= 0.5 ? 1 : -1),p.y());
+    private static Point getSecondPoint(Point p) {
+        if (Math.random() >= 0.5) {
+            return new Point(p.x(), p.y() + (Math.random() >= 0.5 ? 1 : -1));
+        } else {
+            return new Point(p.x() + (Math.random() >= 0.5 ? 1 : -1), p.y());
         }
     }
 
     private static boolean isValidPoint(int x, int y, int[] dims) {
         return x >= 0 && x < dims[0] && y >= 0 && y < dims[1];
-    }
-
-    private static Line normalize(Line candidate) {
-        if (Board.isNotNormalized(candidate))
-            candidate =Board.normalizer(candidate);
-        return candidate;
     }
 
     @Override
