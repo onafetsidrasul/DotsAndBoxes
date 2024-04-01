@@ -23,7 +23,7 @@ public class Game {
     }
 
     public int getLastPlayerIndex(){
-        return players.indexOf(moves.get(moves.size()-1).player());
+        return players.indexOf(moves.getLast().player());
     }
     public int getCurrentPlayerIndex(){
         return (getLastPlayerIndex() + 1) % players.size();
@@ -32,7 +32,7 @@ public class Game {
     public Player getCurrentPlayer() {
         // we chose to make the player1 start first every time
         if(moves.isEmpty())
-            return this.players.get(0);
+            return this.players.getFirst();
         return this.players.get(getCurrentPlayerIndex());
     }
 
@@ -44,8 +44,8 @@ public class Game {
     }
 
     public void makeNextMove(Line line) {
-        Line lineCandidate = new Line(getCurrentPlayer().getColor(), line.p1(), line.p2());
-        Move moveCandidate = new Move(getCurrentPlayer(), new Line(null, lineCandidate).hashCode());
+        Line lineCandidate = new Line(getCurrentPlayer().getColor(), line);
+        Move moveCandidate = new Move(getCurrentPlayer(), lineCandidate);
         gameBoard.addLine(lineCandidate);
         moves.add(moveCandidate);
     }
