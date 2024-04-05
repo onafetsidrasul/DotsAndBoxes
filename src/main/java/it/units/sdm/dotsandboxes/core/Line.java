@@ -48,6 +48,6 @@ public record Line(
     }
 
     public String toString(){
-        return p1.toString() + ", " + p2.toString();
+        return color + ", " + p1.toString() + " -> " + p2.toString();
     }
 }
