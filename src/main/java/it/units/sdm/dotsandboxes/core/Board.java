@@ -10,7 +10,7 @@ public class Board {
     public Board(int xDimension, int yDimension) {
         length = xDimension;
         height = yDimension;
-        this.lines = new HashMap<>();
+        lines = new HashMap<>();
     }
 
     public boolean isBoxCompleted(Point p) {
