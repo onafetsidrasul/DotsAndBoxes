@@ -14,8 +14,8 @@ public class ShellView implements IGameView {
 
     @Override
     public void refresh() {
-        int width = board.getX_dimension();
-        int height = board.getY_dimension();
+        int width = board.length();
+        int height = board.height();
         System.out.println(columnNumber(width));
 
         System.out.println("  ┏" + "━".repeat(width * 4 - 1) + "┓");

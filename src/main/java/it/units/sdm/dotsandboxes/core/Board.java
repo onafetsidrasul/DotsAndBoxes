@@ -5,11 +5,11 @@ import java.util.Map;
 
 public class Board {
     private final Map<Integer, Line> lines;
-    private final int x_dimension, y_dimension;
+    private final int length, height;
 
     public Board(int xDimension, int yDimension) {
-        x_dimension = xDimension;
-        y_dimension = yDimension;
+        length = xDimension;
+        height = yDimension;
         this.lines = new HashMap<>();
     }
 
@@ -30,7 +30,7 @@ public class Board {
         // since we check the validity of every line drawn onto the board we can check if the board has been completely filled
         // (i.e. the games has ended) by simply checking if the number of lines is 2*n*m - n - m which is the amount of possible lines
         // for a n*m board
-        return lines.size() == (2 * x_dimension * y_dimension) - x_dimension - y_dimension;
+        return lines.size() == (2 * length * height) - length - height;
     }
 
     public void addLine(Line line) {
@@ -46,16 +46,16 @@ public class Board {
     }
 
     private boolean isLineOutOfBounds(Line line) {
-        return line.p1().x() < 0 || line.p1().x() >= x_dimension || line.p1().y() < 0 || line.p1().y() >= y_dimension ||
-                line.p2().x() < 0 || line.p2().x() >= x_dimension || line.p2().y() < 0 || line.p2().y() >= y_dimension;
+        return line.p1().x() < 0 || line.p1().x() >= length || line.p1().y() < 0 || line.p1().y() >= height ||
+                line.p2().x() < 0 || line.p2().x() >= length || line.p2().y() < 0 || line.p2().y() >= height;
     }
 
-    public int getX_dimension() {
-        return x_dimension;
+    public int length() {
+        return length;
     }
 
-    public int getY_dimension() {
-        return y_dimension;
+    public int height() {
+        return height;
     }
 
     public Map<Integer, Line> getLines() {
