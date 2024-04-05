@@ -44,7 +44,7 @@ public class Game {
     }
 
     public void makeNextMove(Line line) {
-        Line lineCandidate = new Line(getCurrentPlayer().getColor(), line);
+        Line lineCandidate = new Line(getCurrentPlayer().color(), line);
         Move moveCandidate = new Move(getCurrentPlayer(), lineCandidate);
         gameBoard.addLine(lineCandidate);
         moves.add(moveCandidate);
@@ -63,7 +63,7 @@ public class Game {
             for (int j = 0; j < gameBoard.getY_dimension(); j++) {
                 Point currentPoint= new Point(i,j);
                 if (gameBoard.isBoxCompleted(currentPoint) && !completedBoxes.contains(currentPoint)) {
-                    getLastPlayer().increaseScore();
+                    getLastPlayer().increaseScoreByOne();
                     completedBoxes.add(new Point(i,j));
                 }
             }

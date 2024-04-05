@@ -3,7 +3,6 @@ package it.units.sdm.dotsandboxes.controllers;
 import de.codeshelf.consoleui.prompt.ConsolePrompt;
 import de.codeshelf.consoleui.prompt.InputResult;
 import it.units.sdm.dotsandboxes.views.ShellView;
-import it.units.sdm.dotsandboxes.core.Board;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
 import it.units.sdm.dotsandboxes.core.Point;
@@ -70,7 +69,7 @@ public class RandomGameController implements IGameController {
 
     @Override
     public Line waitForLine(Player currentPlayer) {
-        if (currentPlayer.getName().equals("Computer")) {
+        if (currentPlayer.name().equals("Computer")) {
             int[] dims = getBoardDimensions();
             Line candidate;
             do {
@@ -107,7 +106,7 @@ public class RandomGameController implements IGameController {
         InputResult ir = (InputResult) prompt.prompt(
                 prompt.getPromptBuilder().createInputPrompt()
                         .name(promptName)
-                        .message(currentPlayer.getName() + ", make a move x1 y1 x2 y2")
+                        .message(currentPlayer.name() + ", make a move x1 y1 x2 y2")
                         .addPrompt().build()
         ).get(promptName);
         input = ir.getInput();

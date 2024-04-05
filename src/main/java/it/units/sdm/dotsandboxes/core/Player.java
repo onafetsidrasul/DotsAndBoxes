@@ -1,6 +1,6 @@
 package it.units.sdm.dotsandboxes.core;
 
-public class Player {
+public final class Player {
     private final String name;
     private final Color color;
     private int score;
@@ -11,19 +11,19 @@ public class Player {
         this.score = 0;
     }
 
-    public int getScore() {
+    public int score() {
         return score;
     }
 
-    public void increaseScore() {
+    public void increaseScoreByOne() {
         score++;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public Color getColor() {
+    public Color color() {
         return color;
     }
 

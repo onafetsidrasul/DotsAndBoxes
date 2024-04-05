@@ -85,7 +85,7 @@ public class ShellGameController implements IGameController {
         InputResult ir = (InputResult) prompt.prompt(
                 prompt.getPromptBuilder().createInputPrompt()
                         .name(promptName)
-                        .message(currentPlayer.getName()+", make a move x1 y1 x2 y2")
+                        .message(currentPlayer.name()+", make a move x1 y1 x2 y2")
                         .addPrompt().build()
         ).get(promptName);
         input = ir.getInput();

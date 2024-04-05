@@ -42,7 +42,7 @@ public class GameSession {
 
     public static List<Player> winner(List<Player> players) {
         return players.stream()
-                .collect(Collectors.groupingBy(Player::getScore))
+                .collect(Collectors.groupingBy(Player::score))
                 .entrySet().stream()
                 .max(Comparator.comparingInt(Map.Entry::getKey))
                 .map(Map.Entry::getValue)

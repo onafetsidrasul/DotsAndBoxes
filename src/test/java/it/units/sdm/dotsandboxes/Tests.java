@@ -64,7 +64,7 @@ public class Tests {
     @Test
     void player1StartsFirst() {
         Game testGame = new Game(new Player("A", Color.RED), new Player("B", Color.BLUE), 5, 5);
-        assertEquals("A", testGame.getCurrentPlayer().getName());
+        assertEquals("A", testGame.getCurrentPlayer().name());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class Tests {
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(player1, player2, 5, 5);
         testGame.makeNextMove(new Line(0, 0, 0, 1));
-        assertEquals("B", testGame.getCurrentPlayer().getName());
+        assertEquals("B", testGame.getCurrentPlayer().name());
     }
 
     @Test
@@ -90,8 +90,8 @@ public class Tests {
         testGame.makeNextMove(new Line(0, 2, 1, 2));
         testGame.makeNextMove(new Line(1, 1, 1, 2));
         testGame.updateScore();
-        assertEquals(1, player1.getScore());
-        assertEquals(1, player2.getScore());
+        assertEquals(1, player1.score());
+        assertEquals(1, player2.score());
     }
 
     @Test
