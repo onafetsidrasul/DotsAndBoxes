@@ -4,22 +4,23 @@ import java.util.*;
 
 public class Game {
 
-    final List<Player> players;
-    Board gameBoard;
-    ArrayList<Move> moves;
-    final List<Point> completedBoxes = new ArrayList<>();
-    public Game(List<Player> players, int boardX, int boardY) {
+    private final List<Player> players;
+    private final Board gameBoard;
+    private final ArrayList<Move> moves;
+    private final List<Point> completedBoxes;
+    public Game(int boardLength, int boardHeight, List<Player> players) {
         this.players = Objects.requireNonNull(players);
         if (this.players.size() < 2) {
             throw new RuntimeException("Game requires a minimum of 2 players.");
         }
         this.players.forEach(Objects::requireNonNull);
-        this.gameBoard = new Board(boardX, boardY);
-        this.moves = new ArrayList<>();
+        gameBoard = new Board(boardLength, boardHeight);
+        moves = new ArrayList<>();
+        completedBoxes = new ArrayList<>();
     }
 
-    public Game(Player player1, Player player2, int boardX, int boardY) {
-        this(Arrays.asList(player1, player2), boardX, boardY);
+    public Game(int boardLength, int boardHeight, Player... players) {
+        this(boardLength, boardHeight, Arrays.asList(players));
     }
 
     public int getLastPlayerIndex(){
@@ -50,7 +51,7 @@ public class Game {
         moves.add(moveCandidate);
     }
 
-    public Board getGameBoard() {
+    public Board getBoard() {
         return gameBoard;
     }
 

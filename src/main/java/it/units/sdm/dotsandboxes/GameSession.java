@@ -32,7 +32,7 @@ public class GameSession {
         final List<Player> players = new ArrayList<>();
         managePlayers(playerCount, players);
         game = getGame(players);
-        view.init(game.getGameBoard());
+        view.init(game.getBoard());
         view.refresh();
         while (!game.hasEnded()) {
             handlePlayerMove(game);
@@ -51,7 +51,7 @@ public class GameSession {
 
     private Game getGame(List<Player> players) {
         int[] dimensions = controller.getBoardDimensions();
-        return new Game(players, dimensions[0], dimensions[1] );
+        return new Game(dimensions[0], dimensions[1], players);
     }
 
     private void managePlayers(int playerCount, List<Player> players) {
