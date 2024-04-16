@@ -89,4 +89,8 @@ public class Game {
         scoreBoard.replace(p, newScore);
     }
 
+    public List<Player> getPlayers(){
+        return players;
+    }
+
 }
