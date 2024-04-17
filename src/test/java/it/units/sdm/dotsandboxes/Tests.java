@@ -92,8 +92,8 @@ public class Tests {
         testGame.makeNextMove(new Line(0, 2, 1, 2));
         testGame.makeNextMove(new Line(1, 1, 1, 2));
         testGame.updateScore();
-        assertEquals(1, player1.score());
-        assertEquals(1, player2.score());
+        assertEquals(1, testGame.getPlayerScore(player1));
+        assertEquals(1, testGame.getPlayerScore(player2));
     }
 
     @Test
@@ -189,7 +189,7 @@ public class Tests {
         testGame.makeNextMove(new Line(4, 1, 4, 2));
         testGame.makeNextMove(new Line(4, 1, 4, 0));
         testGame.makeNextMove(new Line(4, 0, 3, 0));
-        assertEquals(List.of(player1, player2), GameSession.winner(List.of(player1, player2)));
+        assertEquals(List.of(player1, player2), testGame.winners());
     }
 
     @Test
@@ -253,7 +253,7 @@ public class Tests {
         testGame.updateScore();
         testGame.makeNextMove(new Line(4, 4, 4, 3));
         testGame.updateScore();
-        assertEquals(List.of(player1), GameSession.winner(List.of(player1, player2)));
+        assertEquals(List.of(player1), testGame.winners());
     }
 
     @Test
