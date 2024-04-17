@@ -1,6 +1,7 @@
 package it.units.sdm.dotsandboxes.core;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class Game {
 
@@ -91,6 +92,16 @@ public class Game {
 
     public List<Player> getPlayers(){
         return players;
+    }
+
+    public List<Player> winners() {
+        if(!hasEnded()){
+            return null; // or maybe throw an exception?
+        } else{
+            List<Player> sortedByScore = getPlayers().stream().sorted((p1, p2) -> getPlayerScore(p1) - getPlayerScore(p2)).toList();
+            int maxScore = getPlayerScore(sortedByScore.getLast());
+            return sortedByScore.stream().filter(player -> getPlayerScore(player) == maxScore).toList();
+        }
     }
 
 }
