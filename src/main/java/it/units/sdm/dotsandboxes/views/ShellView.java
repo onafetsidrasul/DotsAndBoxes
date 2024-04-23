@@ -1,5 +1,6 @@
 package it.units.sdm.dotsandboxes.views;
 
+import it.units.sdm.dotsandboxes.controllers.PostGameIntent;
 import it.units.sdm.dotsandboxes.core.Board;
 import it.units.sdm.dotsandboxes.core.Line;
 
@@ -23,6 +24,16 @@ public class ShellView implements IGameView {
             printBoardInside(i, width, height);
         }
         System.out.println("  ┗" + "━".repeat(width * 4 - 1) + "┛");
+    }
+
+    @Override
+    public PostGameIntent promptForPostGameIntent() {
+        return null;
+    }
+
+    @Override
+    public void displayIllegalMoveWarning(String lineString) {
+
     }
 
     private void printBoardInside(int i, int width, int height) {
