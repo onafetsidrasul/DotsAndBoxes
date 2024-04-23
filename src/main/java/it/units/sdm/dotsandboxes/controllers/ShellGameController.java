@@ -2,6 +2,7 @@ package it.units.sdm.dotsandboxes.controllers;
 
 import de.codeshelf.consoleui.prompt.ConsolePrompt;
 import de.codeshelf.consoleui.prompt.InputResult;
+import it.units.sdm.dotsandboxes.views.IGameView;
 import it.units.sdm.dotsandboxes.views.ShellView;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
@@ -10,9 +11,13 @@ import org.fusesource.jansi.AnsiConsole;
 import java.io.IOException;
 import java.util.List;
 
-public class ShellGameController implements IGameController {
+public class ShellGameController extends IGameController {
     private ConsolePrompt prompt;
     private ShellView view;
+
+    public ShellGameController(IGameView view) {
+        super(view);
+    }
 
     @Override
     public boolean initialize() {

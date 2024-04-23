@@ -2,6 +2,7 @@ package it.units.sdm.dotsandboxes.controllers;
 
 import de.codeshelf.consoleui.prompt.ConsolePrompt;
 import de.codeshelf.consoleui.prompt.InputResult;
+import it.units.sdm.dotsandboxes.views.IGameView;
 import it.units.sdm.dotsandboxes.views.ShellView;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
@@ -11,10 +12,14 @@ import org.fusesource.jansi.AnsiConsole;
 import java.io.IOException;
 import java.util.*;
 
-public class RandomGameController implements IGameController {
+public class RandomGameController extends IGameController {
     private final Set<Line> drawnLines = new HashSet<>();
     private ConsolePrompt prompt;
     private ShellView view;
+
+    public RandomGameController(IGameView view) {
+        super(view);
+    }
 
     @Override
     public boolean initialize() {
