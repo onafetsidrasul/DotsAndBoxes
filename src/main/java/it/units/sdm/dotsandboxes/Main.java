@@ -7,6 +7,6 @@ import it.units.sdm.dotsandboxes.views.ShellView;
 public class Main {
 
     public static void main(String[] args) {
-        new GameSession(new RandomGameController(),new ShellView()).start();
+        new GameSession(new RandomGameController(new ShellView())).start();
     }
 }
