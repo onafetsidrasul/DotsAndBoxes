@@ -97,7 +97,7 @@ public abstract class IGameController {
             game.makeNextMove(new Line(line.p1().x(), line.p1().y(), line.p2().x(), line.p2().y()));
             game.updateScore();
         } catch (RuntimeException e) {
-            view.drawIllegalMoveWarning(line);
+            view.displayIllegalMoveWarning(line.toString());
         }
     }
 
