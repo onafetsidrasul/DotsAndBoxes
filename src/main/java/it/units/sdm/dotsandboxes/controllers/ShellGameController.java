@@ -8,15 +8,20 @@ import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
 import org.fusesource.jansi.AnsiConsole;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.ToIntFunction;
 
 public class ShellGameController extends IGameController {
 
+    private final BufferedReader reader;
+
     public ShellGameController(IGameView view) {
         super(view);
+        reader = new BufferedReader(new InputStreamReader(System.in));
     }
 
     @Override
@@ -26,18 +31,21 @@ public class ShellGameController extends IGameController {
 
     @Override
     public int getPlayerCount() throws IOException {
-        return Integer.parseInt(view.promptForNumberOfPlayers());
+        view.promptForNumberOfPlayers();
+        return Integer.parseInt(reader.readLine());
     }
 
     @Override
     public String getPlayerName(int playerNumber) throws IOException {
-        return view.promptForPlayerName(playerNumber);
+        view.promptForPlayerName(playerNumber);
+        return reader.readLine();
     }
 
     @Override
     public int[] getBoardDimensions() throws IOException {
+        view.promptForBoardDimensions();
         try {
-            return Arrays.stream(view.promptForBoardDimensions()).mapToInt(Integer::parseInt).toArray();
+            return Arrays.stream(reader.readLine().split("x")).mapToInt(Integer::parseInt).toArray();
         } catch (NumberFormatException e) {
             System.err.println("Invalid input. Please enter valid integer coordinates");
             return null;
@@ -46,6 +54,7 @@ public class ShellGameController extends IGameController {
 
     @Override
     public Line waitForLine(Player currentPlayer) {
+        view.promptForMove(currentPlayer);
         Line candidate = null;
         do {
             String input = getValidatedInput(currentPlayer);
@@ -59,7 +68,7 @@ public class ShellGameController extends IGameController {
     private String getValidatedInput(Player currentPlayer) {
         String input = null;
         try {
-            input = view.promptForMove(currentPlayer);
+            input = reader.readLine();
         } catch (IOException | RuntimeException e) {
             System.err.println("An error occurred while prompting for input. Please try again");
         }
@@ -96,5 +105,11 @@ public class ShellGameController extends IGameController {
     @Override
     public void endGame(List<Player> winner) {
         System.out.println("The winner is " + winner);
+    }
+
+    @Override
+    public PostGameIntent getPostGameIntent() throws IOException {
+        view.promptForPostGameIntent();
+        return reader.readLine().equals("y") ? PostGameIntent.NEW_GAME : PostGameIntent.END_GAME;
     }
 }

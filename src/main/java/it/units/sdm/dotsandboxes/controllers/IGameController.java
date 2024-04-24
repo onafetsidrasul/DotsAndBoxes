@@ -33,7 +33,10 @@ public abstract class IGameController {
     public final void setUpGame() throws IOException {
         int playerCount = getPlayerCount();
         if (playerCount < 2) {
-            throw new IllegalArgumentException("You need at least 2 players");
+            throw new IllegalArgumentException("You need at least 2 players!");
+        }
+        if (playerCount > Color.values().length) {
+            throw new IllegalArgumentException("Too many players! Max amount is " + Color.values().length);
         }
         List<Player> players = new ArrayList<>(playerCount);
         for (int playerIndex = 1; playerIndex <= playerCount; playerIndex++) {
@@ -181,8 +184,6 @@ public abstract class IGameController {
      */
     abstract void endGame(List<Player> winner);
 
-    public final PostGameIntent getPostGameIntent() throws IOException {
-        return view.promptForPostGameIntent();
-    }
+    public abstract PostGameIntent getPostGameIntent() throws IOException;
 }
 

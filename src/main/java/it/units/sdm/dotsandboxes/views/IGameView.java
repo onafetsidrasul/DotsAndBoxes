@@ -13,19 +13,19 @@ public interface IGameView {
 
     default void updateUI(Board gameBoard, List<Player> players, int[] scores, Player currentPlayer){};
 
-    PostGameIntent promptForPostGameIntent() throws IOException;
+    void promptForPostGameIntent();
 
     void displayIllegalMoveWarning(Line illegalLine);
 
     void displayIllegalActionWarning(String message);
 
-    String promptForPlayerName(int playerNumber) throws IOException;
+    void promptForPlayerName(int playerNumber);
 
-    String[] promptForBoardDimensions() throws IOException;
+    void promptForBoardDimensions();
 
-    String promptForNumberOfPlayers() throws IOException;
+    void promptForNumberOfPlayers();
 
-    String promptForMove(Player currentPlayer) throws IOException;
+    void promptForMove(Player currentPlayer);
 
     void displayWinners(List<Player> winners);
 }

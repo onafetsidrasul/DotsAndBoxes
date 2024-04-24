@@ -4,12 +4,16 @@ import it.units.sdm.dotsandboxes.controllers.PostGameIntent;
 import it.units.sdm.dotsandboxes.core.Board;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
+import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+
+import static org.fusesource.jansi.Ansi.*;
+import static org.fusesource.jansi.Ansi.Color.*;
 
 public class ShellView implements IGameView { // devo trasferire la visualizzazione dal shellgamecontroller alla shellview
 
@@ -21,6 +25,7 @@ public class ShellView implements IGameView { // devo trasferire la visualizzazi
 
     @Override
     public void updateUI(final Board gameBoard, final List<Player> players, final int[] scores, final Player currentPlayer) {
+        System.out.println(ansi().eraseScreen());
         printPlayers(players, scores);
         printBoard(gameBoard);
         printCurrentPlayer(currentPlayer);
@@ -129,7 +134,7 @@ public class ShellView implements IGameView { // devo trasferire la visualizzazi
         System.out.println("--- PLAYERS ---");
         for (int i = 1; i <= players.size(); i++) {
             Player player = players.get(i - 1);
-            System.out.println("Player " + i + " : " + player.name() + ", " + player.color());
+            System.out.println(ansi().a("Player " + i + " : ").fg(Ansi.Color.valueOf(player.color().name())).a(player.name()).reset());
             System.out.println("\tScore: " + scores[i - 1]);
         }
         System.out.println("---------------");
@@ -140,12 +145,8 @@ public class ShellView implements IGameView { // devo trasferire la visualizzazi
     }
 
     @Override
-    public PostGameIntent promptForPostGameIntent() throws IOException {
-        System.out.print("Do you wish to continue? [y/n] : ");
-        String intent = "";
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        intent = reader.readLine();
-        return intent.equals("y") ? PostGameIntent.NEW_GAME : PostGameIntent.END_GAME;
+    public void promptForPostGameIntent() {
+        System.out.print("Do you wish to play again? [y/n] : ");
     }
 
     @Override
@@ -159,43 +160,28 @@ public class ShellView implements IGameView { // devo trasferire la visualizzazi
     }
 
     @Override
-    public String promptForPlayerName(int playerNumber) throws IOException {
-        System.out.print("Insert name for player" + playerNumber + " : ");
-        String name = "";
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        name = reader.readLine();
-        return name;
+    public void promptForPlayerName(int playerNumber) {
+        System.out.print(ansi().eraseScreen().a("Insert name for player" + playerNumber + " : "));
     }
 
     @Override
-    public String[] promptForBoardDimensions() throws IOException {
-        System.out.print("Insert board dimensions [ NxM ] : ");
-        String dimensions = "";
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        dimensions = reader.readLine();
-        return dimensions.split("x");
+    public void promptForBoardDimensions() {
+        System.out.print(ansi().eraseScreen().a("Insert board dimensions [ NxM ] : "));
     }
 
     @Override
-    public String promptForNumberOfPlayers() throws IOException {
-        System.out.print("Insert number of players : ");
-        String playerNum = "";
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        playerNum = reader.readLine();
-        return playerNum;
+    public void promptForNumberOfPlayers() {
+        System.out.print(ansi().eraseScreen().a("Insert number of players : "));
     }
 
     @Override
-    public String promptForMove(Player currentPlayer) throws IOException {
+    public void promptForMove(Player currentPlayer) {
         System.out.print("Make your move [ x1, y1, x2, y2 ] : ");
-        String move = "";
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        move = reader.readLine();
-        return move;
     }
 
     @Override
     public void displayWinners(List<Player> winners) {
+        System.out.println(ansi().eraseScreen());
         if (winners.size() > 1) {
             System.out.println("Game tied between the players: ");
             for (Player winner : winners) {
