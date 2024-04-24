@@ -2,14 +2,8 @@ package it.units.sdm.dotsandboxes;
 
 import it.units.sdm.dotsandboxes.controllers.IGameController;
 import it.units.sdm.dotsandboxes.controllers.PostGameIntent;
-import it.units.sdm.dotsandboxes.core.Color;
-import it.units.sdm.dotsandboxes.core.Game;
-import it.units.sdm.dotsandboxes.core.Line;
-import it.units.sdm.dotsandboxes.core.Player;
-import it.units.sdm.dotsandboxes.views.IGameView;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
 public class GameSession {
 
@@ -20,13 +14,27 @@ public class GameSession {
     }
 
     public void start() {
+        PostGameIntent intent = PostGameIntent.END_GAME;
         do {
             if (!controller.initialize()) {
                 throw new RuntimeException("Game controller could not initialize!");
             }
-            controller.setUpGame();
-            controller.startGame();
-        } while (controller.getPostGameIntent() == PostGameIntent.NEW_GAME);
+            try {
+                controller.setUpGame();
+            } catch (IOException e) {
+                System.err.println("Game controller could not setup game!");
+            }
+            try {
+                controller.startGame();
+            } catch (IOException e) {
+                System.err.println("Game controller could not start game!");
+            }
+            try {
+                intent = controller.getPostGameIntent();
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+        } while (intent == PostGameIntent.NEW_GAME);
     }
 
 
