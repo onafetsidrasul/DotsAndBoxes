@@ -9,11 +9,11 @@ import it.units.sdm.dotsandboxes.core.Player;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.ToIntFunction;
 
 public class ShellGameController extends IGameController {
-    private ConsolePrompt prompt;
-    private ShellView view;
 
     public ShellGameController(IGameView view) {
         super(view);
@@ -21,45 +21,27 @@ public class ShellGameController extends IGameController {
 
     @Override
     public boolean initialize() {
-        AnsiConsole.systemInstall();
-        prompt = new ConsolePrompt();
-        view = new ShellView();
-        return true;
-    }
-    @Override
-    public int getPlayerCount() {return 2;}
-
-    @Override
-    public String getPlayerName(int playerNumber) {
-        String name = "";
-        do {
-            String promptName = "name" + playerNumber;
-            try {
-                InputResult ir = getInputResult(playerNumber, promptName);
-                name = ir.getInput();
-            } catch (IOException ignored) {}
-        } while (name == null || name.isEmpty());
-        return name;
-    }
-
-    private InputResult getInputResult(int playerNumber, String promptName) throws IOException {
-        return (InputResult) prompt.prompt(
-                prompt.getPromptBuilder().createInputPrompt()
-                        .name(promptName)
-                        .defaultValue("Player " + playerNumber)
-                        .message("Name for player #" + playerNumber)
-                        .addPrompt().build()
-        ).get(promptName);
+        return view.init();
     }
 
     @Override
-    public int[] getBoardDimensions() {
-        return new int[] { 5, 5 };
+    public int getPlayerCount() throws IOException {
+        return Integer.parseInt(view.promptForNumberOfPlayers());
     }
 
     @Override
-    public void updatePlayer(Player player) {
-        System.out.println(player);
+    public String getPlayerName(int playerNumber) throws IOException {
+        return view.promptForPlayerName(playerNumber);
+    }
+
+    @Override
+    public int[] getBoardDimensions() throws IOException {
+        try {
+            return Arrays.stream(view.promptForBoardDimensions()).mapToInt(Integer::parseInt).toArray();
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid input. Please enter valid integer coordinates");
+            return null;
+        }
     }
 
     @Override
@@ -76,24 +58,11 @@ public class ShellGameController extends IGameController {
 
     private String getValidatedInput(Player currentPlayer) {
         String input = null;
-        String promptName = "move";
         try {
-            input = promptForMoveInput(currentPlayer, promptName);
+            input = view.promptForMove(currentPlayer);
         } catch (IOException | RuntimeException e) {
             System.err.println("An error occurred while prompting for input. Please try again");
         }
-        return input;
-    }
-
-    private String promptForMoveInput(Player currentPlayer, String promptName) throws IOException {
-        String input;
-        InputResult ir = (InputResult) prompt.prompt(
-                prompt.getPromptBuilder().createInputPrompt()
-                        .name(promptName)
-                        .message(currentPlayer.name()+", make a move x1 y1 x2 y2")
-                        .addPrompt().build()
-        ).get(promptName);
-        input = ir.getInput();
         return input;
     }
 
