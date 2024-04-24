@@ -15,7 +15,7 @@ public class ShellView implements IGameView { // devo trasferire la visualizzazi
 
     @Override
     public boolean init() {
-        AnsiConsole.systemInstall();
+        //AnsiConsole.systemInstall();
         return true;
     }
 
@@ -79,7 +79,7 @@ public class ShellView implements IGameView { // devo trasferire la visualizzazi
         printRowBorder();
         System.out.println();
         if (rowNumber < gameBoard.height() - 1) {
-            System.out.print(" ");
+            System.out.print("  ");
             printRowBorder();
             sb = new StringBuilder();
             for (int j = 0; j < gameBoard.length(); j++) {
