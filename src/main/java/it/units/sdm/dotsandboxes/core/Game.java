@@ -32,6 +32,9 @@ public class Game {
     }
 
     public int getLastPlayerIndex() {
+        if (moves.isEmpty()) {
+            return -1;
+        }
         return players.indexOf(moves.getLast().player());
     }
 
@@ -53,7 +56,7 @@ public class Game {
         return this.players.get(getLastPlayerIndex());
     }
 
-    public int getPlayerScore(Player p){
+    public int getPlayerScore(Player p) {
         return scoreBoard.get(p);
     }
 
@@ -90,14 +93,22 @@ public class Game {
         scoreBoard.replace(p, newScore);
     }
 
-    public List<Player> getPlayers(){
+    public List<Player> getPlayers() {
         return players;
     }
 
+    public int[] getScores() {
+        int[] scores = new int[players.size()];
+        for (int i = 0; i < players.size(); i++) {
+            scores[i] = scoreBoard.get(players.get(i));
+        }
+        return scores;
+    }
+
     public List<Player> winners() {
-        if(!hasEnded()){
+        if (!hasEnded()) {
             return null; // or maybe throw an exception?
-        } else{
+        } else {
             List<Player> sortedByScore = getPlayers().stream().sorted((p1, p2) -> getPlayerScore(p1) - getPlayerScore(p2)).toList();
             int maxScore = getPlayerScore(sortedByScore.getLast());
             return sortedByScore.stream().filter(player -> getPlayerScore(player) == maxScore).toList();
