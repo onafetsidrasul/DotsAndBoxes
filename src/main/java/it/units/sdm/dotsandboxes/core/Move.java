@@ -1,7 +1,5 @@
 package it.units.sdm.dotsandboxes.core;
 
-import java.util.Objects;
-
 public final class Move {
     private final Player player;
     private final Integer colorlessNormalizedLineHash;

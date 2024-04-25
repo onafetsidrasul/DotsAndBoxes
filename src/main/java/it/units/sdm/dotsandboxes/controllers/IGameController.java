@@ -5,7 +5,6 @@ import it.units.sdm.dotsandboxes.views.IGameView;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public abstract class IGameController {
@@ -76,7 +75,7 @@ public abstract class IGameController {
         }
     }
 
-    public final void startGameVsComputer() throws IOException {
+    public final void startGameVsComputer() {
         if (game == null) {
             throw new IllegalStateException("Game has not been set up!");
         }
@@ -94,7 +93,7 @@ public abstract class IGameController {
         endGame(game.winners());
     }
 
-    public final void startGameVsPlayer() throws IOException {
+    public final void startGameVsPlayer() {
         if (game == null) {
             throw new IllegalStateException("Game has not been set up!");
         }

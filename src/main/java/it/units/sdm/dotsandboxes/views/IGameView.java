@@ -9,7 +9,7 @@ import java.util.List;
 public interface IGameView {
     boolean init();
 
-    default void updateUI(Board gameBoard, List<Player> players, int[] scores, Player currentPlayer){};
+    default void updateUI(Board gameBoard, List<Player> players, int[] scores, Player currentPlayer){}
 
     void promptForPostGameIntent();
 

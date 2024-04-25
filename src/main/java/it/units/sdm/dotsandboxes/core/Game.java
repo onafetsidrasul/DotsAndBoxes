@@ -1,7 +1,6 @@
 package it.units.sdm.dotsandboxes.core;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 public class Game {
 

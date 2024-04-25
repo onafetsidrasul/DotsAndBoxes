@@ -1,19 +1,14 @@
 package it.units.sdm.dotsandboxes.controllers;
 
-import de.codeshelf.consoleui.prompt.ConsolePrompt;
-import de.codeshelf.consoleui.prompt.InputResult;
 import it.units.sdm.dotsandboxes.views.IGameView;
-import it.units.sdm.dotsandboxes.views.ShellView;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
-import org.fusesource.jansi.AnsiConsole;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.ToIntFunction;
 
 public class ShellGameController extends IGameController {
 
@@ -57,7 +52,7 @@ public class ShellGameController extends IGameController {
         view.promptForMove(currentPlayer);
         Line candidate = null;
         do {
-            String input = getValidatedInput(currentPlayer);
+            String input = getValidatedInput();
             if (input != null && !input.isEmpty()) {
                 candidate = CreateLine(input);
             }
@@ -65,7 +60,7 @@ public class ShellGameController extends IGameController {
         return candidate;
     }
 
-    private String getValidatedInput(Player currentPlayer) {
+    private String getValidatedInput() {
         String input = null;
         try {
             input = reader.readLine();

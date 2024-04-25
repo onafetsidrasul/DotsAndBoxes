@@ -1,15 +1,10 @@
 package it.units.sdm.dotsandboxes.views;
 
-import it.units.sdm.dotsandboxes.controllers.PostGameIntent;
 import it.units.sdm.dotsandboxes.core.Board;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
 import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.AnsiConsole;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 
 import static org.fusesource.jansi.Ansi.*;
