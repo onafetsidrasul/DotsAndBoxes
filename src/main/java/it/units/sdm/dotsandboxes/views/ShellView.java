@@ -15,7 +15,7 @@ import java.util.List;
 import static org.fusesource.jansi.Ansi.*;
 import static org.fusesource.jansi.Ansi.Color.*;
 
-public class ShellView implements IGameView { // devo trasferire la visualizzazione dal shellgamecontroller alla shellview
+public class ShellView implements IGameView {
 
     @Override
     public boolean init() {
@@ -191,6 +191,15 @@ public class ShellView implements IGameView { // devo trasferire la visualizzazi
         if (winners.size() == 1) {
             System.out.println("Player " + winners.getFirst().name() + " won!");
         }
+    }
+
+    @Override
+    public void promptForGamemode() {
+        System.out.println(ansi().eraseScreen());
+        System.out.println("Select the game mode");
+        System.out.println("\t1 - Player vs. Player");
+        System.out.println("\t2 - Player vs. CPU");
+        System.out.print(" : ");
     }
 
 

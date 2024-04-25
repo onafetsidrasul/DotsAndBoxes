@@ -12,7 +12,7 @@ public abstract class IGameController {
 
     protected final IGameView view;
     protected Game game;
-    protected boolean isVsComputer;
+    protected Gamemode gamemode;
 
     public IGameController(final IGameView view) {
         this.view = view;
@@ -31,6 +31,26 @@ public abstract class IGameController {
      * Acquires from the user all the information necessary to start a game
      */
     public final void setUpGame() throws IOException {
+        switch (gamemode = getGamemode()) {
+            case PVE:
+                setUpGameVsComputer();
+                break;
+            case PVP:
+                setUpGameVsPlayer();
+                break;
+        }
+    }
+
+    public final void setUpGameVsComputer() throws IOException {
+        int playerCount = 2;
+        List<Player> players = new ArrayList<>(playerCount);
+        players.add(new Player(getPlayerName(1), Color.values()[1 % Color.values().length]));
+        players.add(new Player("CPU", Color.values()[2 % Color.values().length]));
+        int[] boardDimensions = getBoardDimensions();
+        game = new Game(boardDimensions[0], boardDimensions[1], players);
+    }
+
+    public final void setUpGameVsPlayer() throws IOException {
         int playerCount = getPlayerCount();
         if (playerCount < 2) {
             throw new IllegalArgumentException("You need at least 2 players!");
@@ -47,38 +67,18 @@ public abstract class IGameController {
         game = new Game(boardDimensions[0], boardDimensions[1], players);
     }
 
-    public final void setUpGameVsComputer() throws IOException {
-        int playerCount = 2;
-        List<Player> players = new ArrayList<>(playerCount);
-        players.add(new Player(getPlayerName(1), Color.values()[1 % Color.values().length]));
-        players.add(new Player("CPU", Color.values()[2 % Color.values().length]));
-        int[] boardDimensions = getBoardDimensions();
-        game = new Game(boardDimensions[0], boardDimensions[1], players);
-        isVsComputer = true;
-    }
-
     public final void startGame() throws IOException {
-        if (game == null) {
-            throw new IllegalStateException("Game has not been set up!");
+        switch (gamemode) {
+            case PVE:
+                startGameVsComputer();
+            case PVP:
+                startGameVsPlayer();
         }
-        if (isVsComputer) {
-            throw new IllegalStateException("Game has been set up to play against the computer!");
-        }
-        view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
-        while (!game.hasEnded()) {
-            final Line line = waitForLine(game.getCurrentPlayer());
-            makeMove(line);
-            view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
-        }
-        endGame(game.winners());
     }
 
     public final void startGameVsComputer() throws IOException {
         if (game == null) {
             throw new IllegalStateException("Game has not been set up!");
-        }
-        if (!isVsComputer) {
-            throw new IllegalStateException("Game has not been set up to play against the computer!");
         }
         view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
         while (!game.hasEnded()) {
@@ -88,6 +88,19 @@ public abstract class IGameController {
             } else {
                 line = generateMove(ComputerMoveStrategy.RANDOM);
             }
+            makeMove(line);
+            view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
+        }
+        endGame(game.winners());
+    }
+
+    public final void startGameVsPlayer() throws IOException {
+        if (game == null) {
+            throw new IllegalStateException("Game has not been set up!");
+        }
+        view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
+        while (!game.hasEnded()) {
+            final Line line = waitForLine(game.getCurrentPlayer());
             makeMove(line);
             view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
         }
@@ -185,5 +198,7 @@ public abstract class IGameController {
     abstract void endGame(List<Player> winner);
 
     public abstract PostGameIntent getPostGameIntent() throws IOException;
+
+    public abstract Gamemode getGamemode() throws IOException;
 }
 

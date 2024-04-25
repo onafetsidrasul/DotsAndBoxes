@@ -103,13 +103,23 @@ public class ShellGameController extends IGameController {
     }
 
     @Override
-    public void endGame(List<Player> winner) {
-        System.out.println("The winner is " + winner);
+    public void endGame(List<Player> winners) {
+        view.displayWinners(winners);
     }
 
     @Override
     public PostGameIntent getPostGameIntent() throws IOException {
         view.promptForPostGameIntent();
         return reader.readLine().equals("y") ? PostGameIntent.NEW_GAME : PostGameIntent.END_GAME;
+    }
+
+    @Override
+    public Gamemode getGamemode() throws IOException {
+        view.promptForGamemode();
+        return switch (Integer.parseInt(reader.readLine())){
+            case 1 -> Gamemode.PVP;
+            case 2 -> Gamemode.PVE;
+            default -> throw new IllegalArgumentException("Unexpected value: " + reader.readLine());
+        };
     }
 }

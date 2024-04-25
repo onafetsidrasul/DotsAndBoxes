@@ -1,11 +1,9 @@
 package it.units.sdm.dotsandboxes.views;
 
-import it.units.sdm.dotsandboxes.controllers.PostGameIntent;
 import it.units.sdm.dotsandboxes.core.Board;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface IGameView {
@@ -28,4 +26,6 @@ public interface IGameView {
     void promptForMove(Player currentPlayer);
 
     void displayWinners(List<Player> winners);
+
+    void promptForGamemode();
 }
