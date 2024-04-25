@@ -8,7 +8,6 @@ import org.fusesource.jansi.Ansi;
 import java.util.List;
 
 import static org.fusesource.jansi.Ansi.*;
-import static org.fusesource.jansi.Ansi.Color.*;
 
 public class ShellView implements IGameView {
 
@@ -19,7 +18,7 @@ public class ShellView implements IGameView {
     }
 
     @Override
-    public void updateUI(final Board gameBoard, final List<Player> players, final int[] scores, final Player currentPlayer) {
+    public void updateUI(final Board gameBoard, final List<Player> players, final List<Integer> scores, final Player currentPlayer) {
         System.out.println(ansi().eraseScreen());
         printPlayers(players, scores);
         printBoard(gameBoard);
@@ -125,12 +124,12 @@ public class ShellView implements IGameView {
         }
     }
 
-    private void printPlayers(List<Player> players, int[] scores) {
+    private void printPlayers(List<Player> players, List<Integer> scores) {
         System.out.println("--- PLAYERS ---");
         for (int i = 1; i <= players.size(); i++) {
             Player player = players.get(i - 1);
             System.out.println(ansi().a("Player " + i + " : ").fg(Ansi.Color.valueOf(player.color().name())).a(player.name()).reset());
-            System.out.println("\tScore: " + scores[i - 1]);
+            System.out.println("\tScore: " + scores.get(i - 1));
         }
         System.out.println("---------------");
     }

@@ -75,7 +75,7 @@ public abstract class IGameController {
         }
     }
 
-    public final void startGameVsComputer() {
+    public final void startGameVsComputer() throws IOException {
         if (game == null) {
             throw new IllegalStateException("Game has not been set up!");
         }
@@ -83,7 +83,7 @@ public abstract class IGameController {
         while (!game.hasEnded()) {
             final Line line;
             if (game.getCurrentPlayerIndex() + 1 == 1) {
-                line = waitForLine(game.getCurrentPlayer());
+                line = getLine(game.getCurrentPlayer());
             } else {
                 line = generateMove(ComputerMoveStrategy.RANDOM);
             }
@@ -93,13 +93,13 @@ public abstract class IGameController {
         endGame(game.winners());
     }
 
-    public final void startGameVsPlayer() {
+    public final void startGameVsPlayer() throws IOException {
         if (game == null) {
             throw new IllegalStateException("Game has not been set up!");
         }
         view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
         while (!game.hasEnded()) {
-            final Line line = waitForLine(game.getCurrentPlayer());
+            final Line line = getLine(game.getCurrentPlayer());
             makeMove(line);
             view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
         }
@@ -178,7 +178,7 @@ public abstract class IGameController {
      * @return the Line being played in the current turn by the playing Player (determined by the game instance)
      * @see Game#makeNextMove(Line)
      */
-    abstract Line waitForLine(Player player);
+    abstract Line getLine(Player player) throws IOException;
 
     final void makeMove(Line line) {
         try {

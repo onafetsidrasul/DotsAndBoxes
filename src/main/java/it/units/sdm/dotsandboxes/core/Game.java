@@ -96,10 +96,10 @@ public class Game {
         return players;
     }
 
-    public int[] getScores() {
-        int[] scores = new int[players.size()];
-        for (int i = 0; i < players.size(); i++) {
-            scores[i] = scoreBoard.get(players.get(i));
+    public List<Integer> getScores() {
+        List<Integer> scores = new ArrayList<>(scoreBoard.size());
+        for (Player player : players) {
+            scores.add(scoreBoard.get(player));
         }
         return scores;
     }

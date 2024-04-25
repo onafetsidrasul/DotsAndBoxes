@@ -48,53 +48,26 @@ public class ShellGameController extends IGameController {
     }
 
     @Override
-    public Line waitForLine(Player currentPlayer) {
+    public Line getLine(Player currentPlayer) throws IOException {
         view.promptForMove(currentPlayer);
         Line candidate = null;
         do {
-            String input = getValidatedInput();
+            String input = reader.readLine();
             if (input != null && !input.isEmpty()) {
-                candidate = CreateLine(input);
+                candidate = parseLineString(input);
             }
         } while (candidate == null);
         return candidate;
     }
 
-    private String getValidatedInput() {
-        String input = null;
-        try {
-            input = reader.readLine();
-        } catch (IOException | RuntimeException e) {
-            System.err.println("An error occurred while prompting for input. Please try again");
-        }
-        return input;
-    }
-
-    private Line CreateLine(String input) {
-        final String[] coords = input.split(" ");
-        if (coords.length != 4) {
-            System.err.println("Invalid input. Please enter four space-separated coordinates");
+    private Line parseLineString(String input) {
+        final List<String> coords = List.of(input.split(" "));
+        if (coords.size() != 4) {
+            view.displayIllegalActionWarning("Invalid input. Please enter four space-separated coordinates");
             return null;
         }
-        int[] parsedCoords = parseCoordinates(coords);
-        if (parsedCoords == null) {
-            return null;
-        }
-        return new Line(parsedCoords[0], parsedCoords[1], parsedCoords[2], parsedCoords[3]);
-    }
-
-    private int[] parseCoordinates(String[] coords) {
-        int x1, y1, x2, y2;
-        try {
-            x1 = Integer.parseInt(coords[0]);
-            y1 = Integer.parseInt(coords[1]);
-            x2 = Integer.parseInt(coords[2]);
-            y2 = Integer.parseInt(coords[3]);
-        } catch (NumberFormatException e) {
-            System.err.println("Invalid input. Please enter valid integer coordinates");
-            return null;
-        }
-        return new int[]{x1, y1, x2, y2};
+        int[] parsedCoords = coords.stream().mapToInt(Integer::parseInt).toArray();
+        return parsedCoords == null ? null : new Line(parsedCoords[0], parsedCoords[1], parsedCoords[2], parsedCoords[3]);
     }
 
     @Override
