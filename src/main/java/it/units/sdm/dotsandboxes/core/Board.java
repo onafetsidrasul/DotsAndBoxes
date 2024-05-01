@@ -33,7 +33,7 @@ public class Board {
         return lines.size() == (2 * length * height) - length - height;
     }
 
-    public void addLine(Line line) {
+    protected void addLine(Line line) {
         if (line.length() != 1)
             throw new IllegalArgumentException("Line is too long!");
         if (isLineOutOfBounds(line))

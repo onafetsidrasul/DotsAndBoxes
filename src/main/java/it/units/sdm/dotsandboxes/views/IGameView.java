@@ -1,9 +1,31 @@
 package it.units.sdm.dotsandboxes.views;
 
 import it.units.sdm.dotsandboxes.core.Board;
+import it.units.sdm.dotsandboxes.core.Line;
+import it.units.sdm.dotsandboxes.core.Player;
+
+import java.util.List;
 
 public interface IGameView {
-    void init(Board gameBoard);
+    boolean init();
 
-    void refresh();
+    default void updateUI(Board gameBoard, List<Player> players, List<Integer> scores, Player currentPlayer){}
+
+    void promptForPostGameIntent();
+
+    void displayIllegalMoveWarning(Line illegalLine);
+
+    void displayIllegalActionWarning(String message);
+
+    void promptForPlayerName(int playerNumber);
+
+    void promptForBoardDimensions();
+
+    void promptForNumberOfPlayers();
+
+    void promptForMove(Player currentPlayer);
+
+    void displayWinners(List<Player> winners);
+
+    void promptForGamemode();
 }
