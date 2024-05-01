@@ -2,23 +2,23 @@ package it.units.sdm.dotsandboxes.controllers;
 
 import de.codeshelf.consoleui.prompt.ConsolePrompt;
 import de.codeshelf.consoleui.prompt.InputResult;
+import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedQuit;
 import it.units.sdm.dotsandboxes.views.ShellView;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 
 public class ShellGameController implements IGameController {
     private ConsolePrompt prompt;
-    private ShellView view;
 
     @Override
     public boolean initialize() {
         AnsiConsole.systemInstall();
         prompt = new ConsolePrompt();
-        view = new ShellView();
         return true;
     }
     @Override
@@ -93,6 +93,10 @@ public class ShellGameController implements IGameController {
     }
 
     private Line CreateLine(String input) {
+        if ("quit".equals(input)) {
+            throw new UserHasRequestedQuit();
+        }
+
         final String[] coords = input.split(" ");
         if (coords.length != 4) {
             System.err.println("Invalid input. Please enter four space-separated coordinates");

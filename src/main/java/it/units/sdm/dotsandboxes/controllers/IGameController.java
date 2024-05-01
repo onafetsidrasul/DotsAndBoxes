@@ -2,6 +2,7 @@ package it.units.sdm.dotsandboxes.controllers;
 
 import it.units.sdm.dotsandboxes.core.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 public interface IGameController {

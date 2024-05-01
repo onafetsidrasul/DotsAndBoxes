@@ -1,13 +1,23 @@
 package it.units.sdm.dotsandboxes.core;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.JsonAdapter;
+import it.units.sdm.dotsandboxes.persistence.Savable;
+import it.units.sdm.dotsandboxes.persistence.adapters.ScoreboardAdapter;
+
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class Game {
+public class Game implements Savable<Game> {
 
+    private static final Gson serializer = new GsonBuilder().create();
     private final List<Player> players;
 
-    private final HashMap<Player, Integer> scoreBoard;
+    @JsonAdapter(ScoreboardAdapter.class)
+    private HashMap<Player, Integer> scoreBoard;
+
     private final Board gameBoard;
     private final ArrayList<Move> moves;
     private final List<Point> completedBoxes;
@@ -29,6 +39,10 @@ public class Game {
 
     public Game(int boardLength, int boardHeight, Player... players) {
         this(boardLength, boardHeight, Arrays.asList(players));
+    }
+
+    public Game() {
+        this(0, 0, new Player("dummy1", Color.RED), new Player("dummy2", Color.BLUE));
     }
 
     public int getLastPlayerIndex() {
@@ -95,13 +109,42 @@ public class Game {
     }
 
     public List<Player> winners() {
-        if(!hasEnded()){
+        if (!hasEnded()){
             return null; // or maybe throw an exception?
-        } else{
+        } else {
             List<Player> sortedByScore = getPlayers().stream().sorted((p1, p2) -> getPlayerScore(p1) - getPlayerScore(p2)).toList();
             int maxScore = getPlayerScore(sortedByScore.getLast());
             return sortedByScore.stream().filter(player -> getPlayerScore(player) == maxScore).toList();
         }
     }
 
+    @Override
+    public byte[] save() {
+        return serializer.toJson(this).getBytes(StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public Game restore(byte[] data) {
+        final Game restored = serializer.fromJson(new String(data), Game.class);
+        final HashMap<Player, Integer> correctScoreBoard = new HashMap<>();
+        for (Map.Entry<Player, Integer> entry : restored.scoreBoard.entrySet()) {
+            correctScoreBoard.put(restored.players.stream()
+                    .filter(p -> p.id().equals(entry.getKey().id()))
+                    .findFirst()
+                    .orElseThrow(), entry.getValue());
+        }
+        restored.scoreBoard = correctScoreBoard;
+        return restored;
+    }
+
+    @Override
+    public String toString() {
+        return "Game{" +
+                "players=" + players +
+                ", scoreBoard=" + scoreBoard +
+                ", gameBoard=" + gameBoard +
+                ", moves=" + moves +
+                ", completedBoxes=" + completedBoxes +
+                '}';
+    }
 }
