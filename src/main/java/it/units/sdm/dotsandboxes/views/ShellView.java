@@ -170,7 +170,7 @@ public class ShellView implements IGameView {
 
     @Override
     public void promptForMove(Player currentPlayer) {
-        System.out.print("Make your move [ x1, y1, x2, y2 ] : ");
+        System.out.print("Make your move [ x1 y1 x2 y2 ] : ");
     }
 
     @Override
