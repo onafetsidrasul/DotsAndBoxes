@@ -14,7 +14,7 @@ public class Game {
     public Game(int boardLength, int boardHeight, List<Player> players) {
         this.players = Objects.requireNonNull(players);
         if (this.players.size() < 2) {
-            throw new RuntimeException("Game requires a minimum of 2 players.");
+            throw new IllegalStateException("Game requires a minimum of 2 players.");
         }
         this.players.forEach(Objects::requireNonNull);
         scoreBoard = new HashMap<>(this.players.size());
