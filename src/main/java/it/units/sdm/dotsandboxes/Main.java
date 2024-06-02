@@ -18,7 +18,7 @@ public class Main {
         if (args.length > 0) {
             session = (GameSession) saver.restoreFromFile(args[0]);
         } else {
-            session = new GameSession(new ShellGameController(), new ShellView());
+            session = new GameSession(new ShellGameController(new ShellView()));
         }
         try {
             session.start();

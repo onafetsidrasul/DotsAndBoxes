@@ -1,5 +1,6 @@
 package it.units.sdm.dotsandboxes.core;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Player {
@@ -28,6 +29,22 @@ public class Player {
 
     public String id() {
         return id;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Player player)) return false;
+
+        return Objects.equals(id, player.id) && Objects.equals(name, player.name) && color == player.color;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(id);
+        result = 31 * result + Objects.hashCode(name);
+        result = 31 * result + Objects.hashCode(color);
+        return result;
     }
 
     @Override

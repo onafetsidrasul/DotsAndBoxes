@@ -35,3 +35,7 @@ jar {
     }
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
 }
+
+compileJava {
+    options.encoding = "UTF-8"
+}

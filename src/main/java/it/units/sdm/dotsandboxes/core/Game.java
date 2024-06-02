@@ -25,7 +25,7 @@ public class Game implements Savable<Game> {
     public Game(int boardLength, int boardHeight, List<Player> players) {
         this.players = Objects.requireNonNull(players);
         if (this.players.size() < 2) {
-            throw new RuntimeException("Game requires a minimum of 2 players.");
+            throw new IllegalStateException("Game requires a minimum of 2 players.");
         }
         this.players.forEach(Objects::requireNonNull);
         scoreBoard = new HashMap<>(this.players.size());
@@ -46,6 +46,9 @@ public class Game implements Savable<Game> {
     }
 
     public int getLastPlayerIndex() {
+        if (moves.isEmpty()) {
+            return -1;
+        }
         return players.indexOf(moves.getLast().player());
     }
 
@@ -67,7 +70,7 @@ public class Game implements Savable<Game> {
         return this.players.get(getLastPlayerIndex());
     }
 
-    public int getPlayerScore(Player p){
+    public int getPlayerScore(Player p) {
         return scoreBoard.get(p);
     }
 
@@ -104,12 +107,20 @@ public class Game implements Savable<Game> {
         scoreBoard.replace(p, newScore);
     }
 
-    public List<Player> getPlayers(){
+    public List<Player> getPlayers() {
         return players;
     }
 
+    public List<Integer> getScores() {
+        List<Integer> scores = new ArrayList<>(scoreBoard.size());
+        for (Player player : players) {
+            scores.add(scoreBoard.get(player));
+        }
+        return scores;
+    }
+
     public List<Player> winners() {
-        if (!hasEnded()){
+        if (!hasEnded()) {
             return null; // or maybe throw an exception?
         } else {
             List<Player> sortedByScore = getPlayers().stream().sorted((p1, p2) -> getPlayerScore(p1) - getPlayerScore(p2)).toList();

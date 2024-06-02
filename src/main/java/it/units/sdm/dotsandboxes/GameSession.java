@@ -1,6 +1,7 @@
 package it.units.sdm.dotsandboxes;
 
 import it.units.sdm.dotsandboxes.controllers.IGameController;
+import it.units.sdm.dotsandboxes.controllers.PostGameIntent;
 import it.units.sdm.dotsandboxes.core.Color;
 import it.units.sdm.dotsandboxes.core.Game;
 import it.units.sdm.dotsandboxes.core.Line;
@@ -8,98 +9,70 @@ import it.units.sdm.dotsandboxes.core.Player;
 import it.units.sdm.dotsandboxes.persistence.Savable;
 import it.units.sdm.dotsandboxes.views.IGameView;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameSession implements Savable<GameSession> {
 
-    public record SavedGameSession(String gameControllerClassName, String gameViewClassName, String gameData) {}
-
     private IGameController controller;
-    private IGameView view;
-    private Game game;
 
-    GameSession(IGameController controller, IGameView view){
+    GameSession(IGameController controller) {
         this.controller = controller;
-        this.view = view;
     }
+
+    public record SavedGameSession(String gameControllerClassName, String data) {}
 
     public GameSession() {
     }
 
     public void start() {
-        if (!controller.initialize()) {
-            throw new RuntimeException("Game controller could not initialize!");
-        }
-        int playerCount = controller.getPlayerCount();
-        if (game == null) {
-            final List<Player> players = new ArrayList<>();
-            managePlayers(playerCount, players);
-            game = getGame(players);
-        }
-        view.init(game.getBoard());
-        view.refresh();
-        while (!game.hasEnded()) {
-            handlePlayerMove(game);
-        }
-        controller.endGame(game.winners());
-    }
-
-    public Game getGame(List<Player> players) {
-        int[] dimensions = controller.getBoardDimensions();
-        return new Game(dimensions[0], dimensions[1], players);
-    }
-
-    private void managePlayers(int playerCount, List<Player> players) {
-        for (int playerNumber = 1; playerNumber < playerCount + 1; playerNumber++) {
-            final Color playerColor = Color.values()[playerNumber % Color.values().length];
-            players.add(new Player(controller.getPlayerName(playerNumber), playerColor));
-        }
-    }
-
-    private void handlePlayerMove(Game game) {
-        final Line line = controller.waitForLine(game.getCurrentPlayer());
-        try {
-            game.makeNextMove(new Line(line.p1().x(), line.p1().y(), line.p2().x(), line.p2().y()));
-            game.updateScore();
-        } catch (RuntimeException e) {
-            System.err.println("Exception: " + e.getMessage());
-        }
-        controller.updatePlayer(game.getLastPlayer());
-        view.refresh();
+        PostGameIntent intent = PostGameIntent.END_GAME;
+        do {
+            if (!controller.initialize()) {
+                throw new RuntimeException("Game controller could not initialize!");
+            }
+            if (!controller.isSetupDone()) {
+                try {
+                    controller.setUpGame();
+                } catch (IOException e) {
+                    System.err.println("Game controller could not setup game!");
+                }
+            }
+            try {
+                controller.startGame();
+            } catch (IOException e) {
+                System.err.println("Game controller could not start game!");
+            }
+            try {
+                intent = controller.getPostGameIntent();
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+        } while (intent == PostGameIntent.NEW_GAME);
     }
 
     @Override
     public byte[] save() {
-        final String gameData = new String(
-                encoder.encode(game.save()), StandardCharsets.UTF_8);
-        final String payload = gson.toJson(new SavedGameSession(
-                controller.getClass().getName(),
-                view.getClass().getName(),
-                gameData
-        ));
-        return payload.getBytes(StandardCharsets.UTF_8);
+        final SavedGameSession savedGameSession = new SavedGameSession(
+                controller.getClass().getCanonicalName(), encoder.encodeToString(controller.save()));
+        return gson.toJson(savedGameSession).getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
     public GameSession restore(byte[] data) {
-        final SavedGameSession savedSession = gson.fromJson(new String(data), SavedGameSession.class);
+        final SavedGameSession savedGameSession =
+                gson.fromJson(new String(data), SavedGameSession.class);
+        final IGameController controller;
         try {
-            this.controller = (IGameController) Class
-                    .forName(savedSession.gameControllerClassName)
+            controller = (IGameController) Class.forName(savedGameSession.gameControllerClassName)
                     .getConstructor()
                     .newInstance();
-            this.view = (IGameView) Class
-                    .forName(savedSession.gameViewClassName)
-                    .getConstructor()
-                    .newInstance();
-            this.game = new Game().restore(decoder.decode(savedSession.gameData));
-            System.out.println(game);
+            return new GameSession(controller.restore(decoder.decode(savedGameSession.data)));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-        return this;
     }
 }
