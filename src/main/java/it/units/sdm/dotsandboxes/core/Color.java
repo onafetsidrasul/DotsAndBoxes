@@ -17,7 +17,7 @@ public enum Color {
         this.format = format;
     }
 
-    public AnsiFormat getFormat() {
+    public AnsiFormat format() {
         return format;
     }
 }
