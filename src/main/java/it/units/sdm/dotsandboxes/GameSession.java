@@ -6,6 +6,9 @@ import it.units.sdm.dotsandboxes.core.Color;
 import it.units.sdm.dotsandboxes.core.Game;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
+import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
+import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedQuit;
+import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedSave;
 import it.units.sdm.dotsandboxes.persistence.Savable;
 import it.units.sdm.dotsandboxes.views.IGameView;
 
@@ -38,6 +41,10 @@ public class GameSession implements Savable<GameSession> {
                 controller.startGame();
             } catch (IOException e) {
                 throw new IOException("Game controller could not start game.", e);
+            } catch(UserHasRequestedQuit e){
+                break;
+            } catch (UserHasRequestedSave e) {
+                save();
             }
             try {
                 intent = controller.getPostGameIntent();
@@ -65,7 +72,7 @@ public class GameSession implements Savable<GameSession> {
                     .newInstance();
             return new GameSession(controller.restore(decoder.decode(savedGameSession.data)));
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             return null;
         }
     }
