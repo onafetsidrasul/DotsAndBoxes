@@ -23,12 +23,12 @@ public class ShellGameController extends IGameController {
     }
 
     public ShellGameController() {
-      this(null);
+        this(null);
     }
 
     @Override
-    public boolean initialize() {
-        return view.init();
+    public void initialize() {
+        view.init();
     }
 
     @Override
@@ -42,6 +42,7 @@ public class ShellGameController extends IGameController {
         view.promptForPlayerName(playerNumber);
         return reader.readLine();
     }
+
     public int[] getBoardDimensions() throws IOException {
         view.promptForBoardDimensions();
         try {
@@ -51,6 +52,7 @@ public class ShellGameController extends IGameController {
             return null;
         }
     }
+
     public Line getLine(Player currentPlayer) throws IOException {
         view.promptForMove(currentPlayer);
         Line candidate = null;
@@ -69,8 +71,8 @@ public class ShellGameController extends IGameController {
         }
         final List<String> coords = List.of(input.split(" "));
         if (coords.size() != 4) {
-        view.displayIllegalActionWarning("Invalid input. Please enter four space-separated coordinates");
-        return null;
+            view.displayIllegalActionWarning("Invalid input. Please enter four space-separated coordinates");
+            return null;
         }
         int[] parsedCoords = coords.stream().mapToInt(Integer::parseInt).toArray();
         return parsedCoords == null ? null : new Line(parsedCoords[0], parsedCoords[1], parsedCoords[2], parsedCoords[3]);
@@ -90,7 +92,7 @@ public class ShellGameController extends IGameController {
     @Override
     public Gamemode getGamemode() throws IOException {
         view.promptForGamemode();
-        return switch (Integer.parseInt(reader.readLine())){
+        return switch (Integer.parseInt(reader.readLine())) {
             case 1 -> Gamemode.PVP;
             case 2 -> Gamemode.PVE;
             default -> throw new IllegalArgumentException("Unexpected value: " + reader.readLine());
