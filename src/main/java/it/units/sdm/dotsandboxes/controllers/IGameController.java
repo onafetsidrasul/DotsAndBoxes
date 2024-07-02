@@ -1,7 +1,9 @@
 package it.units.sdm.dotsandboxes.controllers;
 
-import it.units.sdm.dotsandboxes.GameSession;
 import it.units.sdm.dotsandboxes.core.*;
+import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
+import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedQuit;
+import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedSave;
 import it.units.sdm.dotsandboxes.persistence.Savable;
 import it.units.sdm.dotsandboxes.views.IGameView;
 
@@ -58,13 +60,27 @@ public abstract class IGameController implements Savable<IGameController> {
         List<Player> players = new ArrayList<>(playerCount);
         players.add(new Player(getPlayerName(1), Color.values()[1 % Color.values().length]));
         players.add(new Player("CPU", Color.values()[2 % Color.values().length]));
-        int[] boardDimensions = getBoardDimensions();
-        game = new Game(boardDimensions[0], boardDimensions[1], players);
+        finishGameSetup(players);
+    }
+
+    private void finishGameSetup(List<Player> players) throws IOException {
+        int[] boardDimensions;
+        boolean dimensionsAreValid;
+        do {
+            dimensionsAreValid = true;
+            boardDimensions = getBoardDimensions();
+            try {
+                game = new Game(boardDimensions[0], boardDimensions[1], players);
+            } catch (InvalidInputException|IllegalArgumentException e) {
+                view.displayIllegalActionWarning(e.getMessage());
+                dimensionsAreValid = false;
+            }
+        } while (!dimensionsAreValid);
     }
 
     public final void setUpGameVsPlayer() throws IOException {
-        int playerCount = 0;
-        do{
+        int playerCount;
+        do {
             playerCount = getPlayerCount();
             if (playerCount < 2) {
                 view.displayIllegalActionWarning("You need at least 2 players!");
@@ -72,51 +88,86 @@ public abstract class IGameController implements Savable<IGameController> {
             if (playerCount > Color.values().length) {
                 view.displayIllegalActionWarning("Too many players! Max amount is " + Color.values().length);
             }
-        } while (playerCount >= 2 && playerCount <= Color.values().length);
+        } while (playerCount < 2 || playerCount > Color.values().length);
         List<Player> players = new ArrayList<>(playerCount);
         for (int playerIndex = 1; playerIndex <= playerCount; playerIndex++) {
             final Color playerColor = Color.values()[playerIndex % Color.values().length];
             players.add(new Player(getPlayerName(playerIndex), playerColor));
         }
-        int[] boardDimensions = getBoardDimensions();
-        game = new Game(boardDimensions[0], boardDimensions[1], players);
+        finishGameSetup(players);
     }
 
-    public final void startGame() throws IOException {
-        switch (gamemode) {
-            case PVE:
-                startGameVsComputer();
-            case PVP:
-                startGameVsPlayer();
+    public final void startGame() throws IOException, UserHasRequestedQuit, UserHasRequestedSave {
+        try {
+            switch (gamemode) {
+                case PVE:
+                    startGameVsComputer();
+                case PVP:
+                    startGameVsPlayer();
+            }
+        } catch (UserHasRequestedQuit e) {
+            view.displayMessage("Bye!");
+            throw e;
+        } catch (UserHasRequestedSave e) {
+            view.displayMessage("Saving game...");
+            throw e;
         }
     }
 
-    public final void startGameVsComputer() throws IOException {
+    public final void startGameVsComputer() throws IOException, UserHasRequestedQuit, UserHasRequestedSave {
         if (game == null) {
             throw new IllegalStateException("Game has not been set up!");
         }
         view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
         while (!game.hasEnded()) {
-            final Line line;
+            Line line = null;
             if (game.getCurrentPlayerIndex() + 1 == 1) {
-                line = getLine(game.getCurrentPlayer());
+                boolean inputIsValid;
+                do {
+                    inputIsValid = true;
+                    try {
+                        line = getAction(game.getCurrentPlayer());
+                    } catch (InvalidInputException e) {
+                        view.displayIllegalActionWarning(e.getMessage());
+                        inputIsValid = false;
+                    }
+                } while (!inputIsValid);
             } else {
                 line = generateMove(ComputerMoveStrategy.RANDOM);
             }
-            makeMove(line);
+            try {
+                makeMove(line);
+            } catch (InvalidInputException e) {
+                view.displayIllegalActionWarning(e.getMessage());
+            }
             view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
         }
         endGame(game.winners());
     }
 
-    public final void startGameVsPlayer() throws IOException {
+    public final void startGameVsPlayer() throws IOException, UserHasRequestedQuit, UserHasRequestedSave {
         if (game == null) {
             throw new IllegalStateException("Game has not been set up!");
         }
         view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
         while (!game.hasEnded()) {
-            final Line line = getLine(game.getCurrentPlayer());
-            makeMove(line);
+            Line line = null;
+            boolean inputIsValid;
+            do {
+                inputIsValid = true;
+                try {
+                    line = getAction(game.getCurrentPlayer());
+                } catch (InvalidInputException e) {
+                    view.displayIllegalActionWarning(e.getMessage());
+                    inputIsValid = false;
+                }
+            } while (!inputIsValid);
+
+            try {
+                makeMove(line);
+            } catch (InvalidInputException e) {
+                view.displayIllegalActionWarning(e.getMessage());
+            }
             view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
         }
         endGame(game.winners());
@@ -130,9 +181,16 @@ public abstract class IGameController implements Savable<IGameController> {
 
     private Line generateRandomMove() {
         Line candidate;
+        boolean lineAlreadyExists;
         do {
-            candidate = Line.normalize(randomCandidate(new int[]{game.getBoard().height(), game.getBoard().length()}));
-        } while (game.getBoard().getLines().containsValue(candidate));
+            lineAlreadyExists = false;
+            candidate = randomCandidate(new int[]{game.getBoard().height(), game.getBoard().length()});
+            for (ColoredLine l : game.getBoard().lines()) {
+                if (l.hasSameEndpointsAs(candidate)) {
+                    lineAlreadyExists = true;
+                }
+            }
+        } while (lineAlreadyExists);
         return candidate;
     }
 
@@ -143,7 +201,11 @@ public abstract class IGameController implements Savable<IGameController> {
         do {
             p2 = getSecondPoint(p1);
         } while (!isValidPoint(p2.x(), p2.y(), dims));
-        candidate = new Line(p1.x(), p1.y(), p2.x(), p2.y());
+        try {
+            candidate = new Line(p1.x(), p1.y(), p2.x(), p2.y());
+        } catch (InvalidInputException e) {
+            throw new RuntimeException(e);
+        }
         return candidate;
     }
 
@@ -194,15 +256,11 @@ public abstract class IGameController implements Savable<IGameController> {
      * @return the Line being played in the current turn by the playing Player (determined by the game instance)
      * @see Game#makeNextMove(Line)
      */
-    abstract Line getLine(Player player) throws IOException;
+    abstract Line getAction(Player player) throws IOException, InvalidInputException, UserHasRequestedSave, UserHasRequestedQuit;
 
-    final void makeMove(Line line) {
-        try {
-            game.makeNextMove(new Line(line.p1().x(), line.p1().y(), line.p2().x(), line.p2().y()));
-            game.updateScore();
-        } catch (RuntimeException e) {
-            view.displayIllegalMoveWarning(line);
-        }
+    final void makeMove(Line line) throws InvalidInputException {
+        game.makeNextMove(line);
+        game.updateScore();
     }
 
     /**

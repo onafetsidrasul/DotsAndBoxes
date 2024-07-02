@@ -1,6 +1,8 @@
 package it.units.sdm.dotsandboxes.controllers;
 
+import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedQuit;
+import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedSave;
 import it.units.sdm.dotsandboxes.views.IGameView;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
@@ -48,8 +50,8 @@ public class ShellGameController extends IGameController {
         }
     }
 
-    public Line getLine(Player currentPlayer) throws IOException {
-        view.promptForMove(currentPlayer);
+    public Line getAction(Player currentPlayer) throws IOException, InvalidInputException, UserHasRequestedSave, UserHasRequestedQuit {
+        view.promptForAction(currentPlayer);
         Line candidate = null;
         do {
             String input = reader.readLine();
@@ -60,9 +62,12 @@ public class ShellGameController extends IGameController {
         return candidate;
     }
 
-    private Line parseLineString(String input) {
+    private Line parseLineString(String input) throws InvalidInputException, UserHasRequestedQuit, UserHasRequestedSave {
         if ("quit".equals(input)) {
             throw new UserHasRequestedQuit();
+        }
+        if("save".equals(input)) {
+            throw new UserHasRequestedSave();
         }
         final List<String> coords = List.of(input.split(" "));
         if (coords.size() != 4) {
