@@ -22,7 +22,8 @@ public abstract class IGameController implements Savable<IGameController> {
             String gameViewClassName,
             String gameData,
             String gameModeName
-    ) {}
+    ) {
+    }
 
     public IGameController(final IGameView view) {
         this.view = view;
@@ -62,13 +63,16 @@ public abstract class IGameController implements Savable<IGameController> {
     }
 
     public final void setUpGameVsPlayer() throws IOException {
-        int playerCount = getPlayerCount();
-        if (playerCount < 2) {
-            throw new IllegalArgumentException("You need at least 2 players!");
-        }
-        if (playerCount > Color.values().length) {
-            throw new IllegalArgumentException("Too many players! Max amount is " + Color.values().length);
-        }
+        int playerCount = 0;
+        do{
+            playerCount = getPlayerCount();
+            if (playerCount < 2) {
+                view.displayIllegalActionWarning("You need at least 2 players!");
+            }
+            if (playerCount > Color.values().length) {
+                view.displayIllegalActionWarning("Too many players! Max amount is " + Color.values().length);
+            }
+        } while (playerCount >= 2 && playerCount <= Color.values().length);
         List<Player> players = new ArrayList<>(playerCount);
         for (int playerIndex = 1; playerIndex <= playerCount; playerIndex++) {
             final Color playerColor = Color.values()[playerIndex % Color.values().length];
