@@ -1,11 +1,14 @@
 package it.units.sdm.dotsandboxes.views;
 
 import it.units.sdm.dotsandboxes.core.Board;
+import it.units.sdm.dotsandboxes.core.ColoredLine;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
+import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 import org.fusesource.jansi.Ansi;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.fusesource.jansi.Ansi.*;
 
@@ -101,10 +104,14 @@ public class ShellView implements IGameView {
 
     private void printVerticalLineIfPresent(int j, int i, StringBuilder sb, Board gameBoard) {
         Line searched;
-        searched = new Line(j, i, j, i + 1);
-        if (gameBoard.getLines().containsKey(searched.hashCode())) {
-            sb.append(gameBoard.getLines().get(
-                    searched.hashCode()).color().getFormat().format(" ‖ "));
+        try {
+            searched = new Line(j, i, j, i + 1);
+        } catch (InvalidInputException e) {
+            throw new RuntimeException(e);
+        }
+        Optional<ColoredLine> res = gameBoard.lines().stream().filter(coloredLine -> coloredLine.hasSameEndpointsAs(searched)).findFirst();
+        if (res.isPresent()) {
+            sb.append(res.get().color().format().format(" ‖ "));
         } else {
             sb.append("   ");
         }
@@ -115,10 +122,14 @@ public class ShellView implements IGameView {
 
     private void printHorizontalLineIfPresent(int j, int i, StringBuilder sb, Board gameBoard) {
         Line searched;
-        searched = new Line(j, i, j + 1, i);
-        if (gameBoard.getLines().containsKey(searched.hashCode())) {
-            sb.append(gameBoard.getLines().get(
-                    searched.hashCode()).color().getFormat().format("="));
+        try {
+            searched = new Line(j, i, j + 1, i);
+        } catch (InvalidInputException e) {
+            throw new RuntimeException(e);
+        }
+        Optional<ColoredLine> res = gameBoard.lines().stream().filter(coloredLine -> coloredLine.hasSameEndpointsAs(searched)).findFirst();
+        if (res.isPresent()) {
+            sb.append(res.get().color().format().format("="));
         } else {
             sb.append(" ");
         }
@@ -144,8 +155,8 @@ public class ShellView implements IGameView {
     }
 
     @Override
-    public void displayIllegalMoveWarning(Line illegalLine) {
-        System.out.println("Line " + illegalLine + " is not allowed, try again");
+    public void displayMessage(String message) {
+        System.out.println(message);
     }
 
     @Override
@@ -169,8 +180,10 @@ public class ShellView implements IGameView {
     }
 
     @Override
-    public void promptForMove(Player currentPlayer) {
-        System.out.print("Make your move [ x1 y1 x2 y2 ] : ");
+    public void promptForAction(Player currentPlayer) {
+        System.out.println("Insert \"quit\" to quit the game");
+        System.out.println("Insert \"save\" to save the game");
+        System.out.print("Or make your move [ x1 y1 x2 y2 ] : ");
     }
 
     @Override
