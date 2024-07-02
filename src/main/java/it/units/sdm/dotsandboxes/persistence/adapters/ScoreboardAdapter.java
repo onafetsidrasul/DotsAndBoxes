@@ -15,7 +15,7 @@ public class ScoreboardAdapter extends TypeAdapter<HashMap<Player, Integer>> {
   public void write(JsonWriter jsonWriter, HashMap<Player, Integer> playerIntegerHashMap) throws IOException {
     jsonWriter.beginObject();
     for (Map.Entry<Player, Integer> entry : playerIntegerHashMap.entrySet()) {
-      jsonWriter.name(entry.getKey().id());
+      jsonWriter.name(entry.getKey().name());
       jsonWriter.value(entry.getValue());
     }
     jsonWriter.endObject();
@@ -26,7 +26,7 @@ public class ScoreboardAdapter extends TypeAdapter<HashMap<Player, Integer>> {
     final HashMap<Player, Integer> map = new HashMap<>();
     jsonReader.beginObject();
     while (jsonReader.hasNext()) {
-      Player player = new Player(jsonReader.nextName(), null, null);
+      Player player = new Player(jsonReader.nextName(), null);
       Integer score = jsonReader.nextInt();
       map.put(player, score);
     }

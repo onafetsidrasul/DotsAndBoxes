@@ -5,6 +5,8 @@ import it.units.sdm.dotsandboxes.persistence.IGameSaver;
 import it.units.sdm.dotsandboxes.persistence.JsonGameSaver;
 import it.units.sdm.dotsandboxes.views.ShellView;
 
+import java.io.IOException;
+
 public class Main {
 
     private static final IGameSaver<GameSession> saver = new JsonGameSaver();
@@ -19,7 +21,7 @@ public class Main {
             try {
                 session.start();
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace(System.out);
             } finally {
                 System.out.println("Game has terminated.");
             }

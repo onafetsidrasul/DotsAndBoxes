@@ -1,6 +1,7 @@
 package it.units.sdm.dotsandboxes;
 
 import it.units.sdm.dotsandboxes.core.*;
+import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class Tests {
     @Test
-    void LinesLongerThan1AreNotAllowed() {
+    void LinesLongerThan1AreNotAllowed() throws InvalidInputException {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(5, 5, player1, player2);
@@ -17,7 +18,7 @@ public class Tests {
     }
 
     @Test
-    void DiagonalLinesAreNotAllowed() {
+    void DiagonalLinesAreNotAllowed() throws InvalidInputException {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(5, 5, player1, player2);
@@ -25,7 +26,7 @@ public class Tests {
     }
 
     @Test
-    void LinesThatStartOutOfBoundsAreNotAllowed() {
+    void LinesThatStartOutOfBoundsAreNotAllowed() throws InvalidInputException {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(5, 5, player1, player2);
@@ -33,7 +34,7 @@ public class Tests {
     }
 
     @Test
-    void LinesThatEndOutOfBoundsAreNotAllowed() {
+    void LinesThatEndOutOfBoundsAreNotAllowed() throws InvalidInputException {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(5, 5, player1, player2);
@@ -41,7 +42,7 @@ public class Tests {
     }
 
     @Test
-    void OverwritingLinesIsNotAllowed() {
+    void OverwritingLinesIsNotAllowed() throws InvalidInputException {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(5, 5, player1, player2);
@@ -50,7 +51,7 @@ public class Tests {
     }
 
     @Test
-    void upperLeftBoxIsCompleted() {
+    void upperLeftBoxIsCompleted() throws InvalidInputException {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(5, 5, player1, player2);
@@ -62,7 +63,7 @@ public class Tests {
     }
 
     @Test
-    void player1StartsFirst() {
+    void player1StartsFirst() throws InvalidInputException {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(5, 5, player1, player2);
@@ -70,7 +71,7 @@ public class Tests {
     }
 
     @Test
-    void playersCorrectlySwitch() {
+    void playersCorrectlySwitch() throws InvalidInputException {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(5, 5, player1, player2);
@@ -79,7 +80,7 @@ public class Tests {
     }
 
     @Test
-    void TwoBoxesCompletedByTwoPlayers() {
+    void TwoBoxesCompletedByTwoPlayers() throws InvalidInputException {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(5, 5, player1, player2);
@@ -97,7 +98,7 @@ public class Tests {
     }
 
     @Test
-    void boardFullMeansGameHasEnded() {
+    void boardFullMeansGameHasEnded() throws InvalidInputException {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(5, 5, player1, player2);
@@ -145,7 +146,7 @@ public class Tests {
     }
 
     @Test
-    void tie() {
+    void tie() throws InvalidInputException {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(5, 5, player1, player2);
@@ -193,7 +194,7 @@ public class Tests {
     }
 
     @Test
-    void player1wins() {
+    void player1wins() throws InvalidInputException {
         Player player1 = new Player("A", Color.RED);
         Player player2 = new Player("B", Color.BLUE);
         Game testGame = new Game(5, 5, player1, player2);
@@ -257,11 +258,9 @@ public class Tests {
     }
 
     @Test
-    void equals() {
+    void equals() throws InvalidInputException {
         Line a = new Line(0, 1, 0, 0);
         Line b = new Line(0, 0, 0, 1);
-        a = Line.normalize(a);
-        b = Line.normalize(b);
         assertEquals(a, b);
     }
 }
