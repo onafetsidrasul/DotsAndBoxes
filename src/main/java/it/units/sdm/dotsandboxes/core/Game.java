@@ -3,12 +3,13 @@ package it.units.sdm.dotsandboxes.core;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.JsonAdapter;
+import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 import it.units.sdm.dotsandboxes.persistence.Savable;
 import it.units.sdm.dotsandboxes.persistence.adapters.ScoreboardAdapter;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 
 public class Game implements Savable<Game> {
 
@@ -16,40 +17,46 @@ public class Game implements Savable<Game> {
     private final List<Player> players;
 
     @JsonAdapter(ScoreboardAdapter.class)
-    private HashMap<Player, Integer> scoreBoard;
+    private HashMap<String, Integer> scoreBoard;
 
-    private final Board gameBoard;
-    private final ArrayList<Move> moves;
+    private final Board board;
     private final List<Point> completedBoxes;
 
-    public Game(int boardLength, int boardHeight, List<Player> players) {
+    public Game(int boardLength, int boardHeight, List<Player> players) throws InvalidInputException {
         this.players = Objects.requireNonNull(players);
         if (this.players.size() < 2) {
-            throw new IllegalStateException("Game requires a minimum of 2 players.");
+            throw new InvalidInputException("Game requires a minimum of 2 players.");
         }
         this.players.forEach(Objects::requireNonNull);
+        Set<Player> s = new HashSet<>();
+        for (Player p : players) {
+            if (s.contains(p)) {
+                throw new InvalidInputException("Two players have the same name.");
+            } else {
+                s.add(p);
+            }
+        }
         scoreBoard = new HashMap<>(this.players.size());
         for (Player p : players) {
-            scoreBoard.put(p, 0);
+            scoreBoard.put(p.name(), 0);
         }
-        gameBoard = new Board(boardLength, boardHeight);
-        moves = new ArrayList<>();
+        board = new Board(boardLength, boardHeight);
         completedBoxes = new ArrayList<>();
     }
 
-    public Game(int boardLength, int boardHeight, Player... players) {
+    public Game(int boardLength, int boardHeight, Player... players) throws InvalidInputException {
         this(boardLength, boardHeight, Arrays.asList(players));
     }
 
-    public Game() {
+    public Game() throws InvalidInputException {
         this(0, 0, new Player("dummy1", Color.RED), new Player("dummy2", Color.BLUE));
     }
 
     public int getLastPlayerIndex() {
-        if (moves.isEmpty()) {
+        if (board.lines().isEmpty()) {
             return -1;
         }
-        return players.indexOf(moves.getLast().player());
+        return (board.lines().size() - 1) % players.size();
     }
 
     public int getCurrentPlayerIndex() {
@@ -58,42 +65,40 @@ public class Game implements Savable<Game> {
 
     public Player getCurrentPlayer() {
         // we chose to make the player1 start first every time
-        if (moves.isEmpty())
+        if (board.lines().isEmpty())
             return this.players.getFirst();
         return this.players.get(getCurrentPlayerIndex());
     }
 
     public Player getLastPlayer() {
         // we chose to make the player1 start first every time
-        if (moves.isEmpty())
+        if (board.lines().isEmpty())
             return null;
         return this.players.get(getLastPlayerIndex());
     }
 
     public int getPlayerScore(Player p) {
-        return scoreBoard.get(p);
+        return scoreBoard.get(p.name());
     }
 
-    public void makeNextMove(Line line) {
-        Line lineCandidate = new Line(getCurrentPlayer().color(), line);
-        Move moveCandidate = new Move(getCurrentPlayer(), lineCandidate);
-        gameBoard.addLine(lineCandidate);
-        moves.add(moveCandidate);
+    public void makeNextMove(Line line) throws InvalidInputException {
+        ColoredLine lineCandidate = new ColoredLine(line, getCurrentPlayer().color());
+        board.placeLine(lineCandidate);
     }
 
     public Board getBoard() {
-        return gameBoard;
+        return board;
     }
 
     public boolean hasEnded() {
-        return gameBoard.isBoardFull();
+        return board.isBoardFull();
     }
 
     public void updateScore() {
-        for (int i = 0; i < gameBoard.length(); i++) {
-            for (int j = 0; j < gameBoard.height(); j++) {
+        for (int i = 0; i < board.length(); i++) {
+            for (int j = 0; j < board.height(); j++) {
                 Point currentPoint = new Point(i, j);
-                if (gameBoard.isBoxCompleted(currentPoint) && !completedBoxes.contains(currentPoint)) {
+                if (board.isBoxCompleted(currentPoint) && !completedBoxes.contains(currentPoint)) {
                     increasePlayerScoreByOne(getLastPlayer());
                     completedBoxes.add(new Point(i, j));
                 }
@@ -102,9 +107,9 @@ public class Game implements Savable<Game> {
     }
 
     private void increasePlayerScoreByOne(final Player p) {
-        final int currentScore = scoreBoard.get(p);
+        final int currentScore = scoreBoard.get(p.name());
         final int newScore = currentScore + 1;
-        scoreBoard.replace(p, newScore);
+        scoreBoard.replace(p.name(), newScore);
     }
 
     public List<Player> getPlayers() {
@@ -114,7 +119,7 @@ public class Game implements Savable<Game> {
     public List<Integer> getScores() {
         List<Integer> scores = new ArrayList<>(scoreBoard.size());
         for (Player player : players) {
-            scores.add(scoreBoard.get(player));
+            scores.add(scoreBoard.get(player.name()));
         }
         return scores;
     }
@@ -123,7 +128,8 @@ public class Game implements Savable<Game> {
         if (!hasEnded()) {
             return null; // or maybe throw an exception?
         } else {
-            List<Player> sortedByScore = getPlayers().stream().sorted((p1, p2) -> getPlayerScore(p1) - getPlayerScore(p2)).toList();
+            //List<Player> sortedByScore = getPlayers().stream().sorted((p1, p2) -> getPlayerScore(p1) - getPlayerScore(p2)).toList();
+            List<Player> sortedByScore = getPlayers().parallelStream().sorted(Comparator.comparingInt(this::getPlayerScore)).toList();
             int maxScore = getPlayerScore(sortedByScore.getLast());
             return sortedByScore.stream().filter(player -> getPlayerScore(player) == maxScore).toList();
         }
@@ -137,12 +143,12 @@ public class Game implements Savable<Game> {
     @Override
     public Game restore(byte[] data) {
         final Game restored = serializer.fromJson(new String(data), Game.class);
-        final HashMap<Player, Integer> correctScoreBoard = new HashMap<>();
-        for (Map.Entry<Player, Integer> entry : restored.scoreBoard.entrySet()) {
+        final HashMap<String, Integer> correctScoreBoard = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : restored.scoreBoard.entrySet()) {
             correctScoreBoard.put(restored.players.stream()
-                    .filter(p -> p.id().equals(entry.getKey().id()))
+                    .filter(p -> p.name().equals(entry.getKey()))
                     .findFirst()
-                    .orElseThrow(), entry.getValue());
+                    .orElseThrow().toString(), entry.getValue());
         }
         restored.scoreBoard = correctScoreBoard;
         return restored;
@@ -153,8 +159,7 @@ public class Game implements Savable<Game> {
         return "Game{" +
                 "players=" + players +
                 ", scoreBoard=" + scoreBoard +
-                ", gameBoard=" + gameBoard +
-                ", moves=" + moves +
+                ", gameBoard=" + board +
                 ", completedBoxes=" + completedBoxes +
                 '}';
     }
