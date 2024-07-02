@@ -35,7 +35,7 @@ public abstract class IGameController implements Savable<IGameController> {
      *
      * @return whether the initialization process completed successfully
      */
-    public abstract boolean initialize();
+    public abstract void initialize() throws IllegalStateException;
 
     /**
      * Acquires from the user all the information necessary to start a game

@@ -16,39 +16,33 @@ import java.util.List;
 
 public class GameSession implements Savable<GameSession> {
 
-    private IGameController controller;
+    private final IGameController controller;
 
     GameSession(IGameController controller) {
         this.controller = controller;
     }
 
-    public record SavedGameSession(String gameControllerClassName, String data) {}
-
-    public GameSession() {
+    public record SavedGameSession(String gameControllerClassName, String data) {
     }
 
-    public void start() {
-        PostGameIntent intent = PostGameIntent.END_GAME;
+    public void start() throws IOException {
+        PostGameIntent intent;
         do {
-            if (!controller.initialize()) {
-                throw new RuntimeException("Game controller could not initialize!");
-            }
-            if (!controller.isSetupDone()) {
-                try {
-                    controller.setUpGame();
-                } catch (IOException e) {
-                    System.err.println("Game controller could not setup game!");
-                }
+            controller.initialize();
+            try {
+                controller.setUpGame();
+            } catch (IOException e) {
+                throw new IOException("Game controller could not setup game.", e);
             }
             try {
                 controller.startGame();
             } catch (IOException e) {
-                System.err.println("Game controller could not start game!");
+                throw new IOException("Game controller could not start game.", e);
             }
             try {
                 intent = controller.getPostGameIntent();
             } catch (IOException e) {
-                System.err.println(e.getMessage());
+                throw new IOException("Problem acquiring the post game intentions.", e);
             }
         } while (intent == PostGameIntent.NEW_GAME);
     }
