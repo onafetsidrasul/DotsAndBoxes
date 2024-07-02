@@ -1,11 +1,9 @@
 package it.units.sdm.dotsandboxes.controllers;
 
-import it.units.sdm.dotsandboxes.core.Game;
 import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedQuit;
 import it.units.sdm.dotsandboxes.views.IGameView;
 import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
-import org.fusesource.jansi.AnsiConsole;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,9 +20,6 @@ public class ShellGameController extends IGameController {
         reader = new BufferedReader(new InputStreamReader(System.in));
     }
 
-    public ShellGameController() {
-        this(null);
-    }
 
     @Override
     public void initialize() {
