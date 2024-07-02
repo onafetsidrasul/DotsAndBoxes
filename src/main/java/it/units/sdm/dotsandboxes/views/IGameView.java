@@ -1,7 +1,6 @@
 package it.units.sdm.dotsandboxes.views;
 
 import it.units.sdm.dotsandboxes.core.Board;
-import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Player;
 
 import java.util.List;
@@ -13,7 +12,7 @@ public interface IGameView {
 
     void promptForPostGameIntent();
 
-    void displayIllegalMoveWarning(Line illegalLine);
+    void displayMessage(String message);
 
     void displayIllegalActionWarning(String message);
 
@@ -23,7 +22,7 @@ public interface IGameView {
 
     void promptForNumberOfPlayers();
 
-    void promptForMove(Player currentPlayer);
+    void promptForAction(Player currentPlayer);
 
     void displayWinners(List<Player> winners);
 
