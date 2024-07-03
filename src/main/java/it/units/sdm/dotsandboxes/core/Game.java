@@ -153,7 +153,7 @@ public class Game implements Savable<Game> {
             correctScoreBoard.put(restored.players.stream()
                     .filter(p -> p.equals(entry.getKey()))
                     .findFirst()
-                    .orElseThrow().toString(), entry.getValue());
+                    .orElseThrow(), entry.getValue());
         }
         restored.scoreBoard = correctScoreBoard;
         return restored;

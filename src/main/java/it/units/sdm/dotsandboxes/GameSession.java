@@ -5,7 +5,6 @@ import it.units.sdm.dotsandboxes.controllers.PostGameIntent;
 import it.units.sdm.dotsandboxes.core.Color;
 import it.units.sdm.dotsandboxes.core.Game;
 import it.units.sdm.dotsandboxes.core.Line;
-import it.units.sdm.dotsandboxes.core.Player;
 import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedQuit;
 import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedSave;

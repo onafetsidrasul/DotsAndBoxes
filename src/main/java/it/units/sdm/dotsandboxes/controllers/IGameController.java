@@ -10,7 +10,6 @@ import it.units.sdm.dotsandboxes.views.IGameView;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.SequencedCollection;
 
 public abstract class IGameController implements Savable<IGameController> {

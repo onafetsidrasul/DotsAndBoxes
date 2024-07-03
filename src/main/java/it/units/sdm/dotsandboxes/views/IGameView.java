@@ -4,7 +4,6 @@ import it.units.sdm.dotsandboxes.core.Board;
 import it.units.sdm.dotsandboxes.core.Color;
 
 
-import java.util.List;
 import java.util.Map;
 import java.util.SequencedCollection;
 
