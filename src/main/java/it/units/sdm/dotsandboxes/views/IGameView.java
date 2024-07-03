@@ -1,14 +1,17 @@
 package it.units.sdm.dotsandboxes.views;
 
 import it.units.sdm.dotsandboxes.core.Board;
-import it.units.sdm.dotsandboxes.core.Player;
+import it.units.sdm.dotsandboxes.core.Color;
+
 
 import java.util.List;
+import java.util.Map;
+import java.util.SequencedCollection;
 
 public interface IGameView {
     boolean init();
 
-    default void updateUI(Board gameBoard, List<Player> players, List<Integer> scores, Player currentPlayer){}
+    default void updateUI(Board gameBoard, SequencedCollection<String> players, Map<String, Integer> scores, Map<String, Color> colors, String currentPlayer){}
 
     void promptForPostGameIntent();
 
@@ -22,9 +25,9 @@ public interface IGameView {
 
     void promptForNumberOfPlayers();
 
-    void promptForAction(Player currentPlayer);
+    void promptForAction(String currentPlayer);
 
-    void displayWinners(List<Player> winners);
+    void displayWinners(SequencedCollection<String> winners);
 
     void promptForGamemode();
 }

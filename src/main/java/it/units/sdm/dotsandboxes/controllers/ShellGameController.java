@@ -5,13 +5,13 @@ import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedQuit;
 import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedSave;
 import it.units.sdm.dotsandboxes.views.IGameView;
 import it.units.sdm.dotsandboxes.core.Line;
-import it.units.sdm.dotsandboxes.core.Player;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.SequencedCollection;
 
 public class ShellGameController extends IGameController {
 
@@ -50,7 +50,7 @@ public class ShellGameController extends IGameController {
         }
     }
 
-    public Line getAction(Player currentPlayer) throws IOException, InvalidInputException, UserHasRequestedSave, UserHasRequestedQuit {
+    public Line getAction(String currentPlayer) throws IOException, InvalidInputException, UserHasRequestedSave, UserHasRequestedQuit {
         view.promptForAction(currentPlayer);
         Line candidate = null;
         do {
@@ -79,7 +79,7 @@ public class ShellGameController extends IGameController {
     }
 
     @Override
-    public void endGame(List<Player> winners) {
+    public void endGame(SequencedCollection<String> winners) {
         view.displayWinners(winners);
     }
 

@@ -3,30 +3,29 @@ package it.units.sdm.dotsandboxes.persistence.adapters;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import it.units.sdm.dotsandboxes.core.Player;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ScoreboardAdapter extends TypeAdapter<HashMap<Player, Integer>> {
+public class ScoreboardAdapter extends TypeAdapter<HashMap<String, Integer>> {
 
   @Override
-  public void write(JsonWriter jsonWriter, HashMap<Player, Integer> playerIntegerHashMap) throws IOException {
+  public void write(JsonWriter jsonWriter, HashMap<String, Integer> playerIntegerHashMap) throws IOException {
     jsonWriter.beginObject();
-    for (Map.Entry<Player, Integer> entry : playerIntegerHashMap.entrySet()) {
-      jsonWriter.name(entry.getKey().name());
+    for (Map.Entry<String, Integer> entry : playerIntegerHashMap.entrySet()) {
+      jsonWriter.name(entry.getKey());
       jsonWriter.value(entry.getValue());
     }
     jsonWriter.endObject();
   }
 
   @Override
-  public HashMap<Player, Integer> read(JsonReader jsonReader) throws IOException {
-    final HashMap<Player, Integer> map = new HashMap<>();
+  public HashMap<String, Integer> read(JsonReader jsonReader) throws IOException {
+    final HashMap<String, Integer> map = new HashMap<>();
     jsonReader.beginObject();
     while (jsonReader.hasNext()) {
-      Player player = new Player(jsonReader.nextName(), null);
+      String player = jsonReader.nextName();
       Integer score = jsonReader.nextInt();
       map.put(player, score);
     }

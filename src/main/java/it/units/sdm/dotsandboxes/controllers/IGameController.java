@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SequencedCollection;
 
 public abstract class IGameController implements Savable<IGameController> {
 
@@ -57,13 +58,13 @@ public abstract class IGameController implements Savable<IGameController> {
 
     public final void setUpGameVsComputer() throws IOException {
         int playerCount = 2;
-        List<Player> players = new ArrayList<>(playerCount);
-        players.add(new Player(getPlayerName(1), Color.values()[1 % Color.values().length]));
-        players.add(new Player("CPU", Color.values()[2 % Color.values().length]));
+        SequencedCollection<String> players = new ArrayList<>(playerCount);
+        players.add(getPlayerName(1));
+        players.add("CPU");
         finishGameSetup(players);
     }
 
-    private void finishGameSetup(List<Player> players) throws IOException {
+    private void finishGameSetup(SequencedCollection<String> players) throws IOException {
         int[] boardDimensions;
         boolean dimensionsAreValid;
         do {
@@ -71,7 +72,7 @@ public abstract class IGameController implements Savable<IGameController> {
             boardDimensions = getBoardDimensions();
             try {
                 game = new Game(boardDimensions[0], boardDimensions[1], players);
-            } catch (InvalidInputException|IllegalArgumentException e) {
+            } catch (InvalidInputException | IllegalArgumentException e) {
                 view.displayIllegalActionWarning(e.getMessage());
                 dimensionsAreValid = false;
             }
@@ -89,10 +90,9 @@ public abstract class IGameController implements Savable<IGameController> {
                 view.displayIllegalActionWarning("Too many players! Max amount is " + Color.values().length);
             }
         } while (playerCount < 2 || playerCount > Color.values().length);
-        List<Player> players = new ArrayList<>(playerCount);
+        SequencedCollection<String> players = new ArrayList<>(playerCount);
         for (int playerIndex = 1; playerIndex <= playerCount; playerIndex++) {
-            final Color playerColor = Color.values()[playerIndex % Color.values().length];
-            players.add(new Player(getPlayerName(playerIndex), playerColor));
+            players.add(getPlayerName(playerIndex));
         }
         finishGameSetup(players);
     }
@@ -118,7 +118,7 @@ public abstract class IGameController implements Savable<IGameController> {
         if (game == null) {
             throw new IllegalStateException("Game has not been set up!");
         }
-        view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
+        view.updateUI(game.getBoard(), game.players(), game.scoreBoard(), game.playerColorLUT(), game.currentPlayer());
         while (!game.hasEnded()) {
             Line line = null;
             if (game.getCurrentPlayerIndex() + 1 == 1) {
@@ -126,7 +126,7 @@ public abstract class IGameController implements Savable<IGameController> {
                 do {
                     inputIsValid = true;
                     try {
-                        line = getAction(game.getCurrentPlayer());
+                        line = getAction(game.currentPlayer());
                     } catch (InvalidInputException e) {
                         view.displayIllegalActionWarning(e.getMessage());
                         inputIsValid = false;
@@ -140,7 +140,7 @@ public abstract class IGameController implements Savable<IGameController> {
             } catch (InvalidInputException e) {
                 view.displayIllegalActionWarning(e.getMessage());
             }
-            view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
+            view.updateUI(game.getBoard(), game.players(), game.scoreBoard(), game.playerColorLUT(), game.currentPlayer());
         }
         endGame(game.winners());
     }
@@ -149,14 +149,14 @@ public abstract class IGameController implements Savable<IGameController> {
         if (game == null) {
             throw new IllegalStateException("Game has not been set up!");
         }
-        view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
+        view.updateUI(game.getBoard(), game.players(), game.scoreBoard(), game.playerColorLUT(), game.currentPlayer());
         while (!game.hasEnded()) {
             Line line = null;
             boolean inputIsValid;
             do {
                 inputIsValid = true;
                 try {
-                    line = getAction(game.getCurrentPlayer());
+                    line = getAction(game.currentPlayer());
                 } catch (InvalidInputException e) {
                     view.displayIllegalActionWarning(e.getMessage());
                     inputIsValid = false;
@@ -168,7 +168,7 @@ public abstract class IGameController implements Savable<IGameController> {
             } catch (InvalidInputException e) {
                 view.displayIllegalActionWarning(e.getMessage());
             }
-            view.updateUI(game.getBoard(), game.getPlayers(), game.getScores(), game.getCurrentPlayer());
+            view.updateUI(game.getBoard(), game.players(), game.scoreBoard(), game.playerColorLUT(), game.currentPlayer());
         }
         endGame(game.winners());
     }
@@ -183,13 +183,9 @@ public abstract class IGameController implements Savable<IGameController> {
         Line candidate;
         boolean lineAlreadyExists;
         do {
-            lineAlreadyExists = false;
             candidate = randomCandidate(new int[]{game.getBoard().height(), game.getBoard().length()});
-            for (ColoredLine l : game.getBoard().lines()) {
-                if (l.hasSameEndpointsAs(candidate)) {
-                    lineAlreadyExists = true;
-                }
-            }
+            final Line finalCandidate = candidate;
+            lineAlreadyExists = game.getBoard().lines().parallelStream().anyMatch(l -> l.hasSameEndpointsAs(finalCandidate));
         } while (lineAlreadyExists);
         return candidate;
     }
@@ -256,7 +252,7 @@ public abstract class IGameController implements Savable<IGameController> {
      * @return the Line being played in the current turn by the playing Player (determined by the game instance)
      * @see Game#makeNextMove(Line)
      */
-    abstract Line getAction(Player player) throws IOException, InvalidInputException, UserHasRequestedSave, UserHasRequestedQuit;
+    abstract Line getAction(String player) throws IOException, InvalidInputException, UserHasRequestedSave, UserHasRequestedQuit;
 
     final void makeMove(Line line) throws InvalidInputException {
         game.makeNextMove(line);
@@ -266,9 +262,9 @@ public abstract class IGameController implements Savable<IGameController> {
     /**
      * Notify the UI to terminate the current game specifying the passed player as the winner.
      *
-     * @param winner the winning player
+     * @param winners the winning player(s)
      */
-    abstract void endGame(List<Player> winner);
+    abstract void endGame(SequencedCollection<String> winners);
 
     public abstract PostGameIntent getPostGameIntent() throws IOException;
 

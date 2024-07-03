@@ -4,30 +4,27 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import it.units.sdm.dotsandboxes.core.Color;
-import it.units.sdm.dotsandboxes.core.Player;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayersAdapter extends TypeAdapter<List<Player>> {
+public class PlayersAdapter extends TypeAdapter<List<String>> {
 
   @Override
-  public void write(JsonWriter jsonWriter, List<Player> players) throws IOException {
+  public void write(JsonWriter jsonWriter, List<String> players) throws IOException {
     jsonWriter.beginArray();
-    for (final Player player : players) {
+    for (String player : players) {
       jsonWriter.beginObject();
-      jsonWriter.name("color").value(player.color().name());
-      jsonWriter.name("name").value(player.name());
-      jsonWriter.name("hash").value(player.hashCode());
+      jsonWriter.name("name").value(player);
       jsonWriter.endObject();
     }
     jsonWriter.endArray();
   }
 
   @Override
-  public List<Player> read(JsonReader jsonReader) throws IOException {
-    final List<Player> players = new ArrayList<>();
+  public List<String> read(JsonReader jsonReader) throws IOException {
+    final List<String> players = new ArrayList<>();
     jsonReader.beginArray();
     while (jsonReader.hasNext()) {
       jsonReader.beginObject();
@@ -45,7 +42,7 @@ public class PlayersAdapter extends TypeAdapter<List<Player>> {
           color = Color.valueOf(jsonReader.nextString());
         }
       }
-      players.add(new Player(name, color));
+      players.add(name);
       jsonReader.endObject();
     }
     jsonReader.endArray();

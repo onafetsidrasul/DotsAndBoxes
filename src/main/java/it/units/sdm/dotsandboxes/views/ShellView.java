@@ -1,14 +1,16 @@
 package it.units.sdm.dotsandboxes.views;
 
 import it.units.sdm.dotsandboxes.core.Board;
+import it.units.sdm.dotsandboxes.core.Color;
 import it.units.sdm.dotsandboxes.core.ColoredLine;
 import it.units.sdm.dotsandboxes.core.Line;
-import it.units.sdm.dotsandboxes.core.Player;
 import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 import org.fusesource.jansi.Ansi;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.SequencedCollection;
 
 import static org.fusesource.jansi.Ansi.*;
 
@@ -21,9 +23,9 @@ public class ShellView implements IGameView {
     }
 
     @Override
-    public void updateUI(final Board gameBoard, final List<Player> players, final List<Integer> scores, final Player currentPlayer) {
+    public void updateUI(Board gameBoard, SequencedCollection<String> players, Map<String, Integer> scores, Map<String, Color> colors, String currentPlayer) {
         System.out.println(ansi().eraseScreen());
-        printPlayers(players, scores);
+        printPlayers(List.copyOf(players), scores, colors);
         printBoard(gameBoard);
         printCurrentPlayer(currentPlayer);
     }
@@ -135,18 +137,18 @@ public class ShellView implements IGameView {
         }
     }
 
-    private void printPlayers(List<Player> players, List<Integer> scores) {
+    private void printPlayers(List<String> players, Map<String, Integer> scores, Map<String, Color> colors) {
         System.out.println("--- PLAYERS ---");
         for (int i = 1; i <= players.size(); i++) {
-            Player player = players.get(i - 1);
-            System.out.println(ansi().a("Player " + i + " : ").fg(Ansi.Color.valueOf(player.color().name())).a(player.name()).reset());
-            System.out.println("\tScore: " + scores.get(i - 1));
+            String player = players.get(i - 1);
+            System.out.println(ansi().a("Player " + i + " : ").fg(Ansi.Color.valueOf(colors.get(player).name())).a(player).reset());
+            System.out.println("\tScore: " + scores.get(player));
         }
         System.out.println("---------------");
     }
 
-    private void printCurrentPlayer(Player currentPlayer) {
-        System.out.println("Current player: " + currentPlayer.name());
+    private void printCurrentPlayer(String currentPlayer) {
+        System.out.println("Current player: " + currentPlayer);
     }
 
     @Override
@@ -180,23 +182,23 @@ public class ShellView implements IGameView {
     }
 
     @Override
-    public void promptForAction(Player currentPlayer) {
+    public void promptForAction(String currentPlayer) {
         System.out.println("Insert \"quit\" to quit the game");
         System.out.println("Insert \"save\" to save the game");
         System.out.print("Or make your move [ x1 y1 x2 y2 ] : ");
     }
 
     @Override
-    public void displayWinners(List<Player> winners) {
+    public void displayWinners(SequencedCollection<String> winners) {
         System.out.println(ansi().eraseScreen());
         if (winners.size() > 1) {
             System.out.println("Game tied between the players: ");
-            for (Player winner : winners) {
-                System.out.println(winner.name());
+            for (String winner : winners) {
+                System.out.println(winner);
             }
         }
         if (winners.size() == 1) {
-            System.out.println("Player " + winners.getFirst().name() + " won!");
+            System.out.println("Player " + winners.getFirst() + " won!");
         }
     }
 
