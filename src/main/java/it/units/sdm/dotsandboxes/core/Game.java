@@ -160,12 +160,18 @@ public class Game implements Savable<Game> {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
     public String toString() {
-        return "Game{" +
-                "players=" + players +
-                ", scoreBoard=" + scoreBoard +
-                ", gameBoard=" + board +
-                ", completedBoxes=" + completedBoxes +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("Score Board:").append("\n");
+        scoreBoard.forEach((p,s)->sb.append(p).append(": ").append(s).append("\n"));
+        sb.append("\n");
+        sb.append("Game Board:").append("\n").append(board);
+        sb.append("\n");
+        return sb.toString();
     }
 }

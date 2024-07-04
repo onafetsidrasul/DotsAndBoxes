@@ -77,4 +77,22 @@ public class Board {
     public SequencedCollection<ColoredLine> lines() {
         return lines;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj.getClass() != this.getClass()){
+            return false;
+        }
+        Board other = (Board) obj;
+        return width == other.width && height == other.height && lines.equals(other.lines);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        for(ColoredLine l : lines){
+            s.append(l.toString()).append("\n");
+        }
+        return s.toString();
+    }
 }
