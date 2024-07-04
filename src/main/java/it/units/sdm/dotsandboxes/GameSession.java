@@ -2,19 +2,12 @@ package it.units.sdm.dotsandboxes;
 
 import it.units.sdm.dotsandboxes.controllers.IGameController;
 import it.units.sdm.dotsandboxes.controllers.PostGameIntent;
-import it.units.sdm.dotsandboxes.core.Color;
-import it.units.sdm.dotsandboxes.core.Game;
-import it.units.sdm.dotsandboxes.core.Line;
-import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedQuit;
 import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedSave;
 import it.units.sdm.dotsandboxes.persistence.Savable;
-import it.units.sdm.dotsandboxes.views.IGameView;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GameSession implements Savable<GameSession> {
 
@@ -43,7 +36,7 @@ public class GameSession implements Savable<GameSession> {
             } catch(UserHasRequestedQuit e){
                 break;
             } catch (UserHasRequestedSave e) {
-                save();
+                serialized();
             }
             try {
                 intent = controller.getPostGameIntent();
@@ -54,9 +47,9 @@ public class GameSession implements Savable<GameSession> {
     }
 
     @Override
-    public byte[] save() {
+    public byte[] serialized() {
         final SavedGameSession savedGameSession = new SavedGameSession(
-                controller.getClass().getCanonicalName(), encoder.encodeToString(controller.save()));
+                controller.getClass().getCanonicalName(), encoder.encodeToString(controller.serialized()));
         return gson.toJson(savedGameSession).getBytes(StandardCharsets.UTF_8);
     }
 

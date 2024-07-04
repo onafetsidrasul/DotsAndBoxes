@@ -31,7 +31,7 @@ public class JsonGameSaver implements IGameSaver<GameSession> {
     final String filename = "saves/gamesave_" + timeFormatter.format(new Date()) + ".json";
     try (final BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filename))) {
       final String gameData = new String(
-              encoder.encode(savable.save()), StandardCharsets.UTF_8);
+              encoder.encode(savable.serialized()), StandardCharsets.UTF_8);
       final String payload = gson.toJson(new SavedGame(
               new Date().getTime(), savable.getClass().getName(), gameData));
       bos.write(payload.getBytes(StandardCharsets.UTF_8));

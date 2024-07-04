@@ -72,6 +72,7 @@ public abstract class IGameController implements Savable<IGameController> {
             try {
                 game = new Game(boardDimensions[0], boardDimensions[1], players);
             } catch (InvalidInputException | IllegalArgumentException e) {
+                sendWarning(e.getMessage());
                 view.displayIllegalActionWarning(e.getMessage());
                 dimensionsAreValid = false;
             }
@@ -83,10 +84,11 @@ public abstract class IGameController implements Savable<IGameController> {
         do {
             playerCount = getPlayerCount();
             if (playerCount < 2) {
+                sendWarning("You need at least 2 players!");
                 view.displayIllegalActionWarning("You need at least 2 players!");
             }
             if (playerCount > Color.values().length) {
-                view.displayIllegalActionWarning("Too many players! Max amount is " + Color.values().length);
+                sendWarning("Too many players! Max amount is " + Color.values().length);
             }
         } while (playerCount < 2 || playerCount > Color.values().length);
         SequencedCollection<String> players = new ArrayList<>(playerCount);
@@ -127,7 +129,7 @@ public abstract class IGameController implements Savable<IGameController> {
                     try {
                         line = getAction(game.currentPlayer());
                     } catch (InvalidInputException e) {
-                        view.displayIllegalActionWarning(e.getMessage());
+                        sendWarning(e.getMessage());
                         inputIsValid = false;
                     }
                 } while (!inputIsValid);
@@ -137,7 +139,7 @@ public abstract class IGameController implements Savable<IGameController> {
             try {
                 makeMove(line);
             } catch (InvalidInputException e) {
-                view.displayIllegalActionWarning(e.getMessage());
+                sendWarning(e.getMessage());
             }
             view.updateUI(game.getBoard(), game.players(), game.scoreBoard(), game.playerColorLUT(), game.currentPlayer());
         }
@@ -157,7 +159,7 @@ public abstract class IGameController implements Savable<IGameController> {
                 try {
                     line = getAction(game.currentPlayer());
                 } catch (InvalidInputException e) {
-                    view.displayIllegalActionWarning(e.getMessage());
+                    sendWarning(e.getMessage());
                     inputIsValid = false;
                 }
             } while (!inputIsValid);
@@ -165,7 +167,7 @@ public abstract class IGameController implements Savable<IGameController> {
             try {
                 makeMove(line);
             } catch (InvalidInputException e) {
-                view.displayIllegalActionWarning(e.getMessage());
+                sendWarning(e.getMessage());
             }
             view.updateUI(game.getBoard(), game.players(), game.scoreBoard(), game.playerColorLUT(), game.currentPlayer());
         }
@@ -273,10 +275,17 @@ public abstract class IGameController implements Savable<IGameController> {
         return isSetupDone;
     }
 
+    public void sendWarning(String message){
+        view.displayIllegalActionWarning(message);
+        getUserConfirmationAfterWarning();
+    }
+
+    public abstract void getUserConfirmationAfterWarning();
+
     @Override
-    public byte[] save() {
+    public byte[] serialized() {
         final String gameData = new String(
-                encoder.encode(game.save()), StandardCharsets.UTF_8);
+                encoder.encode(game.serialized()), StandardCharsets.UTF_8);
         final String payload = gson.toJson(new SavedIGameController(
                 this.getClass().getName(),
                 view.getClass().getName(),

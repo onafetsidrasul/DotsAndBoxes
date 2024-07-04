@@ -141,7 +141,7 @@ public class Game implements Savable<Game> {
     }
 
     @Override
-    public byte[] save() {
+    public byte[] serialized() {
         return serializer.toJson(this).getBytes(StandardCharsets.UTF_8);
     }
 

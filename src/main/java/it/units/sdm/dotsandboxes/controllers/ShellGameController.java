@@ -45,7 +45,7 @@ public class ShellGameController extends IGameController {
         try {
             return Arrays.stream(reader.readLine().split("x")).mapToInt(Integer::parseInt).toArray();
         } catch (NumberFormatException e) {
-            System.err.println("Invalid input. Please enter valid integer coordinates");
+            sendWarning("Invalid input. Please enter valid integer coordinates");
             return null;
         }
     }
@@ -71,7 +71,7 @@ public class ShellGameController extends IGameController {
         }
         final List<String> coords = List.of(input.split(" "));
         if (coords.size() != 4) {
-            view.displayIllegalActionWarning("Invalid input. Please enter four space-separated coordinates");
+            sendWarning("Invalid input. Please enter four space-separated coordinates");
             return null;
         }
         int[] parsedCoords = coords.stream().mapToInt(Integer::parseInt).toArray();
@@ -97,5 +97,13 @@ public class ShellGameController extends IGameController {
             case 2 -> Gamemode.PVE;
             default -> throw new IllegalArgumentException("Unexpected value: " + reader.readLine());
         };
+    }
+
+    public void getUserConfirmationAfterWarning() {
+        try {
+            reader.readLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
