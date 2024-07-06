@@ -32,19 +32,15 @@ public class ShellView extends TextView {
     }
 
     @Override
-    public boolean init(final IGameController controllerReference) {
-        boolean isInitialized = true;
+    protected boolean finishInit() {
         try {
-            Objects.requireNonNull(controllerReference);
-            this.controllerReference = controllerReference;
             AnsiConsole.systemInstall();
         } catch (Exception e) {
-            isInitialized = false;
-        } finally {
-            this.isInitialized = isInitialized;
+            return false;
         }
-        return this.isInitialized;
+        return true;
     }
+
 
     @Override
     public void run() {

@@ -29,35 +29,18 @@ public class TextView extends IGameView {
     }
 
     @Override
-    public boolean init(final IGameController controllerReference) {
-        boolean isInitialized = true;
-        try {
-            Objects.requireNonNull(controllerReference);
-            this.controllerReference = controllerReference;
-        } catch (Exception e) {
-            isInitialized = false;
-        } finally {
-            this.isInitialized = isInitialized;
-        }
-        return this.isInitialized;
+    protected boolean finishInit() {
+        return true;
+    }
+
+
+    @Override
+    protected boolean finishConfigure() {
+        return true;
     }
 
     @Override
-    public boolean configure(final Game gameStateReference) {
-        boolean isConfigured = true;
-        try {
-            Objects.requireNonNull(gameStateReference);
-            this.gameStateReference = gameStateReference;
-        } catch (Exception e) {
-            isConfigured = false;
-        } finally {
-            this.isConfigured = isConfigured;
-        }
-        return this.isConfigured;
-    }
-
-    @Override
-    public void startGameUI() {
+    protected void displayGameUI() {
         new Thread(this).start();
     }
 
