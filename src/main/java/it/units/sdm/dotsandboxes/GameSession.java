@@ -24,11 +24,7 @@ public class GameSession implements Savable<GameSession> {
         PostGameIntent intent;
         do {
             controller.initialize();
-            try {
-                controller.setUpGame();
-            } catch (IOException e) {
-                throw new IOException("Game controller could not setup game.", e);
-            }
+            controller.setUpGame();
             try {
                 controller.startGame();
             } catch (IOException e) {
