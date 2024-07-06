@@ -125,8 +125,10 @@ public abstract class IGameController implements Savable<IGameController> {
             switch (gamemode) {
                 case PVE:
                     startGameVsComputer();
+                    break;
                 case PVP:
                     startGameVsPlayer();
+                    break;
             }
         } catch (UserHasRequestedQuit e) {
             view.displayMessage("Bye!");
@@ -143,27 +145,24 @@ public abstract class IGameController implements Savable<IGameController> {
         }
         view.startGameUI();
         while (!game.hasEnded()) {
-            readyToRefreshUISem.release();
             Line line = null;
             if (game.getCurrentPlayerIndex() + 1 == 1) {
+                readyToRefreshUISem.release();
                 boolean inputIsValid;
                 do {
                     inputIsValid = true;
                     try {
-                        line = getAction(game.currentPlayer());
+                        line = getAction();
                     } catch (InvalidInputException e) {
                         sendWarning(e.getMessage());
                         inputIsValid = false;
                     }
                 } while (!inputIsValid);
             } else {
+                view.isRefreshingUISem.release();
                 line = generateMove(ComputerMoveStrategy.RANDOM);
             }
-            try {
-                makeMove(line);
-            } catch (InvalidInputException e) {
-                sendWarning(e.getMessage());
-            }
+            tryMove(line);
         }
         endGame();
     }
@@ -180,21 +179,27 @@ public abstract class IGameController implements Savable<IGameController> {
             do {
                 inputIsValid = true;
                 try {
-                    line = getAction(game.currentPlayer());
+                    line = getAction();
                 } catch (InvalidInputException e) {
                     sendWarning(e.getMessage());
                     inputIsValid = false;
                     readyToRefreshUISem.release();
                 }
             } while (!inputIsValid);
-
-            try {
-                makeMove(line);
-            } catch (InvalidInputException e) {
-                sendWarning(e.getMessage());
-            }
+            tryMove(line);
         }
         endGame();
+    }
+
+    private void tryMove(Line line) {
+        try {
+            view.isRefreshingUISem.acquire();
+            makeMove(line);
+        } catch (InvalidInputException e) {
+            sendWarning(e.getMessage());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Line generateMove(ComputerMoveStrategy strategy) {
@@ -214,7 +219,7 @@ public abstract class IGameController implements Savable<IGameController> {
         return candidate;
     }
 
-    public static Line randomCandidate(int[] dims) {
+    private static Line randomCandidate(int[] dims) {
         Line candidate;
         Point p1 = getFirstPoint(dims);
         Point p2;
@@ -287,7 +292,7 @@ public abstract class IGameController implements Savable<IGameController> {
      * @return the Line being played in the current turn by the playing Player (determined by the game instance)
      * @see Game#makeNextMove(Line)
      */
-    protected Line getAction(String player) throws IOException, InvalidInputException, UserHasRequestedSave, UserHasRequestedQuit {
+    protected Line getAction() throws IOException, InvalidInputException, UserHasRequestedSave, UserHasRequestedQuit {
         Line candidate = null;
         do {
             try {

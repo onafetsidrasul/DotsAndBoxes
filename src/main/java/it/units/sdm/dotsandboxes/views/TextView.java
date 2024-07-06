@@ -61,6 +61,7 @@ public class TextView extends IGameView {
             printCurrentPlayer(gameStateReference.currentPlayer());
             controllerReference.input = promptForAction();
             controllerReference.inputHasBeenReceivedSem.release();
+            isRefreshingUISem.release();
         } while (true);
     }
 
@@ -214,7 +215,7 @@ public class TextView extends IGameView {
     }
 
     public void displayPrompt(String message) {
-        out.print("PROMPT : " + message);
+        out.print(message);
     }
 
     @Override

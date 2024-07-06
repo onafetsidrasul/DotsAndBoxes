@@ -5,6 +5,7 @@ import it.units.sdm.dotsandboxes.core.Game;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.Semaphore;
 
 public abstract class IGameView implements Runnable {
 
@@ -12,6 +13,7 @@ public abstract class IGameView implements Runnable {
     protected Game gameStateReference;
     protected boolean isInitialized = false;
     protected boolean isConfigured = false;
+    public Semaphore isRefreshingUISem = new Semaphore(0);
 
     /**
      * Initializes the view.

@@ -59,12 +59,11 @@ public class ShellView extends TextView {
             }
             synchronized (gameStateReference.board.lines()){
                 printBoard(gameStateReference.board);
-            }
-            synchronized (gameStateReference.board.lines()){
                 printCurrentPlayer(gameStateReference.currentPlayer(), gameStateReference.playerColorLUT.get(gameStateReference.currentPlayer()));
             }
             controllerReference.input = promptForAction();
             controllerReference.inputHasBeenReceivedSem.release();
+            isRefreshingUISem.release();
         } while (true);
     }
 

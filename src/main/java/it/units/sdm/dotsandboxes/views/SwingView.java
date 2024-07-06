@@ -169,6 +169,7 @@ public class SwingView extends IGameView {
         scorePanel.repaint();
         mainPanel.revalidate();
         mainPanel.repaint();
+        isRefreshingUISem.release();
     }
 
     private void attachListener(JRadioButton endpoint) {
@@ -228,8 +229,4 @@ public class SwingView extends IGameView {
         }
         return new JLabel("spazio vuoto");
     }
-}
-
-class LineSprite extends JLabel{
-
 }
