@@ -1,118 +1,77 @@
 package it.units.sdm.dotsandboxes.views;
 
-import it.units.sdm.dotsandboxes.core.Board;
+import it.units.sdm.dotsandboxes.controllers.IGameController;
+import it.units.sdm.dotsandboxes.core.*;
 import it.units.sdm.dotsandboxes.core.Color;
-import it.units.sdm.dotsandboxes.core.ColoredLine;
-import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.SequencedCollection;
+import java.util.*;
+import java.util.concurrent.Semaphore;
 
 import static org.fusesource.jansi.Ansi.*;
 
-public class ShellView implements IGameView {
+public class ShellView extends TextView {
 
     private final PrintStream out;
+    private final BufferedReader in;
 
-    public ShellView(PrintStream out) {
+    public ShellView(PrintStream out, InputStreamReader in) {
         this.out = out;
+        this.in = new BufferedReader(in);
+    }
+
+    public ShellView() {
+        this.out = System.out;
+        this.in = new BufferedReader(new InputStreamReader(System.in));
     }
 
     @Override
-    public boolean init() {
-        AnsiConsole.systemInstall();
-        return true;
+    public boolean init(final IGameController controllerReference) {
+        boolean isInitialized = true;
+        try {
+            Objects.requireNonNull(controllerReference);
+            this.controllerReference = controllerReference;
+            AnsiConsole.systemInstall();
+        } catch (Exception e) {
+            isInitialized = false;
+        } finally {
+            this.isInitialized = isInitialized;
+        }
+        return this.isInitialized;
     }
 
     @Override
-    public void updateUI(Board gameBoard, SequencedCollection<String> players, Map<String, Integer> scores, Map<String, Color> colors, String currentPlayer) {
-        eraseScreen();
-        printPlayers(List.copyOf(players), scores, colors);
-        printBoard(gameBoard);
-        printCurrentPlayer(currentPlayer, colors.get(currentPlayer));
-    }
-
-    private void printBoard(final Board gameBoard) {
-        printUpperBorder(gameBoard.length());
-        printBoardContents(gameBoard);
-        printLowerBorder(gameBoard.length());
-    }
-
-    private void printUpperBorder(final int boardWidth) {
-        printColumnNumbers(boardWidth);
-        out.print("  ┏");
-        printHorizontalBorder(boardWidth);
-        out.println("┓");
-    }
-
-    private void printColumnNumbers(int width) {
-        StringBuilder sb;
-        sb = new StringBuilder("   ");
-        for (int i = 0; i < width; i++) {
-            sb.append(" ").append(i).append("  ");
-        }
-        out.println(sb);
-    }
-
-    private void printLowerBorder(final int boardWidth) {
-        out.print("  ┗");
-        printHorizontalBorder(boardWidth);
-        out.println("┛");
-    }
-
-    private void printHorizontalBorder(final int boardWidth) {
-        out.print("━".repeat(boardWidth * 4 - 1));
-    }
-
-    private void printBoardContents(final Board gameBoard) {
-        for (int rowNumber = 0; rowNumber < gameBoard.height(); rowNumber++) {
-            printRowContents(rowNumber, gameBoard);
-        }
-
-    }
-
-    private void printRowContents(final int rowNumber, final Board gameBoard) {
-        StringBuilder sb;
-        sb = new StringBuilder();
-        printRowLeftBorder(rowNumber);
-        for (int j = 0; j < gameBoard.length(); j++) {
-            sb.append(" ● ");
-            if (j < gameBoard.length() - 1) {
-                printHorizontalLineIfPresent(j, rowNumber, sb, gameBoard);
+    public void run() {
+        do {
+            try {
+                controllerReference.readyToRefreshUISem.acquire();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
-        }
-        out.print(sb);
-        printRowBorder();
-        out.println();
-        if (rowNumber < gameBoard.height() - 1) {
-            out.print("  ");
-            printRowBorder();
-            sb = new StringBuilder();
-            for (int j = 0; j < gameBoard.length(); j++) {
-                printVerticalLineIfPresent(j, rowNumber, sb, gameBoard);
+            eraseScreen();
+            synchronized (gameStateReference.scoreBoard){
+                printPlayers(gameStateReference.players, gameStateReference.scoreBoard, gameStateReference.playerColorLUT);
             }
-            out.print(sb);
-            printRowBorder();
-            out.println();
-        }
+            synchronized (gameStateReference.board.lines()){
+                printBoard(gameStateReference.board);
+            }
+            synchronized (gameStateReference.board.lines()){
+                printCurrentPlayer(gameStateReference.currentPlayer(), gameStateReference.playerColorLUT.get(gameStateReference.currentPlayer()));
+            }
+            controllerReference.input = promptForAction();
+            controllerReference.inputHasBeenReceivedSem.release();
+        } while (true);
     }
 
-    private void printRowBorder() {
-        out.print("┃");
-    }
 
-    private void printRowLeftBorder(final int rowNumber) {
-        out.print(rowNumber + " ");
-        printRowBorder();
-    }
-
-    private void printVerticalLineIfPresent(int j, int i, StringBuilder sb, Board gameBoard) {
+    @Override
+    protected void printVerticalLineIfPresent(int j, int i, StringBuilder sb, Board gameBoard) {
         Line searched;
         try {
             searched = new Line(j, i, j, i + 1);
@@ -125,12 +84,14 @@ public class ShellView implements IGameView {
         } else {
             sb.append("   ");
         }
-        if (j < gameBoard.length() - 1) {
+
+        if (j < gameBoard.width() - 1) {
             sb.append(" ");
         }
     }
 
-    private void printHorizontalLineIfPresent(int j, int i, StringBuilder sb, Board gameBoard) {
+    @Override
+    protected void printHorizontalLineIfPresent(int j, int i, StringBuilder sb, Board gameBoard) {
         Line searched;
         try {
             searched = new Line(j, i, j + 1, i);
@@ -143,25 +104,23 @@ public class ShellView implements IGameView {
         } else {
             sb.append(" ");
         }
+
+
     }
 
-    private void printPlayers(List<String> players, Map<String, Integer> scores, Map<String, Color> colors) {
+    protected void printPlayers(List<String> players, Map<String, Integer> scores, Map<String, Color> colors) {
         out.println("--- PLAYERS ---");
         for (int i = 1; i <= players.size(); i++) {
             String player = players.get(i - 1);
             out.println(ansi().a("Player " + i + " : ").fg(Ansi.Color.valueOf(colors.get(player).name())).a(player).reset());
             out.println("\tScore: " + scores.get(player));
+
         }
         out.println("---------------");
     }
 
-    private void printCurrentPlayer(String currentPlayer, Color currentPlayerColor) {
+    protected void printCurrentPlayer(String currentPlayer, Color currentPlayerColor) {
         out.println(ansi().a("Current player: ").fg(Ansi.Color.valueOf(currentPlayerColor.name())).a(currentPlayer).reset());
-    }
-
-    @Override
-    public void promptForPostGameIntent() {
-        displayPrompt("Do you wish to play again? [y/n] : ");
     }
 
     @Override
@@ -169,67 +128,39 @@ public class ShellView implements IGameView {
         out.println(ansi().fg(Ansi.Color.GREEN).a(message).reset());
     }
 
-    private void displayPrompt(String message){
+    @Override
+    public void displayPrompt(String message) {
         out.print(ansi().fg(Ansi.Color.YELLOW).a(message).reset());
     }
 
     @Override
-    public void displayIllegalActionWarning(String message) {
+    public void displayWarning(String message) {
+        out.println();
         out.print(ansi().fg(Ansi.Color.RED).a(message).a(". Press Enter to continue :").reset());
-
-    }
-
-    @Override
-    public void promptForPlayerName(int playerNumber) {
-        eraseScreen();
-        displayPrompt("Insert name for player" + playerNumber + " : ");
-    }
-
-    @Override
-    public void promptForBoardDimensions() {
-        eraseScreen();
-        displayPrompt("Insert board dimensions [ NxM ] : ");
-    }
-
-    @Override
-    public void promptForNumberOfPlayers() {
-        eraseScreen();
-        displayPrompt("Insert number of players : ");
-    }
-
-    @Override
-    public void promptForAction(String currentPlayer) {
-        displayPrompt("Insert \"quit\" to quit the game\n");
-        displayPrompt("Insert \"save\" to save the game\n");
-        displayPrompt("Or make your move [ x1 y1 x2 y2 ] : ");
-    }
-
-    @Override
-    public void displayWinners(SequencedCollection<String> winners) {
-        eraseScreen();
-        if (winners.size() > 1) {
-            out.println("Game tied between the players: ");
-            for (String winner : winners) {
-                out.println(winner);
-            }
-        }
-        if (winners.size() == 1) {
-            out.println("Player " + winners.getFirst() + " won!");
+        try {
+            in.readLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void promptForGamemode() {
+    public void displayResults() {
         eraseScreen();
-        out.println("Select the game mode");
-        out.println("\t1 - Player vs. Player");
-        out.println("\t2 - Player vs. CPU");
-        out.print(" : ");
+        out.println("Game results:");
+        for (Map.Entry<String, Integer> entry : gameStateReference.scoreBoard.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList()) {
+            displayResult(entry.getKey(), entry.getValue(), gameStateReference.playerColorLUT.get(entry.getKey()));
+        }
     }
 
-    private void eraseScreen(){
+    protected void displayResult(String playerName, Integer score, Color color) {
+        out.println(ansi().fg(Ansi.Color.valueOf(color.name())).a(playerName).reset().a(" : " + score));
+    }
+
+
+    @Override
+    public void eraseScreen() {
         out.println(ansi().eraseScreen());
     }
-
 
 }
