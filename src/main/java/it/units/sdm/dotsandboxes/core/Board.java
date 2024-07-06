@@ -38,7 +38,7 @@ public class Board {
         return lines.size() == (2 * width * height) - width - height;
     }
 
-    protected void placeLine(ColoredLine line) throws InvalidInputException {
+    protected synchronized void placeLine(ColoredLine line) throws InvalidInputException {
         if (line.length() != 1)
             throw new InvalidInputException("Line is too long.");
         if (isLineOutOfBounds(line))
@@ -56,7 +56,7 @@ public class Board {
                 line.p2().y() < 0 || line.p2().y() >= height;
     }
 
-    private boolean lineSitsBetween(Point p1, Point p2) {
+    public boolean lineSitsBetween(Point p1, Point p2) {
         return lines.parallelStream().anyMatch(l -> {
             try {
                 return l.hasSameEndpointsAs(new Line(p1, p2));
