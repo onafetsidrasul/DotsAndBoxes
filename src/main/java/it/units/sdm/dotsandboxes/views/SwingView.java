@@ -145,6 +145,9 @@ public class SwingView extends IGameView {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            if(controllerReference.gameIsOver){
+                break;
+            }
             refreshBoardComponents();
         } while (true);
     }

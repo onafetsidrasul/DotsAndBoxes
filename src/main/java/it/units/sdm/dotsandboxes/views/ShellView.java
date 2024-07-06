@@ -50,6 +50,9 @@ public class ShellView extends TextView {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            if(controllerReference.gameIsOver){
+                break;
+            }
             eraseScreen();
             synchronized (gameStateReference.scoreBoard){
                 printPlayers(gameStateReference.players, gameStateReference.scoreBoard, gameStateReference.playerColorLUT);
@@ -143,8 +146,9 @@ public class ShellView extends TextView {
     @Override
     public void displayResults() {
         eraseScreen();
-        out.println("Game results:");
-        for (Map.Entry<String, Integer> entry : gameStateReference.scoreBoard.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList()) {
+        displayMessage("GAME RESULTS");
+        displayMessage("------------");
+        for (Map.Entry<String, Integer> entry : gameStateReference.scoreBoard.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList().reversed()) {
             displayResult(entry.getKey(), entry.getValue(), gameStateReference.playerColorLUT.get(entry.getKey()));
         }
     }

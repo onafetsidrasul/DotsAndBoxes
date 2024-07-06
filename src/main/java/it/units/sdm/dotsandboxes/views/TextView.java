@@ -52,6 +52,9 @@ public class TextView extends IGameView {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            if(controllerReference.gameIsOver){
+                break;
+            }
             eraseScreen();
             printPlayers(gameStateReference.players, gameStateReference.scoreBoard);
             printBoard(gameStateReference.board);
@@ -228,8 +231,9 @@ public class TextView extends IGameView {
     @Override
     public void displayResults() {
         eraseScreen();
-        out.println("Game results:");
-        for (Map.Entry<String, Integer> entry : gameStateReference.scoreBoard.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList()) {
+        displayMessage("GAME RESULTS");
+        displayMessage("------------");
+        for (Map.Entry<String, Integer> entry : gameStateReference.scoreBoard.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList().reversed()) {
             displayResult(entry.getKey(), entry.getValue());
         }
     }

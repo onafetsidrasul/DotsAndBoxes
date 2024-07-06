@@ -23,6 +23,7 @@ public abstract class IGameController implements Savable<IGameController> {
     protected boolean isInitialized = false;
     protected boolean setUpIsDone = false;
     public Semaphore readyToRefreshUISem = new Semaphore(0);
+    public boolean gameIsOver = false;
     public Semaphore inputHasBeenReceivedSem = new Semaphore(0);
     public String input = null;
 
@@ -140,9 +141,9 @@ public abstract class IGameController implements Savable<IGameController> {
         if (game == null || !setUpIsDone) {
             throw new IllegalStateException("Game has not been set up!");
         }
-        readyToRefreshUISem.release();
         view.startGameUI();
         while (!game.hasEnded()) {
+            readyToRefreshUISem.release();
             Line line = null;
             if (game.getCurrentPlayerIndex() + 1 == 1) {
                 boolean inputIsValid;
@@ -163,18 +164,17 @@ public abstract class IGameController implements Savable<IGameController> {
             } catch (InvalidInputException e) {
                 sendWarning(e.getMessage());
             }
-            readyToRefreshUISem.release();
         }
         endGame();
     }
 
     public final void startGameVsPlayer() throws IOException, UserHasRequestedQuit, UserHasRequestedSave {
-        if (game == null) {
+        if (game == null || !setUpIsDone) {
             throw new IllegalStateException("Game has not been set up!");
         }
-        readyToRefreshUISem.release();
         view.startGameUI();
         while (!game.hasEnded()) {
+            readyToRefreshUISem.release();
             Line line = null;
             boolean inputIsValid;
             do {
@@ -193,7 +193,6 @@ public abstract class IGameController implements Savable<IGameController> {
             } catch (InvalidInputException e) {
                 sendWarning(e.getMessage());
             }
-            readyToRefreshUISem.release();
         }
         endGame();
     }
@@ -305,9 +304,11 @@ public abstract class IGameController implements Savable<IGameController> {
 
     private Line parseLineString(String input) throws InvalidInputException, UserHasRequestedQuit, UserHasRequestedSave {
         if ("quit".equals(input)) {
+            gameIsOver = true;
             throw new UserHasRequestedQuit();
         }
         if ("save".equals(input)) {
+            gameIsOver = true;
             throw new UserHasRequestedSave();
         }
         final List<String> coords = List.of(input.split(" "));
@@ -329,6 +330,7 @@ public abstract class IGameController implements Savable<IGameController> {
      */
     public void endGame(){
         view.displayResults();
+        gameIsOver = true;
     }
 
     public PostGameIntent getPostGameIntent() throws IOException {

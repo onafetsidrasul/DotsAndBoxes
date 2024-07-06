@@ -23,8 +23,12 @@ public class GameSession implements Savable<GameSession> {
     public void start() throws IOException {
         PostGameIntent intent;
         do {
-            controller.initialize();
-            controller.setUpGame();
+            if(!controller.initialize()){
+                throw new IOException("Could not initialize game");
+            }
+            if(!controller.setUpGame()){
+                throw new IOException("Could not set up game");
+            }
             try {
                 controller.startGame();
             } catch (IOException e) {
