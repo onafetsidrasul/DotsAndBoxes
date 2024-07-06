@@ -14,7 +14,7 @@ public class Board {
         }
         this.width = width;
         this.height = height;
-        lines = new ArrayList<>();
+        lines = Collections.synchronizedList(new ArrayList<>());
     }
 
     /**
@@ -66,7 +66,7 @@ public class Board {
         });
     }
 
-    public int length() {
+    public int width() {
         return width;
     }
 

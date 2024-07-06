@@ -9,19 +9,20 @@ import it.units.sdm.dotsandboxes.persistence.adapters.ScoreboardAdapter;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Game implements Savable<Game> {
 
     private static final Gson serializer = new GsonBuilder().create();
 
-    private final List<String> players = new ArrayList<>();
-    private final Map<String, Color> playerColorLUT;
+    public final List<String> players = new ArrayList<>();
+    public final Map<String, Color> playerColorLUT;
 
     @JsonAdapter(ScoreboardAdapter.class)
-    private Map<String, Integer> scoreBoard;
+    public Map<String, Integer> scoreBoard;
 
-    private final Board board;
-    private final Set<Point> completedBoxes;
+    public final Board board;
+    public final Set<Point> completedBoxes;
 
     public Game(int boardLength, int boardHeight, SequencedCollection<String> players) throws InvalidInputException {
         if (Set.copyOf(players).size() != players.size()) { // allows with a single line to throw a NullPointerException if either players is null or has a null element
@@ -31,7 +32,7 @@ public class Game implements Savable<Game> {
         if (this.players.size() < 2) {
             throw new InvalidInputException("Game requires a minimum of 2 players.");
         }
-        scoreBoard = new HashMap<>(this.players.size());
+        scoreBoard = new ConcurrentHashMap<>(this.players.size());
         playerColorLUT = new HashMap<>(this.players.size());
         int c = 0;
         for (String p : this.players) {
@@ -54,25 +55,25 @@ public class Game implements Savable<Game> {
         this(0, 0, "dummy1", "dummy2");
     }
 
-    public int getLastPlayerIndex() {
+    public synchronized int getLastPlayerIndex() {
         if (board.lines().isEmpty()) {
             return -1;
         }
         return (board.lines().size() - 1) % players.size();
     }
 
-    public int getCurrentPlayerIndex() {
+    public synchronized int getCurrentPlayerIndex() {
         return (getLastPlayerIndex() + 1) % players.size();
     }
 
-    public String currentPlayer() {
+    public synchronized String currentPlayer() {
         // we chose to make the player1 start first every time
         if (board.lines().isEmpty())
             return this.players.getFirst();
         return this.players.get(getCurrentPlayerIndex());
     }
 
-    public String getLastPlayer() {
+    public synchronized String getLastPlayer() {
         // we chose to make the player1 start first every time
         if (board.lines().isEmpty())
             return null;
@@ -92,7 +93,7 @@ public class Game implements Savable<Game> {
         board.placeLine(lineCandidate);
     }
 
-    public Board getBoard() {
+    public Board board() {
         return board;
     }
 
@@ -100,8 +101,8 @@ public class Game implements Savable<Game> {
         return board.isBoardFull();
     }
 
-    public void updateScore() {
-        for (int i = 0; i < board.length(); i++) {
+    public synchronized void updateScore() {
+        for (int i = 0; i < board.width(); i++) {
             for (int j = 0; j < board.height(); j++) {
                 Point currentPoint = new Point(i, j);
                 if (board.isBoxCompleted(currentPoint) && !completedBoxes.contains(currentPoint)) {
@@ -112,7 +113,7 @@ public class Game implements Savable<Game> {
         }
     }
 
-    private void increasePlayerScoreByOne(String p) {
+    private synchronized void increasePlayerScoreByOne(String p) {
         final int currentScore = scoreBoard.get(p);
         final int newScore = currentScore + 1;
         scoreBoard.replace(p, newScore);
