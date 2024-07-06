@@ -55,29 +55,36 @@ public class Game implements Savable<Game> {
         this(0, 0, "dummy1", "dummy2");
     }
 
-    public synchronized int getLastPlayerIndex() {
+    public int getLastPlayerIndex() {
+        synchronized (board.lines()){
         if (board.lines().isEmpty()) {
             return -1;
         }
-        return (board.lines().size() - 1) % players.size();
+        return (board.lines().size() - 1) % players.size();}
     }
 
-    public synchronized int getCurrentPlayerIndex() {
+    public int getCurrentPlayerIndex() {
         return (getLastPlayerIndex() + 1) % players.size();
     }
 
-    public synchronized String currentPlayer() {
+    public String currentPlayer() {
         // we chose to make the player1 start first every time
-        if (board.lines().isEmpty())
-            return this.players.getFirst();
-        return this.players.get(getCurrentPlayerIndex());
+        synchronized(board.lines()){
+            if (board.lines().isEmpty())
+                return this.players.getFirst();
+            return this.players.get(getCurrentPlayerIndex());
+        }
+
     }
 
-    public synchronized String getLastPlayer() {
+    public String getLastPlayer() {
         // we chose to make the player1 start first every time
-        if (board.lines().isEmpty())
-            return null;
-        return this.players.get(getLastPlayerIndex());
+        synchronized (board.lines()){
+            if (board.lines().isEmpty())
+                return null;
+            return this.players.get(getLastPlayerIndex());
+        }
+
     }
 
     public int getPlayerScore(String p) {
