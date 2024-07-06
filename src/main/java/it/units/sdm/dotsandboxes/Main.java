@@ -1,9 +1,11 @@
 package it.units.sdm.dotsandboxes;
 
+import it.units.sdm.dotsandboxes.controllers.SwingGameController;
 import it.units.sdm.dotsandboxes.controllers.TerminalGameController;
 import it.units.sdm.dotsandboxes.persistence.IGameSaver;
 import it.units.sdm.dotsandboxes.persistence.JsonGameSaver;
 import it.units.sdm.dotsandboxes.views.ShellView;
+import it.units.sdm.dotsandboxes.views.SwingView;
 import it.units.sdm.dotsandboxes.views.TextView;
 
 public class Main {
@@ -14,7 +16,7 @@ public class Main {
         if (args.length == 1) {
             final GameSession session = switch (args[0]) {
                 case "tui" -> new GameSession(new TerminalGameController(new ShellView()));
-                //case "gui" -> new GameSession(new SwingGameController(new SwingView()));
+                case "gui" -> new GameSession(new SwingGameController(new SwingView()));
                 default -> (GameSession) saver.restoreFromFile(args[0]);
             };
             try {
