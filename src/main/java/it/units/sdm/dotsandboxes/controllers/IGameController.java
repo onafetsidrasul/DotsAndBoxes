@@ -94,7 +94,6 @@ public abstract class IGameController implements Savable<IGameController> {
                 game = new Game(boardDimensions[0], boardDimensions[1], players);
             } catch (InvalidInputException | IllegalArgumentException e) {
                 sendWarning(e.getMessage());
-                view.displayWarning(e.getMessage());
                 dimensionsAreValid = false;
             }
         } while (!dimensionsAreValid);
@@ -107,7 +106,6 @@ public abstract class IGameController implements Savable<IGameController> {
             playerCount = getPlayerCount();
             if (playerCount < 2) {
                 sendWarning("You need at least 2 players!");
-                view.displayWarning("You need at least 2 players!");
             }
             if (playerCount > Color.values().length) {
                 sendWarning("Too many players! Max amount is " + Color.values().length);
@@ -147,9 +145,9 @@ public abstract class IGameController implements Savable<IGameController> {
         while (!game.hasEnded()) {
             Line line = null;
             if (game.getCurrentPlayerIndex() + 1 == 1) {
-                readyToRefreshUISem.release();
                 boolean inputIsValid;
                 do {
+                    readyToRefreshUISem.release();
                     inputIsValid = true;
                     try {
                         line = getAction();
