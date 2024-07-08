@@ -17,7 +17,7 @@ public class SwingView extends IGameView {
     @Override
     protected boolean finishInit() {
         try {
-            frame = new JFrame();
+            frame = new JFrame("Dots and Boxes");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 600);
             frame.setLocationRelativeTo(null);
@@ -163,10 +163,6 @@ public class SwingView extends IGameView {
         synchronized (gameStateReference.scoreBoard) {
             gameStateReference.scoreBoard.forEach((p, s) -> scorePanel.add(new JLabel(p + " : " + s)));
         }
-        boardPanel.revalidate();
-        scorePanel.revalidate();
-        boardPanel.repaint();
-        scorePanel.repaint();
         mainPanel.revalidate();
         mainPanel.repaint();
         isRefreshingUISem.release();
@@ -186,7 +182,7 @@ public class SwingView extends IGameView {
 
     private void fillRow(final int row) {
         fillPointsRow(row);
-        if(row < gameStateReference.board.height()){
+        if(row < gameStateReference.board.height() - 1){
             fillLinesRow(row);
         }
     }
@@ -195,12 +191,12 @@ public class SwingView extends IGameView {
         for (int i = 0; i < gameStateReference.board.width(); i++) {
             JRadioButton point = new JRadioButton("o");
             point.setName(i + "" + row);
+            point.setIcon(new ImageIcon("point.png"));
+            point.setSelectedIcon(new ImageIcon("selected_point.png"));
             boardPanel.add(point);
-            boardPanel.revalidate();
             attachListener(point);
             if(i < gameStateReference.board.width() - 1) {
                 boardPanel.add(addHorizontalLineIfPresent(i, row));
-                boardPanel.revalidate();
             }
         }
     }
@@ -208,10 +204,8 @@ public class SwingView extends IGameView {
     private void fillLinesRow(final int row) {
         for (int i = 0; i < gameStateReference.board.width(); i++) {
             boardPanel.add(addVerticalLineIfPresent(i, row));
-            boardPanel.revalidate();
             if(i < gameStateReference.board.width() - 1) {
                 boardPanel.add(new JLabel("spazio vuoto"));
-                boardPanel.revalidate();
             }
         }
     }
