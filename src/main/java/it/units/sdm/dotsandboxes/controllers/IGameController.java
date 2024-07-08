@@ -9,13 +9,10 @@ import it.units.sdm.dotsandboxes.views.IGameView;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.SequencedCollection;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 
-public abstract class IGameController implements Savable<IGameController> {
+public class IGameController implements Savable<IGameController> {
 
     protected IGameView view;
     protected Game game;
@@ -35,13 +32,9 @@ public abstract class IGameController implements Savable<IGameController> {
     ) {
     }
 
-    public IGameController(final IGameView view) {
+    public IGameController(IGameView view){
         this.view = view;
     }
-
-    public IGameController() {
-    }
-
 
     /**
      * Let the controller and the UI perform an initialization step. After this method has returned successfully, the UI is
@@ -49,7 +42,10 @@ public abstract class IGameController implements Savable<IGameController> {
      *
      * @return true if the initialization has terminated successfully, false otherwise.
      */
-    public abstract boolean initialize();
+    public boolean initialize(){
+        isInitialized = view.init(this);
+        return isInitialized;
+    }
 
     /**
      * Let the controller and the UI perform the game set-up. This method must be invoked after the initialization step.

@@ -5,6 +5,7 @@ import it.units.sdm.dotsandboxes.controllers.PostGameIntent;
 import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedQuit;
 import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedSave;
 import it.units.sdm.dotsandboxes.persistence.Savable;
+import it.units.sdm.dotsandboxes.views.IGameView;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
