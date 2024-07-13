@@ -32,7 +32,7 @@ public class IGameController implements Savable<IGameController> {
     ) {
     }
 
-    public IGameController(IGameView view){
+    public IGameController(IGameView view) {
         this.view = view;
     }
 
@@ -42,7 +42,7 @@ public class IGameController implements Savable<IGameController> {
      *
      * @return true if the initialization has terminated successfully, false otherwise.
      */
-    public boolean initialize(){
+    public boolean initialize() {
         isInitialized = view.init(this);
         return isInitialized;
     }
@@ -287,17 +287,14 @@ public class IGameController implements Savable<IGameController> {
      * @see Game#makeNextMove(Line)
      */
     protected Line getAction() throws IOException, InvalidInputException, UserHasRequestedSave, UserHasRequestedQuit {
-        Line candidate = null;
-        do {
-            try {
-                inputHasBeenReceivedSem.acquire();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            if (input != null && !input.isEmpty()) {
-                candidate = parseLineString(input);
-            }
-        } while (candidate == null);
+        Line candidate;
+        try {
+            inputHasBeenReceivedSem.acquire();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        candidate = parseLineString(input);
+
         return candidate;
     }
 
@@ -312,8 +309,7 @@ public class IGameController implements Savable<IGameController> {
         }
         final List<String> coords = List.of(input.split(" "));
         if (coords.size() != 4) {
-            sendWarning("Invalid input. Please enter four space-separated coordinates");
-            return null;
+            throw new InvalidInputException("Invalid input. Please enter four space-separated coordinates");
         }
         int[] parsedCoords = coords.stream().mapToInt(Integer::parseInt).toArray();
         return parsedCoords == null ? null : new Line(parsedCoords[0], parsedCoords[1], parsedCoords[2], parsedCoords[3]);
@@ -327,7 +323,7 @@ public class IGameController implements Savable<IGameController> {
     /**
      * Notify the UI to terminate the current game specifying the passed player as the winner.
      */
-    public void endGame(){
+    public void endGame() {
         view.displayResults();
         gameIsOver = true;
     }
@@ -336,7 +332,7 @@ public class IGameController implements Savable<IGameController> {
         return view.promptForPostGameIntent().equals("NEW") ? PostGameIntent.NEW_GAME : PostGameIntent.END_GAME;
     }
 
-    public Gamemode getGamemode() throws IOException{
+    public Gamemode getGamemode() throws IOException {
         return switch (view.promptForGamemode()) {
             case "PVP" -> Gamemode.PVP;
             case "PVE" -> Gamemode.PVE;
