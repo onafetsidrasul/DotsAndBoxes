@@ -96,7 +96,7 @@ public class Game implements Savable<Game> {
     }
 
     public void makeNextMove(Line line) throws InvalidInputException {
-        ColoredLine lineCandidate = new ColoredLine(line, getPlayerColor(currentPlayer()));
+        ColoredLine lineCandidate =  line == null ? null : new ColoredLine(line, getPlayerColor(currentPlayer()));
         board.placeLine(lineCandidate);
     }
 

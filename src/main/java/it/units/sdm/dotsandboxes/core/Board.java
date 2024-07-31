@@ -39,6 +39,9 @@ public class Board {
     }
 
     protected void placeLine(ColoredLine line) throws InvalidInputException {
+        if(line == null){
+            throw new InvalidInputException("Line is invalid.");
+        }
         if (line.length() != 1)
             throw new InvalidInputException("Line is too long.");
         if (isLineOutOfBounds(line))

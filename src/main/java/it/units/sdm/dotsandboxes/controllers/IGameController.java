@@ -17,10 +17,12 @@ public class IGameController implements Savable<IGameController> {
     protected IGameView view;
     protected Game game;
     protected Gamemode gamemode;
+    private ComputerMoveStrategy computerMoveStrategy;
     protected boolean isInitialized = false;
     protected boolean setUpIsDone = false;
-    public Semaphore readyToRefreshUISem = new Semaphore(0);
+    public Semaphore refreshUISem = new Semaphore(0);
     public boolean gameIsOver = false;
+    public Semaphore gameOverCheckSem = new Semaphore(1);
     public Semaphore inputHasBeenReceivedSem = new Semaphore(0);
     public String input = null;
 
@@ -77,6 +79,7 @@ public class IGameController implements Savable<IGameController> {
         SequencedCollection<String> players = new ArrayList<>(playerCount);
         players.add(getPlayerName(1));
         players.add("CPU");
+        computerMoveStrategy = ComputerMoveStrategy.RANDOM;
         finishGameSetup(players);
     }
 
@@ -131,6 +134,7 @@ public class IGameController implements Savable<IGameController> {
             view.displayMessage("Saving game...");
             throw e;
         }
+        displayResults();
     }
 
     public final void startGameVsComputer() throws IOException, UserHasRequestedQuit, UserHasRequestedSave {
@@ -138,26 +142,28 @@ public class IGameController implements Savable<IGameController> {
             throw new IllegalStateException("Game has not been set up!");
         }
         view.startGameUI();
-        while (!game.hasEnded()) {
-            Line line = null;
+        do {
             if (game.getCurrentPlayerIndex() + 1 == 1) {
-                boolean inputIsValid;
-                do {
-                    readyToRefreshUISem.release();
-                    inputIsValid = true;
-                    try {
-                        line = getAction();
-                    } catch (InvalidInputException e) {
-                        sendWarning(e.getMessage());
-                        inputIsValid = false;
-                    }
-                } while (!inputIsValid);
+                refreshUISem.release();
+                try {
+                    view.isRefreshingUISem.acquire();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    Line line = getAction();
+                    makeMove(line);
+                } catch (InvalidInputException e) {
+                    sendWarning(e.getMessage());
+                }
             } else {
-                view.isRefreshingUISem.release();
-                line = generateMove(ComputerMoveStrategy.RANDOM);
+                makeGeneratedMove();
             }
-            tryMove(line);
-        }
+            if (game.hasEnded()) {
+                break;
+            }
+            gameOverCheckSem.release();
+        } while (true);
         endGame();
     }
 
@@ -166,38 +172,32 @@ public class IGameController implements Savable<IGameController> {
             throw new IllegalStateException("Game has not been set up!");
         }
         view.startGameUI();
-        while (!game.hasEnded()) {
-            readyToRefreshUISem.release();
-            Line line = null;
-            boolean inputIsValid;
-            do {
-                inputIsValid = true;
-                try {
-                    line = getAction();
-                } catch (InvalidInputException e) {
-                    sendWarning(e.getMessage());
-                    inputIsValid = false;
-                    readyToRefreshUISem.release();
-                }
-            } while (!inputIsValid);
-            tryMove(line);
-        }
+        do {
+            refreshUISem.release();
+            try {
+                Line line = getAction();
+                makeMove(line);
+            } catch (InvalidInputException e) {
+                sendWarning(e.getMessage());
+            }
+            if (game.hasEnded()) {
+                break;
+            }
+            gameOverCheckSem.release();
+        } while (true);
         endGame();
     }
 
-    private void tryMove(Line line) {
+    private void makeGeneratedMove(){
         try {
-            view.isRefreshingUISem.acquire();
-            makeMove(line);
+            makeMove(generateMove());
         } catch (InvalidInputException e) {
-            sendWarning(e.getMessage());
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("The CPU generated an invalid move. " + e);
         }
     }
 
-    private Line generateMove(ComputerMoveStrategy strategy) {
-        return switch (strategy) {
+    private Line generateMove() {
+        return switch (computerMoveStrategy) {
             case RANDOM -> generateRandomMove();
         };
     }
@@ -300,11 +300,11 @@ public class IGameController implements Savable<IGameController> {
 
     private Line parseLineString(String input) throws InvalidInputException, UserHasRequestedQuit, UserHasRequestedSave {
         if ("quit".equals(input)) {
-            gameIsOver = true;
+            endGame();
             throw new UserHasRequestedQuit();
         }
         if ("save".equals(input)) {
-            gameIsOver = true;
+            endGame();
             throw new UserHasRequestedSave();
         }
         final List<String> coords = List.of(input.split(" "));
@@ -321,11 +321,16 @@ public class IGameController implements Savable<IGameController> {
     }
 
     /**
-     * Notify the UI to terminate the current game specifying the passed player as the winner.
+     * Notify the UI to terminate the current game.
      */
     public void endGame() {
-        view.displayResults();
         gameIsOver = true;
+        gameOverCheckSem.release();
+        refreshUISem.release();
+    }
+
+    public void displayResults() {
+        view.displayResults();
     }
 
     public PostGameIntent getPostGameIntent() throws IOException {

@@ -141,7 +141,7 @@ public class SwingView extends IGameView {
         frame.setVisible(true);
         do {
             try {
-                controllerReference.readyToRefreshUISem.acquire();
+                controllerReference.refreshUISem.acquire();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

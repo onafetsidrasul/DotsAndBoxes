@@ -1,6 +1,5 @@
 package it.units.sdm.dotsandboxes.views;
 
-import it.units.sdm.dotsandboxes.controllers.IGameController;
 import it.units.sdm.dotsandboxes.core.*;
 import it.units.sdm.dotsandboxes.core.Color;
 import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
@@ -12,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.*;
-import java.util.concurrent.Semaphore;
 
 import static org.fusesource.jansi.Ansi.*;
 
@@ -46,24 +44,25 @@ public class ShellView extends TextView {
     public void run() {
         do {
             try {
-                controllerReference.readyToRefreshUISem.acquire();
+                controllerReference.refreshUISem.acquire();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            if(controllerReference.gameIsOver){
+            try {
+                controllerReference.gameOverCheckSem.acquire();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            if (controllerReference.gameIsOver) {
                 break;
             }
             eraseScreen();
-            synchronized (gameStateReference.scoreBoard){
-                printPlayers(gameStateReference.players, gameStateReference.scoreBoard, gameStateReference.playerColorLUT);
-            }
-            synchronized (gameStateReference.board.lines()){
-                printBoard(gameStateReference.board);
-                printCurrentPlayer(gameStateReference.currentPlayer(), gameStateReference.playerColorLUT.get(gameStateReference.currentPlayer()));
-            }
+            printPlayers(gameStateReference.players, gameStateReference.scoreBoard, gameStateReference.playerColorLUT);
+            printBoard(gameStateReference.board);
+            printCurrentPlayer(gameStateReference.currentPlayer(), gameStateReference.playerColorLUT.get(gameStateReference.currentPlayer()));
+            isRefreshingUISem.release();
             controllerReference.input = promptForAction();
             controllerReference.inputHasBeenReceivedSem.release();
-            isRefreshingUISem.release();
         } while (true);
     }
 
