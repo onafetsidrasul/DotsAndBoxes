@@ -1,12 +1,11 @@
 package it.units.sdm.dotsandboxes;
 
-import it.units.sdm.dotsandboxes.controllers.ShellGameController;
+import it.units.sdm.dotsandboxes.controllers.IGameController;
 import it.units.sdm.dotsandboxes.persistence.IGameSaver;
 import it.units.sdm.dotsandboxes.persistence.JsonGameSaver;
 import it.units.sdm.dotsandboxes.views.ShellView;
-
-import java.io.Console;
-import java.io.IOException;
+import it.units.sdm.dotsandboxes.views.SwingView;
+import it.units.sdm.dotsandboxes.views.TextView;
 
 public class Main {
 
@@ -15,8 +14,9 @@ public class Main {
     public static void main(String... args) {
         if (args.length == 1) {
             final GameSession session = switch (args[0]) {
-                case "tui" -> new GameSession(new ShellGameController(new ShellView(System.out)));
-                //case "gui" -> new GameSession(new SwingGameController(new SwingView()));
+                case "text" -> new GameSession(new IGameController(new TextView()));
+                case "tui" -> new GameSession(new IGameController(new ShellView()));
+                case "gui" -> new GameSession(new IGameController(new SwingView()));
                 default -> (GameSession) saver.restoreFromFile(args[0]);
             };
             try {
