@@ -47,7 +47,7 @@ public class Tests {
         testGame.makeNextMove(new Line(0, 1, 1, 1));
         testGame.makeNextMove(new Line(0, 0, 0, 1));
         testGame.makeNextMove(new Line(1, 0, 1, 1));
-        assertTrue(testGame.getBoard().isBoxCompleted(new Point(0, 0)));
+        assertTrue(testGame.board().isBoxCompleted(new Point(0, 0)));
     }
 
     @Test

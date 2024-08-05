@@ -14,7 +14,7 @@ public class Board {
         }
         this.width = width;
         this.height = height;
-        lines = new ArrayList<>();
+        lines = Collections.synchronizedList(new ArrayList<>());
     }
 
     /**
@@ -39,6 +39,9 @@ public class Board {
     }
 
     protected void placeLine(ColoredLine line) throws InvalidInputException {
+        if(line == null){
+            throw new InvalidInputException("Line is invalid.");
+        }
         if (line.length() != 1)
             throw new InvalidInputException("Line is too long.");
         if (isLineOutOfBounds(line))
@@ -46,7 +49,9 @@ public class Board {
         if (lines.parallelStream().anyMatch(l -> l.hasSameEndpointsAs(line))) {
             throw new InvalidInputException("A line already exists between endpoints " + line.p1() + " and " + line.p2());
         }
-        lines.add(line);
+        synchronized (lines){
+            lines.add(line);
+        }
     }
 
     private boolean isLineOutOfBounds(Line line) {
@@ -56,7 +61,7 @@ public class Board {
                 line.p2().y() < 0 || line.p2().y() >= height;
     }
 
-    private boolean lineSitsBetween(Point p1, Point p2) {
+    public boolean lineSitsBetween(Point p1, Point p2) {
         return lines.parallelStream().anyMatch(l -> {
             try {
                 return l.hasSameEndpointsAs(new Line(p1, p2));
@@ -66,7 +71,7 @@ public class Board {
         });
     }
 
-    public int length() {
+    public int width() {
         return width;
     }
 
