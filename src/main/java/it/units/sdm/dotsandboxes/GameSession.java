@@ -20,7 +20,7 @@ public class GameSession implements Savable<GameSession> {
     public record SavedGameSession(String gameControllerClassName, String data) {
     }
 
-    public void start() throws IOException {
+    public void begin() throws IOException {
         PostGameIntent intent;
         do {
             if (!controller.initialize()) {

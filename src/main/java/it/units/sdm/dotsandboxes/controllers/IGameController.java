@@ -18,13 +18,13 @@ public class IGameController implements Savable<IGameController> {
     protected Game game;
     protected Gamemode gamemode;
     private ComputerMoveStrategy computerMoveStrategy;
-    protected boolean isInitialized = false;
-    protected boolean setUpIsDone = false;
-    public Semaphore refreshUISem = new Semaphore(0);
-    public boolean gameIsOver = false;
-    public Semaphore gameOverCheckSem = new Semaphore(1);
-    public Semaphore inputHasBeenReceivedSem = new Semaphore(0);
-    public String input = null;
+    protected boolean isInitialized;
+    protected boolean setUpIsDone;
+    public Semaphore refreshUISem;
+    public boolean gameIsOver;
+    public Semaphore gameOverCheckSem;
+    public Semaphore inputHasBeenReceivedSem;
+    public String input;
 
     public record SavedIGameController(
             String gameControllerClassName,
@@ -45,6 +45,13 @@ public class IGameController implements Savable<IGameController> {
      * @return true if the initialization has terminated successfully, false otherwise.
      */
     public boolean initialize() {
+        isInitialized = false;
+        setUpIsDone = false;
+        gameIsOver = false;
+        input = null;
+        refreshUISem = new Semaphore(0);
+        gameOverCheckSem = new Semaphore(1);
+        inputHasBeenReceivedSem = new Semaphore(0);
         isInitialized = view.init(this);
         return isInitialized;
     }

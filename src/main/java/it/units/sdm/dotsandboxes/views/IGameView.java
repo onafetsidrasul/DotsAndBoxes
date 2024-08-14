@@ -11,9 +11,9 @@ public abstract class IGameView implements Runnable {
 
     protected IGameController controllerReference;
     protected Game gameStateReference;
-    protected boolean isInitialized = false;
-    protected boolean isConfigured = false;
-    public Semaphore isRefreshingUISem = new Semaphore(0);
+    protected boolean isInitialized;
+    protected boolean isConfigured;
+    public Semaphore isRefreshingUISem;
 
     /**
      * Initializes the view.
@@ -21,6 +21,9 @@ public abstract class IGameView implements Runnable {
      * @return true if initialization was successful, false otherwise.
      */
     public final boolean init(final IGameController controllerReference) {
+        isInitialized = false;
+        isConfigured = false;
+        isRefreshingUISem = new Semaphore(0);
         isInitialized = assignControllerReference(controllerReference) && finishInit();
         return isInitialized;
     }
