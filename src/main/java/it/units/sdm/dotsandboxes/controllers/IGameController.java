@@ -188,7 +188,7 @@ public class IGameController implements Savable<IGameController> {
         endGame();
     }
 
-    private void makeGeneratedMove(){
+    private void makeGeneratedMove() {
         try {
             makeMove(generateMove());
         } catch (InvalidInputException e) {
@@ -206,20 +206,24 @@ public class IGameController implements Savable<IGameController> {
         Line candidate;
         boolean lineAlreadyExists;
         do {
-            candidate = randomCandidate(new int[]{game.board().height(), game.board().width()});
+            candidate = generateRandomCandidate();
             final Line finalCandidate = candidate;
             lineAlreadyExists = game.board().lines().parallelStream().anyMatch(l -> l.hasSameEndpointsAs(finalCandidate));
         } while (lineAlreadyExists);
         return candidate;
     }
 
-    private static Line randomCandidate(int[] dims) {
+    private Line generateRandomCandidate() {
         Line candidate;
-        Point p1 = getFirstPoint(dims);
+        Point p1 = new Point((int) Math.floor(Math.random() * (game.board().width())), (int) Math.floor(Math.random() * (game.board().height())));
         Point p2;
         do {
-            p2 = getSecondPoint(p1);
-        } while (!isValidPoint(p2.x(), p2.y(), dims));
+            if (Math.random() >= 0.5) {
+                p2 = new Point(p1.x(), p1.y() + (Math.random() >= 0.5 ? 1 : -1));
+            } else {
+                p2 = new Point(p1.x() + (Math.random() >= 0.5 ? 1 : -1), p1.y());
+            }
+        } while (!isValidPoint(p2.x(), p2.y()));
         try {
             candidate = new Line(p1.x(), p1.y(), p2.x(), p2.y());
         } catch (InvalidInputException e) {
@@ -228,22 +232,8 @@ public class IGameController implements Savable<IGameController> {
         return candidate;
     }
 
-    private static Point getFirstPoint(int[] dims) {
-        int x1 = (int) Math.floor(Math.random() * dims[0]);
-        int y1 = (int) Math.floor(Math.random() * dims[1]);
-        return new Point(x1, y1);
-    }
-
-    private static Point getSecondPoint(Point p) {
-        if (Math.random() >= 0.5) {
-            return new Point(p.x(), p.y() + (Math.random() >= 0.5 ? 1 : -1));
-        } else {
-            return new Point(p.x() + (Math.random() >= 0.5 ? 1 : -1), p.y());
-        }
-    }
-
-    private static boolean isValidPoint(int x, int y, int[] dims) {
-        return x >= 0 && x < dims[0] && y >= 0 && y < dims[1];
+    private boolean isValidPoint(int x, int y) {
+        return x >= 0 && x < game.board().width() && y >= 0 && y < game.board().height();
     }
 
     /**
