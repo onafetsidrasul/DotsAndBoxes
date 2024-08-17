@@ -46,7 +46,7 @@ public class TextView extends IGameView {
                 throw new RuntimeException(e);
             }
             controllerReference.stopToCheckIfGameOver();
-            if (controllerReference.gameIsOver) {
+            if (controllerReference.gameIsOver()) {
                 break;
             }
             eraseScreen();

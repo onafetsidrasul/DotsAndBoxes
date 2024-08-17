@@ -387,6 +387,10 @@ public class IGameController implements Savable<IGameController> {
         return restored;
     }
 
+    public boolean gameIsOver() {
+        return gameIsOver;
+    }
+
     public void writeInput(String input) {
         this.input = input;
     }

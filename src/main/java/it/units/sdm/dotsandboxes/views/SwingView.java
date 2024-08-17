@@ -158,7 +158,7 @@ public class SwingView extends IGameView implements Runnable {
                 throw new RuntimeException(e);
             }
             controllerReference.stopToCheckIfGameOver();
-            if (controllerReference.gameIsOver) {
+            if (controllerReference.gameIsOver()) {
                 try {
                     SwingUtilities.invokeAndWait(() -> {
                         boardPanel.repaint();

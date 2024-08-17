@@ -44,7 +44,7 @@ public class ShellView extends TextView {
                 throw new RuntimeException(e);
             }
             controllerReference.stopToCheckIfGameOver();
-            if (controllerReference.gameIsOver) {
+            if (controllerReference.gameIsOver()) {
                 break;
             }
             eraseScreen();
