@@ -152,11 +152,7 @@ public class SwingView extends IGameView implements Runnable {
     @Override
     public void run() {
         while (true) {
-            try {
-                controllerReference.refreshUISem.acquire();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            controllerReference.stopToRefreshUI();
             controllerReference.stopToCheckIfGameOver();
             if (controllerReference.gameIsOver()) {
                 try {

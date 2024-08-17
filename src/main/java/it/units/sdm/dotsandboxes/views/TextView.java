@@ -40,11 +40,7 @@ public class TextView extends IGameView {
     @Override
     public void run() {
         do {
-            try {
-                controllerReference.refreshUISem.acquire();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            controllerReference.stopToRefreshUI();
             controllerReference.stopToCheckIfGameOver();
             if (controllerReference.gameIsOver()) {
                 break;

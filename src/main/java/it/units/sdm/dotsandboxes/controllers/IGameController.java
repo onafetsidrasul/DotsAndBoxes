@@ -406,5 +406,13 @@ public class IGameController implements Savable<IGameController> {
             throw new RuntimeException(e);
         }
     }
+
+    public void stopToRefreshUI(){
+        try {
+            refreshUISem.acquire();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 
