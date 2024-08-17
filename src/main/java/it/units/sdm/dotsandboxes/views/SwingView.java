@@ -14,9 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Optional;
 
 public class SwingView extends IGameView implements Runnable {
 
@@ -143,9 +142,14 @@ public class SwingView extends IGameView implements Runnable {
 
     @Override
     public void displayResults() {
+        List<Map.Entry<String, Integer>> results = gameStateReference.scoreBoard.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList().reversed();
+        StringBuilder resultsString = new StringBuilder();
+        for (Map.Entry<String, Integer> entry : results) {
+            resultsString.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
         JOptionPane.showMessageDialog(
                 null,
-                "GAME RESULTS\n" + gameStateReference.scoreBoard
+                "GAME RESULTS\n" + resultsString
         );
     }
 
