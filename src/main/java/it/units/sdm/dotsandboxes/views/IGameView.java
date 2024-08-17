@@ -9,11 +9,11 @@ import java.util.concurrent.Semaphore;
 
 public abstract class IGameView implements Runnable {
 
-    protected IGameController controllerReference;
-    protected Game gameStateReference;
-    protected boolean isInitialized;
-    protected boolean isConfigured;
-    public Semaphore isRefreshingUISem;
+    private IGameController controllerReference;
+    private Game gameStateReference;
+    private boolean isInitialized;
+    private boolean isConfigured;
+    private Semaphore isRefreshingUISem;
 
     /**
      * Initializes the view.
