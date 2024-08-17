@@ -59,7 +59,7 @@ public class TextView extends IGameView {
             printCurrentPlayer(gameStateReference.currentPlayer());
             isRefreshingUISem.release();
             controllerReference.writeInput(promptForAction());
-            controllerReference.signalInputReceived();
+            controllerReference.resumeAfterInputReception();
         } while (true);
     }
 
