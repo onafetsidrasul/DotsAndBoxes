@@ -124,14 +124,6 @@ public abstract class IGameView implements Runnable {
      */
     public abstract void displayResults();
 
-    public boolean isInitialized() {
-        return isInitialized;
-    }
-
-    public boolean isConfigured() {
-        return isConfigured;
-    }
-
     public void signalWhenUIRefreshed(){
         try {
             isRefreshingUISem.acquire();
