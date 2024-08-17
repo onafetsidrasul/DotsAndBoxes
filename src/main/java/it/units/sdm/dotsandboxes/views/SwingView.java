@@ -180,7 +180,7 @@ public class SwingView extends IGameView implements Runnable {
             scorePanel.updateTurn();
             scorePanel.updateScore();
         }
-        isRefreshingUISem.release();
+        signalUIHasRefreshed();
     }
 
     public static class BoardPanel extends JPanel {

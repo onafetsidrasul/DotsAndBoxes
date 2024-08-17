@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.concurrent.Semaphore;
 
 public abstract class IGameView implements Runnable {
-
     private IGameController controllerReference;
     private Game gameStateReference;
     private boolean isInitialized;
@@ -124,5 +123,33 @@ public abstract class IGameView implements Runnable {
      * Displays the winner(s) of the game.
      */
     public abstract void displayResults();
+
+    protected IGameController controllerReference() {
+        return controllerReference;
+    }
+
+    protected Game gameStateReference() {
+        return gameStateReference;
+    }
+
+    public boolean isInitialized() {
+        return isInitialized;
+    }
+
+    public boolean isConfigured() {
+        return isConfigured;
+    }
+
+    public void signalWhenUIRefreshed(){
+        try {
+            isRefreshingUISem.acquire();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void signalUIHasRefreshed(){
+        isRefreshingUISem.release();
+    }
 
 }

@@ -152,11 +152,7 @@ public class IGameController implements Savable<IGameController> {
         do {
             if (game.getCurrentPlayerIndex() + 1 == 1) {
                 refreshUISem.release();
-                try {
-                    view.isRefreshingUISem.acquire();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                view.signalWhenUIRefreshed();
                 try {
                     Line line = getAction();
                     makeMove(line);
