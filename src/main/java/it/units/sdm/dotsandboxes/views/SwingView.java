@@ -355,7 +355,7 @@ public class SwingView extends IGameView implements Runnable {
 
             private void processLineSelection(Point secondPoint) {
                 controllerReference.writeInput(formatLineInput(firstPoint, secondPoint));
-                controllerReference.inputHasBeenReceivedSem.release();
+                controllerReference.signalInputReceived();
             }
 
             private String formatLineInput(Point first, Point second) {

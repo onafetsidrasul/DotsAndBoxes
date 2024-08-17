@@ -390,5 +390,9 @@ public class IGameController implements Savable<IGameController> {
     public void writeInput(String input) {
         this.input = input;
     }
+    
+    public void signalInputReceived(){
+        inputHasBeenReceivedSem.release();
+    }
 }
 
