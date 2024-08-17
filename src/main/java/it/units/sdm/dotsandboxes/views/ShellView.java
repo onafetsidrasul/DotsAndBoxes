@@ -43,11 +43,7 @@ public class ShellView extends TextView {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            try {
-                controllerReference.gameOverCheckSem.acquire();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            controllerReference.stopToCheckIfGameOver();
             if (controllerReference.gameIsOver) {
                 break;
             }

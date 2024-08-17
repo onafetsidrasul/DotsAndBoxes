@@ -157,11 +157,7 @@ public class SwingView extends IGameView implements Runnable {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            try {
-                controllerReference.gameOverCheckSem.acquire();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            controllerReference.stopToCheckIfGameOver();
             if (controllerReference.gameIsOver) {
                 try {
                     SwingUtilities.invokeAndWait(() -> {

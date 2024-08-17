@@ -394,5 +394,13 @@ public class IGameController implements Savable<IGameController> {
     public void resumeAfterInputReception(){
         inputHasBeenReceivedSem.release();
     }
+
+    public void stopToCheckIfGameOver(){
+        try {
+            gameOverCheckSem.acquire();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 
