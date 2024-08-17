@@ -56,7 +56,7 @@ public class ShellView extends TextView {
             printBoard(gameStateReference.board);
             printCurrentPlayer(gameStateReference.currentPlayer(), gameStateReference.playerColorLUT.get(gameStateReference.currentPlayer()));
             isRefreshingUISem.release();
-            controllerReference.input = promptForAction();
+            controllerReference.writeInput(promptForAction());
             controllerReference.inputHasBeenReceivedSem.release();
         } while (true);
     }

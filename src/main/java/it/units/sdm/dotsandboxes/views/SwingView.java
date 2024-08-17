@@ -36,7 +36,6 @@ public class SwingView extends IGameView implements Runnable {
             mainPanel = new JPanel(new BorderLayout());
             frame.add(mainPanel);
         } catch (Exception e) {
-            e.printStackTrace();
             return false;
         }
         return true;
@@ -46,7 +45,7 @@ public class SwingView extends IGameView implements Runnable {
     protected boolean finishConfigure() {
         try {
             boardPanel = new BoardPanel(gameStateReference, controllerReference);
-            scorePanel = new ScorePanel();
+            scorePanel = new ScorePanel(gameStateReference);
 
             mainPanel.add(boardPanel, BorderLayout.CENTER);
             mainPanel.add(scorePanel, BorderLayout.EAST);
@@ -54,7 +53,6 @@ public class SwingView extends IGameView implements Runnable {
             mainPanel.revalidate();
             mainPanel.repaint();
         } catch (Exception e) {
-            e.printStackTrace();
             return false;
         }
         return true;
@@ -172,7 +170,7 @@ public class SwingView extends IGameView implements Runnable {
                         mainPanel.repaint();
                     });
 
-                    // Slight delay to ensure the last line is drawn
+                    // Slight delay to ensure the last line is drawn before closing the window
                     Thread.sleep(1000);
                 } catch (InterruptedException | InvocationTargetException e) {
                     throw new RuntimeException(e);
@@ -187,8 +185,8 @@ public class SwingView extends IGameView implements Runnable {
     private void refreshBoardComponents() {
         synchronized (gameStateReference.board) {
             boardPanel.repaint();
-            scorePanel.updateTurn(gameStateReference);
-            scorePanel.updateScore(gameStateReference);
+            scorePanel.updateTurn();
+            scorePanel.updateScore();
         }
         isRefreshingUISem.release();
     }
@@ -199,23 +197,23 @@ public class SwingView extends IGameView implements Runnable {
         private static final int LINE_THICKNESS = 2;
 
         private final List<JRadioButton> selectedButtons = new ArrayList<>();
-        private final Game gameState;
-        private final IGameController controller;
+        private final Game gameStateReference;
+        private final IGameController controllerReference;
 
         private Point firstPoint;
         private boolean isSelectingFirstPoint = true;
 
-        public BoardPanel(Game gameState, IGameController controller) {
-            this.gameState = gameState;
-            this.controller = controller;
+        public BoardPanel(Game gameStateReference, IGameController controllerReference) {
+            this.gameStateReference = gameStateReference;
+            this.controllerReference = controllerReference;
             setLayout(null);
             initializeDotButtons();
             addResizeListener();
         }
 
         private void initializeDotButtons() {
-            int width = gameState.board.width();
-            int height = gameState.board.height();
+            int width = gameStateReference.board.width();
+            int height = gameStateReference.board.height();
 
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
@@ -244,8 +242,8 @@ public class SwingView extends IGameView implements Runnable {
         }
 
         private void updateDotButtonPositions() {
-            int width = gameState.board.width();
-            int height = gameState.board.height();
+            int width = gameStateReference.board.width();
+            int height = gameStateReference.board.height();
 
             int cellWidth = calculateCellDimension(getWidth(), width);
             int cellHeight = calculateCellDimension(getHeight(), height);
@@ -276,21 +274,21 @@ public class SwingView extends IGameView implements Runnable {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            int width = gameState.board.width();
-            int height = gameState.board.height();
+            int width = gameStateReference.board.width();
+            int height = gameStateReference.board.height();
 
             int cellWidth = calculateCellDimension(getWidth(), width);
             int cellHeight = calculateCellDimension(getHeight(), height);
 
-            synchronized (gameState.board.lines()) {
+            synchronized (gameStateReference.board.lines()) {
                 drawLines(g2, cellWidth, cellHeight, true);
                 drawLines(g2, cellWidth, cellHeight, false);
             }
         }
 
         private void drawLines(Graphics2D g2, int cellWidth, int cellHeight, boolean isHorizontal) {
-            int width = gameState.board.width();
-            int height = gameState.board.height();
+            int width = gameStateReference.board.width();
+            int height = gameStateReference.board.height();
 
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
@@ -302,7 +300,7 @@ public class SwingView extends IGameView implements Runnable {
         private void drawLineIfPresent(Graphics2D g2, int x, int y, int cellWidth, int cellHeight, boolean isHorizontal) {
             Line line = createLine(x, y, isHorizontal);
 
-            Optional<ColoredLine> lineOpt = gameState.board.lines().stream()
+            Optional<ColoredLine> lineOpt = gameStateReference.board.lines().stream()
                     .filter(coloredLine -> coloredLine.hasSameEndpointsAs(line))
                     .findFirst();
 
@@ -356,8 +354,8 @@ public class SwingView extends IGameView implements Runnable {
             }
 
             private void processLineSelection(Point secondPoint) {
-                controller.input = formatLineInput(firstPoint, secondPoint);
-                controller.inputHasBeenReceivedSem.release();
+                controllerReference.writeInput(formatLineInput(firstPoint, secondPoint));
+                controllerReference.inputHasBeenReceivedSem.release();
             }
 
             private String formatLineInput(Point first, Point second) {
@@ -379,30 +377,32 @@ public class SwingView extends IGameView implements Runnable {
     private static class ScorePanel extends JPanel {
         private final JLabel scoreLabels;
         private final JLabel turnLabel;
+        private final Game gameStateReference;
 
-        public ScorePanel() {
+        public ScorePanel(Game gameStateReference) {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             scoreLabels = new JLabel();
             turnLabel = new JLabel("Turn: Player 1");
             add(scoreLabels);
             add(turnLabel);
+            this.gameStateReference = gameStateReference;
         }
 
-        public void updateScore(Game game) {
+        public void updateScore() {
             StringBuilder scores = new StringBuilder("<html>");
-            for (int i = 1; i <= game.players.size(); i++) {
-                String player = game.players.get(i - 1);
-                String score = String.valueOf(game.scoreBoard.get(player));
+            for (int i = 1; i <= gameStateReference.players.size(); i++) {
+                String player = gameStateReference.players.get(i - 1);
+                String score = String.valueOf(gameStateReference.scoreBoard.get(player));
                 scores.append(player).append(": ").append(score).append("<br>");
             }
             scores.append("</html>");
             scoreLabels.setText(scores.toString());
         }
 
-        public void updateTurn(Game game) {
-            String currentPlayer = game.currentPlayer();
+        public void updateTurn() {
+            String currentPlayer = gameStateReference.currentPlayer();
             turnLabel.setText("Current player: " + currentPlayer);
-            Color playerColor = game.playerColorLUT.get(currentPlayer).toAwtColor();
+            Color playerColor = gameStateReference.playerColorLUT.get(currentPlayer).toAwtColor();
             turnLabel.setForeground(playerColor);
         }
     }

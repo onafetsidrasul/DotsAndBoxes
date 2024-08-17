@@ -14,17 +14,17 @@ import java.util.concurrent.Semaphore;
 
 public class IGameController implements Savable<IGameController> {
 
-    protected IGameView view;
-    protected Game game;
-    protected Gamemode gamemode;
+    private IGameView view;
+    private Game game;
+    private Gamemode gamemode;
     private ComputerMoveStrategy computerMoveStrategy;
-    protected boolean isInitialized;
-    protected boolean setUpIsDone;
-    public Semaphore refreshUISem;
-    public boolean gameIsOver;
-    public Semaphore gameOverCheckSem;
-    public Semaphore inputHasBeenReceivedSem;
-    public String input;
+    private boolean isInitialized;
+    private boolean setUpIsDone;
+    private Semaphore refreshUISem;
+    private boolean gameIsOver;
+    private Semaphore gameOverCheckSem;
+    private Semaphore inputHasBeenReceivedSem;
+    private String input;
 
     public record SavedIGameController(
             String gameControllerClassName,
@@ -385,6 +385,10 @@ public class IGameController implements Savable<IGameController> {
             return null;
         }
         return restored;
+    }
+
+    public void writeInput(String input) {
+        this.input = input;
     }
 }
 
