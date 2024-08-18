@@ -79,7 +79,7 @@ public class IGameController {
         finishGameSetup(players);
     }
 
-    private void finishGameSetup(SequencedCollection<String> players) throws IOException {
+    private void finishGameSetup(SequencedCollection<String> players) {
         int[] boardDimensions;
         boolean dimensionsAreValid;
         do {
@@ -318,10 +318,6 @@ public class IGameController {
             case "PVE" -> Gamemode.PVE;
             default -> throw new IllegalArgumentException("Unexpected value");
         };
-    }
-
-    public boolean isSetUpDone() {
-        return setUpIsDone;
     }
 
     public void sendWarning(String message) {

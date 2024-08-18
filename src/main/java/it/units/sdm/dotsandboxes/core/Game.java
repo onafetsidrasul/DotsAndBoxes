@@ -7,12 +7,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Game {
 
-    public final List<String> players = new ArrayList<>();
-    public final Map<String, Color> playerColorLUT;
-    public Map<String, Integer> scoreBoard;
+    private final List<String> players = new ArrayList<>();
+    private final Map<String, Color> playerColorLUT;
+    private Map<String, Integer> scoreBoard;
 
-    public final Board board;
-    public final Set<Point> completedBoxes;
+    private final Board board;
+    private final Set<Point> completedBoxes;
 
     public Game(int boardLength, int boardHeight, SequencedCollection<String> players) throws InvalidInputException {
         if (Set.copyOf(players).size() != players.size()) {
@@ -114,7 +114,7 @@ public class Game {
         scoreBoard.replace(p, newScore);
     }
 
-    public SequencedCollection<String> players() {
+    public List<String> players() {
         return players;
     }
 

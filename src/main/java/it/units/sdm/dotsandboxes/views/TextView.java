@@ -46,8 +46,8 @@ public class TextView extends IGameView {
                 break;
             }
             eraseScreen();
-            printPlayers(gameStateReference.players, gameStateReference.scoreBoard);
-            printBoard(gameStateReference.board);
+            printPlayers(gameStateReference.players(), gameStateReference.scoreBoard());
+            printBoard(gameStateReference.board());
             printCurrentPlayer(gameStateReference.currentPlayer());
             signalUIHasRefreshed();
             controllerReference.writeInput(promptForAction());
@@ -169,7 +169,7 @@ public class TextView extends IGameView {
 
     protected void printPlayers(List<String> players, Map<String, Integer> scores) {
         out.println("--- PLAYERS ---");
-        synchronized (gameStateReference.scoreBoard) {
+        synchronized (gameStateReference.scoreBoard()) {
             for (int i = 1; i <= players.size(); i++) {
                 String player = players.get(i - 1);
                 out.println("Player " + i + " : " + player);
@@ -224,7 +224,7 @@ public class TextView extends IGameView {
         eraseScreen();
         displayMessage("GAME RESULTS");
         displayMessage("------------");
-        for (Map.Entry<String, Integer> entry : gameStateReference.scoreBoard.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList().reversed()) {
+        for (Map.Entry<String, Integer> entry : gameStateReference.scoreBoard().entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList().reversed()) {
             displayResult(entry.getKey(), entry.getValue());
         }
     }
