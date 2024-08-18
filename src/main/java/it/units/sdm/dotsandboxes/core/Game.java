@@ -9,7 +9,7 @@ public class Game {
 
     private final List<String> players = new ArrayList<>();
     private final Map<String, Color> playerColorLUT;
-    private Map<String, Integer> scoreBoard;
+    private final Map<String, Integer> scoreBoard;
 
     private final Board board;
     private final Set<Point> completedBoxes;

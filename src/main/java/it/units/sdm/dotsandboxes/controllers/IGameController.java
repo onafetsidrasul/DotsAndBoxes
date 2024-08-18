@@ -70,7 +70,7 @@ public class IGameController {
         return setUpIsDone;
     }
 
-    public final void setUpGameVsComputer() throws IOException {
+    public final void setUpGameVsComputer() {
         int playerCount = 2;
         SequencedCollection<String> players = new ArrayList<>(playerCount);
         players.add(getPlayerName(1));
@@ -95,7 +95,7 @@ public class IGameController {
         setUpIsDone = view.configure(game);
     }
 
-    public final void setUpGameVsPlayer() throws IOException {
+    public final void setUpGameVsPlayer() {
         int playerCount;
         do {
             playerCount = getPlayerCount();
