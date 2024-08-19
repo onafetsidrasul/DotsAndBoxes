@@ -62,6 +62,11 @@ public class Game implements Savable<Game> {
             }
             return (board.lines().size() - 1) % players.size();
         }
+        synchronized (board.lines()){
+        if (board.lines().isEmpty()) {
+            return -1;
+        }
+        return (board.lines().size() - 1) % players.size();}
     }
 
     public int getCurrentPlayerIndex() {
@@ -70,7 +75,7 @@ public class Game implements Savable<Game> {
 
     public String currentPlayer() {
         // we chose to make the player1 start first every time
-        synchronized (board.lines()) {
+        synchronized(board.lines()){
             if (board.lines().isEmpty())
                 return this.players.getFirst();
             return this.players.get(getCurrentPlayerIndex());
@@ -80,7 +85,7 @@ public class Game implements Savable<Game> {
 
     public String getLastPlayer() {
         // we chose to make the player1 start first every time
-        synchronized (board.lines()) {
+        synchronized (board.lines()){
             if (board.lines().isEmpty())
                 return null;
             return this.players.get(getLastPlayerIndex());
@@ -97,11 +102,11 @@ public class Game implements Savable<Game> {
     }
 
     public void makeNextMove(Line line) throws InvalidInputException {
-        ColoredLine lineCandidate = line == null ? null : new ColoredLine(line, getPlayerColor(currentPlayer()));
+        ColoredLine lineCandidate =  line == null ? null : new ColoredLine(line, getPlayerColor(currentPlayer()));
         board.placeLine(lineCandidate);
     }
 
-    public final Board board() {
+    public Board board() {
         return board;
     }
 

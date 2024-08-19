@@ -24,6 +24,7 @@ public class SwingView extends IGameView implements Runnable {
     private BoardPanel boardPanel;
     private ScorePanel scorePanel;
 
+
     @Override
     protected boolean finishInit() {
         try {
@@ -48,7 +49,6 @@ public class SwingView extends IGameView implements Runnable {
 
             mainPanel.add(boardPanel, BorderLayout.CENTER);
             mainPanel.add(scorePanel, BorderLayout.EAST);
-
             mainPanel.revalidate();
             mainPanel.repaint();
         } catch (Exception e) {

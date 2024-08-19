@@ -15,7 +15,6 @@ public class TextView extends IGameView {
 
     private final PrintStream out;
     private final BufferedReader in;
-
     public TextView() {
         this.out = System.out;
         this.in = new BufferedReader(new InputStreamReader(System.in));

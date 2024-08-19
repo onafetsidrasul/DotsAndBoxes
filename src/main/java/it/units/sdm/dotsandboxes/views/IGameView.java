@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.concurrent.Semaphore;
 
 public abstract class IGameView implements Runnable {
+
     protected IGameController controllerReference;
     protected Game gameStateReference;
     private boolean isInitialized;

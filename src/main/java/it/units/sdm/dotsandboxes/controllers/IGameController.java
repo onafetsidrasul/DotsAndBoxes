@@ -191,7 +191,7 @@ public class IGameController implements Savable<IGameController> {
         endGame();
     }
 
-    private void makeGeneratedMove() {
+    private void makeGeneratedMove(){
         try {
             makeMove(generateMove());
         } catch (InvalidInputException e) {

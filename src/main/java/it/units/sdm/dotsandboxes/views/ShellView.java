@@ -38,6 +38,7 @@ public class ShellView extends TextView {
     @Override
     public void run() {
         do {
+
             controllerReference.stopToRefreshUI();
             controllerReference.stopToCheckIfGameOver();
             if (controllerReference.gameIsOver()) {
@@ -47,6 +48,7 @@ public class ShellView extends TextView {
             printPlayers(gameStateReference.players, gameStateReference.scoreBoard, gameStateReference.playerColorLUT);
             printBoard(gameStateReference.board);
             printCurrentPlayer(gameStateReference.currentPlayer(), gameStateReference.playerColorLUT.get(gameStateReference.currentPlayer()));
+
             signalUIHasRefreshed();
             controllerReference.writeInput(promptForAction());
             controllerReference.resumeAfterInputReception();

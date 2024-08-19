@@ -5,6 +5,7 @@ import it.units.sdm.dotsandboxes.controllers.PostGameIntent;
 import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedQuit;
 import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedSave;
 import it.units.sdm.dotsandboxes.persistence.Savable;
+import it.units.sdm.dotsandboxes.views.IGameView;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -23,10 +24,10 @@ public class GameSession implements Savable<GameSession> {
     public void begin() throws IOException {
         PostGameIntent intent;
         do {
-            if (!controller.initialize()) {
+            if(!controller.initialize()){
                 throw new IOException("Could not initialize game");
             }
-            if (!controller.setUpGame()) {
+            if(!controller.setUpGame()){
                 throw new IOException("Could not set up game");
             }
             try {
