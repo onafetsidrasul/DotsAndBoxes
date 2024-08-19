@@ -1,31 +1,22 @@
 package it.units.sdm.dotsandboxes.core;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.JsonAdapter;
 import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
-import it.units.sdm.dotsandboxes.persistence.Savable;
-import it.units.sdm.dotsandboxes.persistence.adapters.ScoreboardAdapter;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Game implements Savable<Game> {
+public class Game {
 
-    private static final Gson serializer = new GsonBuilder().create();
+    private final List<String> players = new ArrayList<>();
+    private final Map<String, Color> playerColorLUT;
+    private final Map<String, Integer> scoreBoard;
 
-    public final List<String> players = new ArrayList<>();
-    public final Map<String, Color> playerColorLUT;
-
-    @JsonAdapter(ScoreboardAdapter.class)
-    public Map<String, Integer> scoreBoard;
-
-    public final Board board;
-    public final Set<Point> completedBoxes;
+    private final Board board;
+    private final Set<Point> completedBoxes;
 
     public Game(int boardLength, int boardHeight, SequencedCollection<String> players) throws InvalidInputException {
-        if (Set.copyOf(players).size() != players.size()) { // allows with a single line to throw a NullPointerException if either players is null or has a null element
+        if (Set.copyOf(players).size() != players.size()) {
+            // allows with a single line to throw a NullPointerException if either players is null or has a null element
             throw new InvalidInputException("Two players have the same name.");
         }
         this.players.addAll(players);
@@ -49,10 +40,6 @@ public class Game implements Savable<Game> {
 
     public Game(int boardLength, int boardHeight, String... players) throws InvalidInputException {
         this(boardLength, boardHeight, Arrays.asList(players));
-    }
-
-    public Game() throws InvalidInputException {
-        this(0, 0, "dummy1", "dummy2");
     }
 
     public int getLastPlayerIndex() {
@@ -127,7 +114,7 @@ public class Game implements Savable<Game> {
         scoreBoard.replace(p, newScore);
     }
 
-    public SequencedCollection<String> players() {
+    public List<String> players() {
         return players;
     }
 
@@ -141,31 +128,12 @@ public class Game implements Savable<Game> {
 
     public SequencedCollection<String> winners() {
         if (!hasEnded()) {
-            return null; // or maybe throw an exception?
+            return null;
         } else {
             SequencedCollection<String> sortedByScore = players().parallelStream().sorted(Comparator.comparingInt(this::getPlayerScore)).toList();
             int maxScore = getPlayerScore(sortedByScore.getLast());
             return sortedByScore.stream().filter(player -> getPlayerScore(player) == maxScore).toList();
         }
-    }
-
-    @Override
-    public byte[] serialized() {
-        return serializer.toJson(this).getBytes(StandardCharsets.UTF_8);
-    }
-
-    @Override
-    public Game restore(byte[] data) {
-        final Game restored = serializer.fromJson(new String(data), Game.class);
-        final HashMap<String, Integer> correctScoreBoard = new HashMap<>();
-        for (Map.Entry<String, Integer> entry : restored.scoreBoard.entrySet()) {
-            correctScoreBoard.put(restored.players.stream()
-                    .filter(p -> p.equals(entry.getKey()))
-                    .findFirst()
-                    .orElseThrow(), entry.getValue());
-        }
-        restored.scoreBoard = correctScoreBoard;
-        return restored;
     }
 
     @Override

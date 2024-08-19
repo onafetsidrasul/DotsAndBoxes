@@ -38,17 +38,15 @@ public class ShellView extends TextView {
     @Override
     public void run() {
         do {
-
             controllerReference.stopToRefreshUI();
             controllerReference.stopToCheckIfGameOver();
             if (controllerReference.gameIsOver()) {
                 break;
             }
             eraseScreen();
-            printPlayers(gameStateReference.players, gameStateReference.scoreBoard, gameStateReference.playerColorLUT);
-            printBoard(gameStateReference.board);
-            printCurrentPlayer(gameStateReference.currentPlayer(), gameStateReference.playerColorLUT.get(gameStateReference.currentPlayer()));
-
+            printPlayers(gameStateReference.players(), gameStateReference.scoreBoard(), gameStateReference.playerColorLUT());
+            printBoard(gameStateReference.board());
+            printCurrentPlayer(gameStateReference.currentPlayer(), gameStateReference.playerColorLUT().get(gameStateReference.currentPlayer()));
             signalUIHasRefreshed();
             controllerReference.writeInput(promptForAction());
             controllerReference.resumeAfterInputReception();
@@ -135,8 +133,8 @@ public class ShellView extends TextView {
         eraseScreen();
         displayMessage("GAME RESULTS");
         displayMessage("------------");
-        for (Map.Entry<String, Integer> entry : gameStateReference.scoreBoard.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList().reversed()) {
-            displayResult(entry.getKey(), entry.getValue(), gameStateReference.playerColorLUT.get(entry.getKey()));
+        for (Map.Entry<String, Integer> entry : gameStateReference.scoreBoard().entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList().reversed()) {
+            displayResult(entry.getKey(), entry.getValue(), gameStateReference.playerColorLUT().get(entry.getKey()));
         }
     }
 

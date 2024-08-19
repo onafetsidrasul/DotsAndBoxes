@@ -3,18 +3,15 @@ package it.units.sdm.dotsandboxes.controllers;
 import it.units.sdm.dotsandboxes.core.*;
 import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedQuit;
-import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedSave;
-import it.units.sdm.dotsandboxes.persistence.Savable;
 import it.units.sdm.dotsandboxes.views.IGameView;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.Semaphore;
 
-public class IGameController implements Savable<IGameController> {
+public class IGameController {
 
-    private IGameView view;
+    private final IGameView view;
     private Game game;
     private Gamemode gamemode;
     private ComputerMoveStrategy computerMoveStrategy;
@@ -25,14 +22,6 @@ public class IGameController implements Savable<IGameController> {
     private Semaphore gameOverCheckSem;
     private Semaphore inputHasBeenReceivedSem;
     private String input;
-
-    public record SavedIGameController(
-            String gameControllerClassName,
-            String gameViewClassName,
-            String gameData,
-            String gameModeName
-    ) {
-    }
 
     public IGameController(IGameView view) {
         this.view = view;
@@ -81,7 +70,7 @@ public class IGameController implements Savable<IGameController> {
         return setUpIsDone;
     }
 
-    public final void setUpGameVsComputer() throws IOException {
+    public final void setUpGameVsComputer() {
         int playerCount = 2;
         SequencedCollection<String> players = new ArrayList<>(playerCount);
         players.add(getPlayerName(1));
@@ -90,7 +79,7 @@ public class IGameController implements Savable<IGameController> {
         finishGameSetup(players);
     }
 
-    private void finishGameSetup(SequencedCollection<String> players) throws IOException {
+    private void finishGameSetup(SequencedCollection<String> players) {
         int[] boardDimensions;
         boolean dimensionsAreValid;
         do {
@@ -106,7 +95,7 @@ public class IGameController implements Savable<IGameController> {
         setUpIsDone = view.configure(game);
     }
 
-    public final void setUpGameVsPlayer() throws IOException {
+    public final void setUpGameVsPlayer() {
         int playerCount;
         do {
             playerCount = getPlayerCount();
@@ -124,7 +113,7 @@ public class IGameController implements Savable<IGameController> {
         finishGameSetup(players);
     }
 
-    public final void startGame() throws IOException, UserHasRequestedQuit, UserHasRequestedSave {
+    public final void startGame() throws IOException, UserHasRequestedQuit{
         try {
             switch (gamemode) {
                 case PVE:
@@ -137,14 +126,11 @@ public class IGameController implements Savable<IGameController> {
         } catch (UserHasRequestedQuit e) {
             view.displayMessage("Bye!");
             throw e;
-        } catch (UserHasRequestedSave e) {
-            view.displayMessage("Saving game...");
-            throw e;
         }
         displayResults();
     }
 
-    public final void startGameVsComputer() throws IOException, UserHasRequestedQuit, UserHasRequestedSave {
+    public final void startGameVsComputer() throws IOException, UserHasRequestedQuit {
         if (game == null || !setUpIsDone) {
             throw new IllegalStateException("Game has not been set up!");
         }
@@ -170,7 +156,7 @@ public class IGameController implements Savable<IGameController> {
         endGame();
     }
 
-    public final void startGameVsPlayer() throws IOException, UserHasRequestedQuit, UserHasRequestedSave {
+    public final void startGameVsPlayer() throws IOException, UserHasRequestedQuit {
         if (game == null || !setUpIsDone) {
             throw new IllegalStateException("Game has not been set up!");
         }
@@ -244,7 +230,7 @@ public class IGameController implements Savable<IGameController> {
      *
      * @return player count [1, ]
      */
-    protected int getPlayerCount() throws IOException {
+    protected int getPlayerCount() {
         return Integer.parseInt(view.promptForNumberOfPlayers());
     }
 
@@ -254,7 +240,7 @@ public class IGameController implements Savable<IGameController> {
      * @param playerNumber ordinal of the player being created
      * @return the string literal for the name to be assigned to the player being created
      */
-    protected String getPlayerName(int playerNumber) throws IOException {
+    protected String getPlayerName(int playerNumber) {
         return view.promptForPlayerName(playerNumber);
     }
 
@@ -264,7 +250,7 @@ public class IGameController implements Savable<IGameController> {
      *
      * @return an integer array containing two elements: int[2] { width, height }
      */
-    protected int[] getBoardDimensions() throws IOException {
+    protected int[] getBoardDimensions() {
         try {
             return Arrays.stream(view.promptForBoardDimensions()).mapToInt(Integer::parseInt).toArray();
         } catch (NumberFormatException e) {
@@ -279,7 +265,7 @@ public class IGameController implements Savable<IGameController> {
      * @return the Line being played in the current turn by the playing Player (determined by the game instance)
      * @see Game#makeNextMove(Line)
      */
-    protected Line getAction() throws IOException, InvalidInputException, UserHasRequestedSave, UserHasRequestedQuit {
+    protected Line getAction() throws InvalidInputException, UserHasRequestedQuit {
         Line candidate;
         try {
             inputHasBeenReceivedSem.acquire();
@@ -291,14 +277,10 @@ public class IGameController implements Savable<IGameController> {
         return candidate;
     }
 
-    private Line parseLineString(String input) throws InvalidInputException, UserHasRequestedQuit, UserHasRequestedSave {
+    private Line parseLineString(String input) throws InvalidInputException, UserHasRequestedQuit {
         if ("quit".equals(input)) {
             endGame();
             throw new UserHasRequestedQuit();
-        }
-        if ("save".equals(input)) {
-            endGame();
-            throw new UserHasRequestedSave();
         }
         final List<String> coords = List.of(input.split(" "));
         if (coords.size() != 4) {
@@ -330,7 +312,7 @@ public class IGameController implements Savable<IGameController> {
         return view.promptForPostGameIntent().equals("NEW") ? PostGameIntent.NEW_GAME : PostGameIntent.END_GAME;
     }
 
-    public Gamemode getGamemode() throws IOException {
+    public Gamemode getGamemode() {
         return switch (view.promptForGamemode()) {
             case "PVP" -> Gamemode.PVP;
             case "PVE" -> Gamemode.PVE;
@@ -338,49 +320,8 @@ public class IGameController implements Savable<IGameController> {
         };
     }
 
-    public boolean isSetUpIsDone() {
-        return setUpIsDone;
-    }
-
     public void sendWarning(String message) {
         view.displayWarning(message);
-    }
-
-    @Override
-    public byte[] serialized() {
-        final String gameData = new String(
-                encoder.encode(game.serialized()), StandardCharsets.UTF_8);
-        final String payload = gson.toJson(new SavedIGameController(
-                this.getClass().getName(),
-                view.getClass().getName(),
-                gameData,
-                gamemode.name()
-        ));
-        return payload.getBytes(StandardCharsets.UTF_8);
-    }
-
-    @Override
-    public IGameController restore(byte[] data) {
-        final SavedIGameController savedSession =
-                gson.fromJson(new String(data), SavedIGameController.class);
-        final IGameController restored;
-        try {
-            restored = (IGameController) Class
-                    .forName(savedSession.gameControllerClassName)
-                    .getConstructor()
-                    .newInstance();
-            restored.view = (IGameView) Class
-                    .forName(savedSession.gameViewClassName)
-                    .getConstructor()
-                    .newInstance();
-            restored.game = new Game().restore(decoder.decode(savedSession.gameData));
-            restored.gamemode = Gamemode.valueOf(savedSession.gameModeName);
-            restored.setUpIsDone = true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        return restored;
     }
 
     public boolean gameIsOver() {

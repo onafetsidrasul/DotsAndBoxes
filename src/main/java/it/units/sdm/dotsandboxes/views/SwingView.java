@@ -142,7 +142,7 @@ public class SwingView extends IGameView implements Runnable {
 
     @Override
     public void displayResults() {
-        List<Map.Entry<String, Integer>> results = gameStateReference.scoreBoard.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList().reversed();
+        List<Map.Entry<String, Integer>> results = gameStateReference.scoreBoard().entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList().reversed();
         StringBuilder resultsString = new StringBuilder();
         for (Map.Entry<String, Integer> entry : results) {
             resultsString.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
@@ -179,7 +179,7 @@ public class SwingView extends IGameView implements Runnable {
     }
 
     private void refreshBoardComponents() {
-        synchronized (gameStateReference.board) {
+        synchronized (gameStateReference.board()) {
             boardPanel.repaint();
             scorePanel.updateTurn();
             scorePanel.updateScore();
@@ -208,8 +208,8 @@ public class SwingView extends IGameView implements Runnable {
         }
 
         private void initializeDotButtons() {
-            int width = gameStateReference.board.width();
-            int height = gameStateReference.board.height();
+            int width = gameStateReference.board().width();
+            int height = gameStateReference.board().height();
 
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
@@ -238,8 +238,8 @@ public class SwingView extends IGameView implements Runnable {
         }
 
         private void updateDotButtonPositions() {
-            int width = gameStateReference.board.width();
-            int height = gameStateReference.board.height();
+            int width = gameStateReference.board().width();
+            int height = gameStateReference.board().height();
 
             int cellWidth = calculateCellDimension(getWidth(), width);
             int cellHeight = calculateCellDimension(getHeight(), height);
@@ -270,21 +270,21 @@ public class SwingView extends IGameView implements Runnable {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            int width = gameStateReference.board.width();
-            int height = gameStateReference.board.height();
+            int width = gameStateReference.board().width();
+            int height = gameStateReference.board().height();
 
             int cellWidth = calculateCellDimension(getWidth(), width);
             int cellHeight = calculateCellDimension(getHeight(), height);
 
-            synchronized (gameStateReference.board.lines()) {
+            synchronized (gameStateReference.board().lines()) {
                 drawLines(g2, cellWidth, cellHeight, true);
                 drawLines(g2, cellWidth, cellHeight, false);
             }
         }
 
         private void drawLines(Graphics2D g2, int cellWidth, int cellHeight, boolean isHorizontal) {
-            int width = gameStateReference.board.width();
-            int height = gameStateReference.board.height();
+            int width = gameStateReference.board().width();
+            int height = gameStateReference.board().height();
 
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
@@ -296,7 +296,7 @@ public class SwingView extends IGameView implements Runnable {
         private void drawLineIfPresent(Graphics2D g2, int x, int y, int cellWidth, int cellHeight, boolean isHorizontal) {
             Line line = createLine(x, y, isHorizontal);
 
-            Optional<ColoredLine> lineOpt = gameStateReference.board.lines().stream()
+            Optional<ColoredLine> lineOpt = gameStateReference.board().lines().stream()
                     .filter(coloredLine -> coloredLine.hasSameEndpointsAs(line))
                     .findFirst();
 
@@ -386,9 +386,9 @@ public class SwingView extends IGameView implements Runnable {
 
         public void updateScore() {
             StringBuilder scores = new StringBuilder("<html>");
-            for (int i = 1; i <= gameStateReference.players.size(); i++) {
-                String player = gameStateReference.players.get(i - 1);
-                String score = String.valueOf(gameStateReference.scoreBoard.get(player));
+            for (int i = 1; i <= gameStateReference.players().size(); i++) {
+                String player = gameStateReference.players().get(i - 1);
+                String score = String.valueOf(gameStateReference.scoreBoard().get(player));
                 scores.append(player).append(": ").append(score).append("<br>");
             }
             scores.append("</html>");
@@ -398,7 +398,7 @@ public class SwingView extends IGameView implements Runnable {
         public void updateTurn() {
             String currentPlayer = gameStateReference.currentPlayer();
             turnLabel.setText("Current player: " + currentPlayer);
-            Color playerColor = gameStateReference.playerColorLUT.get(currentPlayer).toAwtColor();
+            Color playerColor = gameStateReference.playerColorLUT().get(currentPlayer).toAwtColor();
             turnLabel.setForeground(playerColor);
         }
     }

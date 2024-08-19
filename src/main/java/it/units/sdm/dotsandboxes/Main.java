@@ -1,15 +1,11 @@
 package it.units.sdm.dotsandboxes;
 
 import it.units.sdm.dotsandboxes.controllers.IGameController;
-import it.units.sdm.dotsandboxes.persistence.IGameSaver;
-import it.units.sdm.dotsandboxes.persistence.JsonGameSaver;
 import it.units.sdm.dotsandboxes.views.ShellView;
 import it.units.sdm.dotsandboxes.views.SwingView;
 import it.units.sdm.dotsandboxes.views.TextView;
 
 public class Main {
-
-    private static final IGameSaver<GameSession> saver = new JsonGameSaver();
 
     public static void main(String... args) {
         if (args.length == 1) {
@@ -17,7 +13,10 @@ public class Main {
                 case "text" -> new GameSession(new IGameController(new TextView()));
                 case "tui" -> new GameSession(new IGameController(new ShellView()));
                 case "gui" -> new GameSession(new IGameController(new SwingView()));
-                default -> (GameSession) saver.restoreFromFile(args[0]);
+                default -> {
+                    System.out.println("Invalid game mode!ì.");
+                    yield null;
+                }
             };
             try {
                 session.begin();
@@ -27,7 +26,7 @@ public class Main {
                 System.out.println("Game has terminated.");
             }
         } else {
-            System.out.println("Usage: \n java -jar DotsAndBoxes.jar <gamemode> \n java -jar DotsAndBoxes.jar <gamesave>");
+            System.out.println("Usage: \n java -jar DotsAndBoxes.jar text|tui|gui");
         }
 
     }
