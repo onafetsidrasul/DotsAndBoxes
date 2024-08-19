@@ -177,7 +177,7 @@ public class IGameController {
         endGame();
     }
 
-    private void makeGeneratedMove() {
+    private void makeGeneratedMove(){
         try {
             makeMove(generateMove());
         } catch (InvalidInputException e) {
@@ -350,6 +350,7 @@ public class IGameController {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        
     }
 }
 

@@ -17,10 +17,10 @@ public class GameSession{
     public void begin() throws IOException {
         PostGameIntent intent;
         do {
-            if (!controller.initialize()) {
+            if(!controller.initialize()){
                 throw new IOException("Could not initialize game");
             }
-            if (!controller.setUpGame()) {
+            if(!controller.setUpGame()){
                 throw new IOException("Could not set up game");
             }
             try {
