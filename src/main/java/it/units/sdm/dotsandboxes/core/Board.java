@@ -62,13 +62,15 @@ public class Board {
     }
 
     public boolean lineSitsBetween(Point p1, Point p2) {
-        return lines.parallelStream().anyMatch(l -> {
-            try {
-                return l.hasSameEndpointsAs(new Line(p1, p2));
-            } catch (InvalidInputException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        synchronized (lines){
+            return lines.parallelStream().anyMatch(l -> {
+                try {
+                    return l.hasSameEndpointsAs(new Line(p1, p2));
+                } catch (InvalidInputException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
     }
 
     public int width() {

@@ -1,17 +1,28 @@
 package it.units.sdm.dotsandboxes.views;
 
+import it.units.sdm.dotsandboxes.controllers.IGameController;
+import it.units.sdm.dotsandboxes.core.ColoredLine;
+import it.units.sdm.dotsandboxes.core.Game;
+import it.units.sdm.dotsandboxes.core.Line;
 import it.units.sdm.dotsandboxes.core.Point;
+import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.List;
 
-public class SwingView extends IGameView {
+public class SwingView extends IGameView implements Runnable {
 
     private JFrame frame;
     private JPanel mainPanel;
-    private JPanel boardPanel;
-    private JPanel scorePanel;
-    private boolean firstEndpointIsSelected = false;
+    private BoardPanel boardPanel;
+    private ScorePanel scorePanel;
 
 
     @Override
@@ -19,10 +30,10 @@ public class SwingView extends IGameView {
         try {
             frame = new JFrame("Dots and Boxes");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(800, 600);
+            frame.setSize(600, 500);
             frame.setLocationRelativeTo(null);
             frame.setResizable(false);
-            mainPanel = new JPanel(new GridLayout(1, 2));
+            mainPanel = new JPanel(new BorderLayout());
             frame.add(mainPanel);
         } catch (Exception e) {
             return false;
@@ -33,10 +44,11 @@ public class SwingView extends IGameView {
     @Override
     protected boolean finishConfigure() {
         try {
-            boardPanel = new JPanel(new GridLayout(2 * gameStateReference.board.height() - 1, 2 * gameStateReference.board.width() - 1));
-            scorePanel = new JPanel(new GridLayout(gameStateReference.players.size(), 1));
-            mainPanel.add(boardPanel);
-            mainPanel.add(scorePanel);
+            boardPanel = new BoardPanel(gameStateReference, controllerReference);
+            scorePanel = new ScorePanel(gameStateReference);
+
+            mainPanel.add(boardPanel, BorderLayout.CENTER);
+            mainPanel.add(scorePanel, BorderLayout.EAST);
             mainPanel.revalidate();
             mainPanel.repaint();
         } catch (Exception e) {
@@ -45,10 +57,10 @@ public class SwingView extends IGameView {
         return true;
     }
 
-
     @Override
     protected void displayGameUI() {
-        SwingUtilities.invokeLater(this);
+        SwingUtilities.invokeLater(() -> frame.setVisible(true));
+        new Thread(this).start();
     }
 
     @Override
@@ -130,97 +142,264 @@ public class SwingView extends IGameView {
 
     @Override
     public void displayResults() {
+        List<Map.Entry<String, Integer>> results = gameStateReference.scoreBoard.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList().reversed();
+        StringBuilder resultsString = new StringBuilder();
+        for (Map.Entry<String, Integer> entry : results) {
+            resultsString.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
         JOptionPane.showMessageDialog(
                 null,
-                "GAME RESULTS\n" + gameStateReference.scoreBoard
+                "GAME RESULTS\n" + resultsString
         );
     }
 
     @Override
     public void run() {
-        frame.setVisible(true);
-        do {
-            try {
-                controllerReference.refreshUISem.acquire();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            if(controllerReference.gameIsOver){
+        while (true) {
+            controllerReference.stopToRefreshUI();
+            controllerReference.stopToCheckIfGameOver();
+            if (controllerReference.gameIsOver()) {
+                try {
+                    SwingUtilities.invokeAndWait(() -> {
+                        boardPanel.repaint();
+                        mainPanel.revalidate();
+                        mainPanel.repaint();
+                    });
+
+                    // Slight delay to ensure the last line is drawn before closing the window
+                    Thread.sleep(1000);
+                } catch (InterruptedException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+                SwingUtilities.invokeLater(() -> frame.dispose());
                 break;
             }
-            refreshBoardComponents();
-        } while (true);
+            SwingUtilities.invokeLater(this::refreshBoardComponents);
+        }
     }
 
     private void refreshBoardComponents() {
-        boardPanel.removeAll();
         synchronized (gameStateReference.board) {
-            for (int i = 0; i < gameStateReference.board.height(); i++) {
-                fillRow(i);
-            }
+            boardPanel.repaint();
+            scorePanel.updateTurn();
+            scorePanel.updateScore();
         }
-        scorePanel.removeAll();
-        synchronized (gameStateReference.scoreBoard) {
-            gameStateReference.scoreBoard.forEach((p, s) -> scorePanel.add(new JLabel(p + " : " + s)));
-        }
-        mainPanel.revalidate();
-        mainPanel.repaint();
-        isRefreshingUISem.release();
+        signalUIHasRefreshed();
     }
 
-    private void attachListener(JRadioButton endpoint) {
-        endpoint.addActionListener(e -> {
-            if (firstEndpointIsSelected) {
-                controllerReference.input = controllerReference.input + " " + endpoint.getName();
-                controllerReference.inputHasBeenReceivedSem.release();
+    public static class BoardPanel extends JPanel {
+        private static final int PADDING = 20;
+        private static final int DOT_SIZE = 20;
+        private static final int LINE_THICKNESS = 2;
+
+        private final List<JRadioButton> selectedButtons = new ArrayList<>();
+        private final Game gameStateReference;
+        private final IGameController controllerReference;
+
+        private Point firstPoint;
+        private boolean isSelectingFirstPoint = true;
+
+        public BoardPanel(Game gameStateReference, IGameController controllerReference) {
+            this.gameStateReference = gameStateReference;
+            this.controllerReference = controllerReference;
+            setLayout(null);
+            initializeDotButtons();
+            addResizeListener();
+        }
+
+        private void initializeDotButtons() {
+            int width = gameStateReference.board.width();
+            int height = gameStateReference.board.height();
+
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    add(createDotButton(x, y));
+                }
+            }
+            updateDotButtonPositions();
+        }
+
+        private JRadioButton createDotButton(int x, int y) {
+            JRadioButton dotButton = new JRadioButton();
+            dotButton.setPreferredSize(new Dimension(DOT_SIZE, DOT_SIZE));
+            dotButton.setActionCommand(x + " " + y);
+            dotButton.addActionListener(new DotButtonActionListener());
+            return dotButton;
+        }
+
+        private void addResizeListener() {
+            addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    updateDotButtonPositions();
+                    repaint();
+                }
+            });
+        }
+
+        private void updateDotButtonPositions() {
+            int width = gameStateReference.board.width();
+            int height = gameStateReference.board.height();
+
+            int cellWidth = calculateCellDimension(getWidth(), width);
+            int cellHeight = calculateCellDimension(getHeight(), height);
+
+            for (Component component : getComponents()) {
+                if (component instanceof JRadioButton) {
+                    updateButtonPosition((JRadioButton) component, cellWidth, cellHeight);
+                }
+            }
+        }
+
+        private void updateButtonPosition(JRadioButton button, int cellWidth, int cellHeight) {
+            String[] coordinates = button.getActionCommand().split(" ");
+            int x = Integer.parseInt(coordinates[0]);
+            int y = Integer.parseInt(coordinates[1]);
+            int dotX = PADDING + x * cellWidth;
+            int dotY = PADDING + y * cellHeight;
+            button.setBounds(dotX - DOT_SIZE / 2, dotY - DOT_SIZE / 2, DOT_SIZE, DOT_SIZE);
+        }
+
+        private int calculateCellDimension(int totalSize, int count) {
+            return (totalSize - 2 * PADDING) / (count - 1);
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            int width = gameStateReference.board.width();
+            int height = gameStateReference.board.height();
+
+            int cellWidth = calculateCellDimension(getWidth(), width);
+            int cellHeight = calculateCellDimension(getHeight(), height);
+
+            synchronized (gameStateReference.board.lines()) {
+                drawLines(g2, cellWidth, cellHeight, true);
+                drawLines(g2, cellWidth, cellHeight, false);
+            }
+        }
+
+        private void drawLines(Graphics2D g2, int cellWidth, int cellHeight, boolean isHorizontal) {
+            int width = gameStateReference.board.width();
+            int height = gameStateReference.board.height();
+
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    drawLineIfPresent(g2, x, y, cellWidth, cellHeight, isHorizontal);
+                }
+            }
+        }
+
+        private void drawLineIfPresent(Graphics2D g2, int x, int y, int cellWidth, int cellHeight, boolean isHorizontal) {
+            Line line = createLine(x, y, isHorizontal);
+
+            Optional<ColoredLine> lineOpt = gameStateReference.board.lines().stream()
+                    .filter(coloredLine -> coloredLine.hasSameEndpointsAs(line))
+                    .findFirst();
+
+            lineOpt.ifPresent(coloredLine -> drawLine(g2, coloredLine, x, y, cellWidth, cellHeight, isHorizontal));
+        }
+
+        private Line createLine(int x, int y, boolean isHorizontal) {
+            try {
+                return isHorizontal ? new Line(x, y, x + 1, y) : new Line(x, y, x, y + 1);
+            } catch (InvalidInputException e) {
+                throw new RuntimeException("Invalid line coordinates", e);
+            }
+        }
+
+        private void drawLine(Graphics2D g2, ColoredLine coloredLine, int x, int y, int cellWidth, int cellHeight, boolean isHorizontal) {
+            g2.setColor(coloredLine.color().toAwtColor());
+            int dotX = PADDING + x * cellWidth;
+            int dotY = PADDING + y * cellHeight;
+
+            if (isHorizontal) {
+                g2.fillRect(dotX, dotY - LINE_THICKNESS / 2, cellWidth, LINE_THICKNESS);
             } else {
-                controllerReference.input = endpoint.getName();
-                firstEndpointIsSelected = true;
-            }
-        });
-    }
-
-    private void fillRow(final int row) {
-        fillPointsRow(row);
-        if(row < gameStateReference.board.height() - 1){
-            fillLinesRow(row);
-        }
-    }
-
-    private void fillPointsRow(final int row){
-        for (int i = 0; i < gameStateReference.board.width(); i++) {
-            JRadioButton point = new JRadioButton("o");
-            point.setName(i + "" + row);
-            point.setIcon(new ImageIcon("point.png"));
-            point.setSelectedIcon(new ImageIcon("selected_point.png"));
-            boardPanel.add(point);
-            attachListener(point);
-            if(i < gameStateReference.board.width() - 1) {
-                boardPanel.add(addHorizontalLineIfPresent(i, row));
+                g2.fillRect(dotX - LINE_THICKNESS / 2, dotY, LINE_THICKNESS, cellHeight);
             }
         }
-    }
 
-    private void fillLinesRow(final int row) {
-        for (int i = 0; i < gameStateReference.board.width(); i++) {
-            boardPanel.add(addVerticalLineIfPresent(i, row));
-            if(i < gameStateReference.board.width() - 1) {
-                boardPanel.add(new JLabel("spazio vuoto"));
+        private class DotButtonActionListener implements ActionListener {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Point clickedPoint = parseCoordinates(e.getActionCommand());
+                handleDotSelection(clickedPoint, (JRadioButton) e.getSource());
+            }
+
+            private Point parseCoordinates(String actionCommand) {
+                String[] coords = actionCommand.split(" ");
+                return new Point(Integer.parseInt(coords[0]), Integer.parseInt(coords[1]));
+            }
+
+            private void handleDotSelection(Point clickedPoint, JRadioButton sourceButton) {
+                selectedButtons.add(sourceButton);
+
+                if (isSelectingFirstPoint) {
+                    firstPoint = clickedPoint;
+                    isSelectingFirstPoint = false;
+                } else {
+                    if (firstPoint != null) {
+                        processLineSelection(clickedPoint);
+                        resetSelection();
+                    }
+                }
+            }
+
+            private void processLineSelection(Point secondPoint) {
+                controllerReference.writeInput(formatLineInput(firstPoint, secondPoint));
+                controllerReference.resumeAfterInputReception();
+            }
+
+            private String formatLineInput(Point first, Point second) {
+                return first.x() + " " + first.y() + " " + second.x() + " " + second.y();
+            }
+
+            private void resetSelection() {
+                firstPoint = null;
+                isSelectingFirstPoint = true;
+
+                if (selectedButtons.size() == 2) {
+                    selectedButtons.forEach(button -> button.setSelected(false));
+                    selectedButtons.clear();
+                }
             }
         }
     }
 
-    private JLabel addVerticalLineIfPresent(final int i, final int j) {
-        if(gameStateReference.board.lineSitsBetween(new Point(i,j), new Point(i, j+1))){
-            return new JLabel("|");
-        }
-        return new JLabel("spazio vuoto");
-    }
+    private static class ScorePanel extends JPanel {
+        private final JLabel scoreLabels;
+        private final JLabel turnLabel;
+        private final Game gameStateReference;
 
-    private JLabel addHorizontalLineIfPresent(final int i, final int j) {
-        if(gameStateReference.board.lineSitsBetween(new Point(i,j), new Point(i+1, j))){
-            return new JLabel("---");
+        public ScorePanel(Game gameStateReference) {
+            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+            scoreLabels = new JLabel();
+            turnLabel = new JLabel("Turn: Player 1");
+            add(scoreLabels);
+            add(turnLabel);
+            this.gameStateReference = gameStateReference;
         }
-        return new JLabel("spazio vuoto");
+
+        public void updateScore() {
+            StringBuilder scores = new StringBuilder("<html>");
+            for (int i = 1; i <= gameStateReference.players.size(); i++) {
+                String player = gameStateReference.players.get(i - 1);
+                String score = String.valueOf(gameStateReference.scoreBoard.get(player));
+                scores.append(player).append(": ").append(score).append("<br>");
+            }
+            scores.append("</html>");
+            scoreLabels.setText(scores.toString());
+        }
+
+        public void updateTurn() {
+            String currentPlayer = gameStateReference.currentPlayer();
+            turnLabel.setText("Current player: " + currentPlayer);
+            Color playerColor = gameStateReference.playerColorLUT.get(currentPlayer).toAwtColor();
+            turnLabel.setForeground(playerColor);
+        }
     }
 }

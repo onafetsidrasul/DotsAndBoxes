@@ -56,11 +56,12 @@ public class Game implements Savable<Game> {
     }
 
     public int getLastPlayerIndex() {
-        synchronized (board.lines()){
-        if (board.lines().isEmpty()) {
-            return -1;
+        synchronized (board.lines()) {
+            if (board.lines().isEmpty()) {
+                return -1;
+            }
+            return (board.lines().size() - 1) % players.size();
         }
-        return (board.lines().size() - 1) % players.size();}
     }
 
     public int getCurrentPlayerIndex() {
@@ -69,7 +70,7 @@ public class Game implements Savable<Game> {
 
     public String currentPlayer() {
         // we chose to make the player1 start first every time
-        synchronized(board.lines()){
+        synchronized (board.lines()) {
             if (board.lines().isEmpty())
                 return this.players.getFirst();
             return this.players.get(getCurrentPlayerIndex());
@@ -79,7 +80,7 @@ public class Game implements Savable<Game> {
 
     public String getLastPlayer() {
         // we chose to make the player1 start first every time
-        synchronized (board.lines()){
+        synchronized (board.lines()) {
             if (board.lines().isEmpty())
                 return null;
             return this.players.get(getLastPlayerIndex());
@@ -96,11 +97,11 @@ public class Game implements Savable<Game> {
     }
 
     public void makeNextMove(Line line) throws InvalidInputException {
-        ColoredLine lineCandidate =  line == null ? null : new ColoredLine(line, getPlayerColor(currentPlayer()));
+        ColoredLine lineCandidate = line == null ? null : new ColoredLine(line, getPlayerColor(currentPlayer()));
         board.placeLine(lineCandidate);
     }
 
-    public Board board() {
+    public final Board board() {
         return board;
     }
 
@@ -134,7 +135,7 @@ public class Game implements Savable<Game> {
         return scoreBoard;
     }
 
-    public Map<String, Color> playerColorLUT(){
+    public Map<String, Color> playerColorLUT() {
         return playerColorLUT;
     }
 
@@ -176,7 +177,7 @@ public class Game implements Savable<Game> {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Score Board:").append("\n");
-        scoreBoard.forEach((p,s)->sb.append(p).append(": ").append(s).append("\n"));
+        scoreBoard.forEach((p, s) -> sb.append(p).append(": ").append(s).append("\n"));
         sb.append("\n");
         sb.append("Game Board:").append("\n").append(board);
         sb.append("\n");

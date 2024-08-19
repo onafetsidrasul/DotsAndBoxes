@@ -11,9 +11,9 @@ public abstract class IGameView implements Runnable {
 
     protected IGameController controllerReference;
     protected Game gameStateReference;
-    protected boolean isInitialized = false;
-    protected boolean isConfigured = false;
-    public Semaphore isRefreshingUISem = new Semaphore(0);
+    private boolean isInitialized;
+    private boolean isConfigured;
+    private Semaphore isRefreshingUISem;
 
     /**
      * Initializes the view.
@@ -21,6 +21,9 @@ public abstract class IGameView implements Runnable {
      * @return true if initialization was successful, false otherwise.
      */
     public final boolean init(final IGameController controllerReference) {
+        isInitialized = false;
+        isConfigured = false;
+        isRefreshingUISem = new Semaphore(0);
         isInitialized = assignControllerReference(controllerReference) && finishInit();
         return isInitialized;
     }
@@ -93,14 +96,6 @@ public abstract class IGameView implements Runnable {
 
     public abstract String promptForBoardWidth();
 
-    public String[] promptForPlayersNames(int numOfPlayers) {
-        String[] names = new String[numOfPlayers];
-        for (int i = 0; i < numOfPlayers; i++) {
-            names[i] = promptForPlayerName(i);
-        }
-        return names;
-    }
-
     public abstract String promptForPlayerName(int playerNumber);
 
     /**
@@ -129,5 +124,17 @@ public abstract class IGameView implements Runnable {
      * Displays the winner(s) of the game.
      */
     public abstract void displayResults();
+
+    public void signalWhenUIRefreshed(){
+        try {
+            isRefreshingUISem.acquire();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void signalUIHasRefreshed(){
+        isRefreshingUISem.release();
+    }
 
 }

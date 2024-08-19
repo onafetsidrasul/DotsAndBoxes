@@ -15,12 +15,6 @@ public class TextView extends IGameView {
 
     private final PrintStream out;
     private final BufferedReader in;
-
-    public TextView(PrintStream out, InputStreamReader in) {
-        this.out = out;
-        this.in = new BufferedReader(in);
-    }
-
     public TextView() {
         this.out = System.out;
         this.in = new BufferedReader(new InputStreamReader(System.in));
@@ -45,26 +39,18 @@ public class TextView extends IGameView {
     @Override
     public void run() {
         do {
-            try {
-                controllerReference.refreshUISem.acquire();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                controllerReference.gameOverCheckSem.acquire();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            if (controllerReference.gameIsOver) {
+            controllerReference.stopToRefreshUI();
+            controllerReference.stopToCheckIfGameOver();
+            if (controllerReference.gameIsOver()) {
                 break;
             }
             eraseScreen();
             printPlayers(gameStateReference.players, gameStateReference.scoreBoard);
             printBoard(gameStateReference.board);
             printCurrentPlayer(gameStateReference.currentPlayer());
-            isRefreshingUISem.release();
-            controllerReference.input = promptForAction();
-            controllerReference.inputHasBeenReceivedSem.release();
+            signalUIHasRefreshed();
+            controllerReference.writeInput(promptForAction());
+            controllerReference.resumeAfterInputReception();
         } while (true);
     }
 

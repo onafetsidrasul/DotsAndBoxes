@@ -20,7 +20,7 @@ public class Main {
                 default -> (GameSession) saver.restoreFromFile(args[0]);
             };
             try {
-                session.start();
+                session.begin();
             } catch (Exception e) {
                 e.printStackTrace(System.out);
             } finally {

@@ -21,7 +21,7 @@ public class GameSession implements Savable<GameSession> {
     public record SavedGameSession(String gameControllerClassName, String data) {
     }
 
-    public void start() throws IOException {
+    public void begin() throws IOException {
         PostGameIntent intent;
         do {
             if(!controller.initialize()){
@@ -34,7 +34,7 @@ public class GameSession implements Savable<GameSession> {
                 controller.startGame();
             } catch (IOException e) {
                 throw new IOException("Game controller could not start game.", e);
-            } catch(UserHasRequestedQuit e){
+            } catch (UserHasRequestedQuit e) {
                 break;
             } catch (UserHasRequestedSave e) {
                 serialized();

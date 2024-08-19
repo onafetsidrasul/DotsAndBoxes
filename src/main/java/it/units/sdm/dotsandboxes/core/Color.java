@@ -20,4 +20,15 @@ public enum Color {
     public AnsiFormat format() {
         return format;
     }
+
+    public java.awt.Color toAwtColor() {
+        return switch (this) {
+            case RED -> java.awt.Color.RED;
+            case GREEN -> java.awt.Color.GREEN;
+            case BLUE -> java.awt.Color.BLUE;
+            case YELLOW -> java.awt.Color.YELLOW;
+            case CYAN -> java.awt.Color.CYAN;
+            case MAGENTA -> java.awt.Color.MAGENTA;
+        };
+    }
 }

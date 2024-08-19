@@ -19,11 +19,6 @@ public class ShellView extends TextView {
     private final PrintStream out;
     private final BufferedReader in;
 
-    public ShellView(PrintStream out, InputStreamReader in) {
-        this.out = out;
-        this.in = new BufferedReader(in);
-    }
-
     public ShellView() {
         this.out = System.out;
         this.in = new BufferedReader(new InputStreamReader(System.in));
@@ -43,26 +38,20 @@ public class ShellView extends TextView {
     @Override
     public void run() {
         do {
-            try {
-                controllerReference.refreshUISem.acquire();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                controllerReference.gameOverCheckSem.acquire();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            if (controllerReference.gameIsOver) {
+
+            controllerReference.stopToRefreshUI();
+            controllerReference.stopToCheckIfGameOver();
+            if (controllerReference.gameIsOver()) {
                 break;
             }
             eraseScreen();
             printPlayers(gameStateReference.players, gameStateReference.scoreBoard, gameStateReference.playerColorLUT);
             printBoard(gameStateReference.board);
             printCurrentPlayer(gameStateReference.currentPlayer(), gameStateReference.playerColorLUT.get(gameStateReference.currentPlayer()));
-            isRefreshingUISem.release();
-            controllerReference.input = promptForAction();
-            controllerReference.inputHasBeenReceivedSem.release();
+
+            signalUIHasRefreshed();
+            controllerReference.writeInput(promptForAction());
+            controllerReference.resumeAfterInputReception();
         } while (true);
     }
 
