@@ -181,8 +181,7 @@ public class SwingView extends IGameView implements Runnable {
     private void refreshBoardComponents() {
         synchronized (gameStateReference.board()) {
             boardPanel.repaint();
-            scorePanel.updateTurn();
-            scorePanel.updateScore();
+            scorePanel.updateScoreAndTurn();
         }
         signalUIHasRefreshed();
     }
@@ -382,6 +381,11 @@ public class SwingView extends IGameView implements Runnable {
             add(scoreLabels);
             add(turnLabel);
             this.gameStateReference = gameStateReference;
+        }
+
+        public void updateScoreAndTurn() {
+            updateScore();
+            updateTurn();
         }
 
         public void updateScore() {
