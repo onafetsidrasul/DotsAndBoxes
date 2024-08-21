@@ -279,7 +279,6 @@ public class TextView extends IGameView {
 
     public String promptForAction() {
         displayPrompt("Insert \"quit\" to quit the game\n");
-        displayPrompt("Insert \"save\" to save the game\n");
         displayPrompt("Or make your move [ x1 y1 x2 y2 ] : ");
         try {
             return in.readLine();
