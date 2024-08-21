@@ -54,6 +54,9 @@ public class TextView extends IGameView {
         } while (true);
     }
 
+    /** Prints the state of the board.
+     * @param gameBoard the board to print.
+     */
     protected void printBoard(final Board gameBoard) {
         printUpperBorder(gameBoard.width());
         printBoardContents(gameBoard);
@@ -166,6 +169,10 @@ public class TextView extends IGameView {
 
     }
 
+    /** Print a textual representation of the players with their scoreboard.
+     * @param players the player list.
+     * @param scores the players' scores.
+     */
     protected void printPlayers(List<String> players, Map<String, Integer> scores) {
         out.println("--- PLAYERS ---");
         synchronized (gameStateReference.scoreBoard()) {
@@ -178,6 +185,9 @@ public class TextView extends IGameView {
         out.println("---------------");
     }
 
+    /** Print a textual representation of the current player's name.
+     * @param currentPlayer the current player's name.
+     */
     protected void printCurrentPlayer(String currentPlayer) {
         out.println("Current player: " + currentPlayer);
     }
@@ -203,6 +213,9 @@ public class TextView extends IGameView {
         out.println("INFO " + message);
     }
 
+    /** Displays a prompt to the user.
+     * @param message the text of the prompt
+     */
     public void displayPrompt(String message) {
         out.print(message);
     }
@@ -228,6 +241,10 @@ public class TextView extends IGameView {
         }
     }
 
+    /** Displays a textual representation of a single player's result.
+     * @param playerName the player's name.
+     * @param score the player's score.
+     */
     protected void displayResult(String playerName, Integer score) {
         out.println(playerName + " : " + score);
     }
@@ -277,6 +294,9 @@ public class TextView extends IGameView {
     }
 
 
+    /** Prompts the player for an action.
+     * @return the action of the user.
+     */
     public String promptForAction() {
         displayPrompt("Insert \"quit\" to quit the game\n");
         displayPrompt("Or make your move [ x1 y1 x2 y2 ] : ");
@@ -307,6 +327,9 @@ public class TextView extends IGameView {
         };
     }
 
+    /**
+     * Cleans up the screen.
+     */
     public void eraseScreen() {
         for (int i = 0; i < 3; i++) {
             out.println();

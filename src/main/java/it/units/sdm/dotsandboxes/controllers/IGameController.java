@@ -9,19 +9,22 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Semaphore;
 
+/**
+ * Controller class that contains all the game's logic, such as the order of turns and end game conditions.
+ */
 public class IGameController {
 
     private final IGameView view;
     private Game game;
-    private Gamemode gamemode;
+    private GameMode gamemode;
     private ComputerMoveStrategy computerMoveStrategy;
     private boolean isInitialized;
     private boolean setUpIsDone;
-    private Semaphore refreshUISem;
     private boolean gameIsOver;
+    private Semaphore refreshUISem;
     private Semaphore gameOverCheckSem;
     private Semaphore inputHasBeenReceivedSem;
-    private String input;
+    private String input;   // inputs are in the form of strings, and follow the same syntax for all input methods (console, gui, etc.)
 
     public IGameController(IGameView view) {
         this.view = view;
@@ -47,7 +50,7 @@ public class IGameController {
 
     /**
      * Let the controller and the UI perform the game set-up. This method must be invoked after the initialization step.
-     * After the method has been called the UI is assumed to be ready to render the game.
+     * After the method has been called, the UI is assumed to be ready to render the game.
      *
      * @return true if the set-up has terminated successfully, false otherwise.
      */
@@ -70,12 +73,30 @@ public class IGameController {
         return setUpIsDone;
     }
 
-    public final void setUpGameVsComputer() {
+    private void setUpGameVsComputer() {
         int playerCount = 2;
         SequencedCollection<String> players = new ArrayList<>(playerCount);
         players.add(getPlayerName(1));
         players.add("CPU");
         computerMoveStrategy = ComputerMoveStrategy.RANDOM;
+        finishGameSetup(players);
+    }
+
+    private void setUpGameVsPlayer() {
+        int playerCount;
+        do {
+            playerCount = getPlayerCount();
+            if (playerCount < 2) {
+                sendWarning("You need at least 2 players!");
+            }
+            if (playerCount > Color.values().length) {
+                sendWarning("Too many players! Max amount is " + Color.values().length);
+            }
+        } while (playerCount < 2 || playerCount > Color.values().length);
+        SequencedCollection<String> players = new ArrayList<>(playerCount);
+        for (int playerIndex = 1; playerIndex <= playerCount; playerIndex++) {
+            players.add(getPlayerName(playerIndex));
+        }
         finishGameSetup(players);
     }
 
@@ -95,25 +116,11 @@ public class IGameController {
         setUpIsDone = view.configure(game);
     }
 
-    public final void setUpGameVsPlayer() {
-        int playerCount;
-        do {
-            playerCount = getPlayerCount();
-            if (playerCount < 2) {
-                sendWarning("You need at least 2 players!");
-            }
-            if (playerCount > Color.values().length) {
-                sendWarning("Too many players! Max amount is " + Color.values().length);
-            }
-        } while (playerCount < 2 || playerCount > Color.values().length);
-        SequencedCollection<String> players = new ArrayList<>(playerCount);
-        for (int playerIndex = 1; playerIndex <= playerCount; playerIndex++) {
-            players.add(getPlayerName(playerIndex));
-        }
-        finishGameSetup(players);
-    }
-
-    public final void startGame() throws IOException, UserHasRequestedQuit{
+    /**
+     * Begins the actual game with the proper set-up.
+     * @throws UserHasRequestedQuit if the player has requested to end the game.
+     */
+    public final void startGame() throws UserHasRequestedQuit, InvalidInputException {
         try {
             switch (gamemode) {
                 case PVE:
@@ -130,7 +137,7 @@ public class IGameController {
         displayResults();
     }
 
-    public final void startGameVsComputer() throws IOException, UserHasRequestedQuit {
+    private void startGameVsComputer() throws UserHasRequestedQuit, InvalidInputException {
         if (game == null || !setUpIsDone) {
             throw new IllegalStateException("Game has not been set up!");
         }
@@ -156,7 +163,7 @@ public class IGameController {
         endGame();
     }
 
-    public final void startGameVsPlayer() throws IOException, UserHasRequestedQuit {
+    private void startGameVsPlayer() throws UserHasRequestedQuit, InvalidInputException {
         if (game == null || !setUpIsDone) {
             throw new IllegalStateException("Game has not been set up!");
         }
@@ -178,6 +185,9 @@ public class IGameController {
     }
 
     private void makeGeneratedMove(){
+        /* In theory, computer-generated moves should always be valid. For this reason, we can suppose this method never throws.
+         * If it does, the game must crash, as it means the computer-generation algorithm is wrong and should be fixed.
+         */
         try {
             makeMove(generateMove());
         } catch (InvalidInputException e) {
@@ -226,29 +236,27 @@ public class IGameController {
     }
 
     /**
-     * Get the number of players that will be generated and therefore will play the current game.
+     * Get the number of players that will be generated, meaning how many will play the current game.
      *
-     * @return player count [1, ]
+     * @return the player count.
      */
     protected int getPlayerCount() {
         return Integer.parseInt(view.promptForNumberOfPlayers());
     }
 
     /**
-     * Get the name to be assigned to the player with the passed number and color.
+     * Get the name to be assigned to the player with the passed number.
      *
-     * @param playerNumber ordinal of the player being created
-     * @return the string literal for the name to be assigned to the player being created
+     * @param playerNumber ordinal of the player being created.
+     * @return the string literal for the name to be assigned to the player being created.
      */
     protected String getPlayerName(int playerNumber) {
         return view.promptForPlayerName(playerNumber);
     }
 
     /**
-     * Get the number of rows and columns of the game board being created, either asking for user input or
-     * returning a fixed value
-     *
-     * @return an integer array containing two elements: int[2] { width, height }
+     * Get the number of columns and rows of the game board.
+     * @return an integer array containing two elements: int[2] { height, width }.
      */
     protected int[] getBoardDimensions() {
         try {
@@ -260,10 +268,12 @@ public class IGameController {
     }
 
     /**
-     * Wait for the UI to receive an event of a game turn being played by the user.
+     * Wait to receive an event from the player.
      *
-     * @return the Line being played in the current turn by the playing Player (determined by the game instance)
+     * @return the Line being played in the current turn by the playing Player (determined by the game instance).
      * @see Game#makeNextMove(Line)
+     * @throws UserHasRequestedQuit if the user wants to quit the game.
+     * @throws InvalidInputException if something unexpected happened in the entire chain of input.
      */
     protected Line getAction() throws InvalidInputException, UserHasRequestedQuit {
         Line candidate;
@@ -296,7 +306,7 @@ public class IGameController {
     }
 
     /**
-     * Notify the UI to terminate the current game.
+     * Terminate the game.
      */
     public void endGame() {
         gameIsOver = true;
@@ -304,38 +314,64 @@ public class IGameController {
         refreshUISem.release();
     }
 
+    /**
+     * Displays the scoreboard in decreasing score order.
+     */
     public void displayResults() {
         view.displayResults();
     }
 
+    /**
+     * @return the intent of the player after the game has ended.
+     * @throws IOException
+     */
     public PostGameIntent getPostGameIntent() throws IOException {
         return view.promptForPostGameIntent().equals("NEW") ? PostGameIntent.NEW_GAME : PostGameIntent.END_GAME;
     }
 
-    public Gamemode getGamemode() {
+    /**
+     * @return the chosen game mode.
+     */
+    public GameMode getGamemode() {
         return switch (view.promptForGamemode()) {
-            case "PVP" -> Gamemode.PVP;
-            case "PVE" -> Gamemode.PVE;
+            case "PVP" -> GameMode.PVP;
+            case "PVE" -> GameMode.PVE;
             default -> throw new IllegalArgumentException("Unexpected value");
         };
     }
 
+    /**
+     * Send a warning to the player through the UI.
+     * @param message warning to send.
+     */
     public void sendWarning(String message) {
         view.displayWarning(message);
     }
 
+    /**
+     * @return if the game is over.
+     */
     public boolean gameIsOver() {
         return gameIsOver;
     }
 
+    /**
+     * @param input the input received from the user in string form.
+     */
     public void writeInput(String input) {
         this.input = input;
     }
-    
+
+    /**
+     * Unlocks the controller after an input has been passed.
+     */
     public void resumeAfterInputReception(){
         inputHasBeenReceivedSem.release();
     }
 
+    /**
+     * Stops the controller to let others mutually check the game over state.
+     */
     public void stopToCheckIfGameOver(){
         try {
             gameOverCheckSem.acquire();
@@ -344,6 +380,9 @@ public class IGameController {
         }
     }
 
+    /**
+     * Stops the controller while the UI refreshes.
+     */
     public void stopToRefreshUI(){
         try {
             refreshUISem.acquire();

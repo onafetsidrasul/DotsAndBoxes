@@ -2,11 +2,15 @@ package it.units.sdm.dotsandboxes.views;
 
 import it.units.sdm.dotsandboxes.controllers.IGameController;
 import it.units.sdm.dotsandboxes.core.Game;
+import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.Semaphore;
 
+/**
+ * Abstract class containing the basic features each view must have to properly work with the controller.
+ */
 public abstract class IGameView implements Runnable {
 
     protected IGameController controllerReference;
@@ -28,6 +32,9 @@ public abstract class IGameView implements Runnable {
         return isInitialized;
     }
 
+    /** The finishing steps needed in each implementation to complete the initialization.
+     * @return if the finishing initialization steps have been performed correctly.
+     */
     protected abstract boolean finishInit();
 
     private boolean assignControllerReference(final IGameController controllerReference) {
@@ -60,14 +67,17 @@ public abstract class IGameView implements Runnable {
         return true;
     }
 
+    /** The finishing steps needed in each implementation to complete the configuration.
+     * @return if the finishing configuration steps have been performed correctly.
+     */
     protected abstract boolean finishConfigure();
 
     /**
      * Starts the display loop of the game. View must be initialized and configured.
      */
-    public void startGameUI() throws IOException {
+    public void startGameUI() throws InvalidInputException {
         if (!isInitializedAndConfigured()) {
-            throw new IOException("View was not initialized and configured properly");
+            throw new InvalidInputException("View was not initialized and configured properly");
         }
         displayGameUI();
     }
@@ -86,16 +96,32 @@ public abstract class IGameView implements Runnable {
      */
     public abstract String promptForGamemode();
 
+    /** Prompts the user for the desired number of players.
+     * @return the desired number of players.
+     */
     public abstract String promptForNumberOfPlayers();
 
+    /** Prompts the user for the desired dimensions of the board.
+     * @return the dimensions of the board in the form: int[2] { height, width }.
+     */
     public String[] promptForBoardDimensions() {
         return new String[]{promptForBoardHeight(), promptForBoardWidth()};
     }
 
+    /** Prompts the user for the desired height of the board.
+     * @return the desired height of the board.
+     */
     public abstract String promptForBoardHeight();
 
+    /** Prompts the user for the desired width of the board.
+     * @return the desired width of the board.
+     */
     public abstract String promptForBoardWidth();
 
+    /** Prompts the player for its name.
+     * @param playerNumber - the ordinal of the player.
+     * @return the name chosen by the player.
+     */
     public abstract String promptForPlayerName(int playerNumber);
 
     /**

@@ -4,16 +4,19 @@ import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 
 import java.util.*;
 
+/**
+ * Class modeling a Dots and Boxes board.
+ */
 public class Board {
     private final SequencedCollection<ColoredLine> lines;
-    private final int width, height;
+    private final int height, width;
 
-    public Board(int width, int height) {
+    public Board(int height, int width) {
         if (width < 2 || height < 2) {
             throw new IllegalArgumentException("Board width and height must be greater than 2");
         }
-        this.width = width;
         this.height = height;
+        this.width = width;
         lines = Collections.synchronizedList(new ArrayList<>());
     }
 
@@ -31,13 +34,21 @@ public class Board {
                 lineSitsBetween(new Point(p.x() + 1, p.y() + 1), new Point(p.x() + 1, p.y()));
     }
 
+    /**
+     * @return true, if the board is full. False, otherwise.
+     */
     public boolean isBoardFull() {
-        // since we check the validity of every line drawn onto the board we can check if the board has been completely filled
-        // (i.e. the games has ended) by simply checking if the number of lines is 2*n*m - n - m which is the amount of possible lines
-        // for a n*m board
+        /* since we check the validity of every line drawn onto the board we can check if the board has been completely filled
+         * (i.e. the games has ended) by simply checking if the number of lines is 2*n*m - n - m which is the amount of possible lines
+         * for a n*m board
+         */
         return lines.size() == (2 * width * height) - width - height;
     }
 
+    /** Try placing a line onto the board.
+     * @param line the line to be placed.
+     * @throws InvalidInputException if the line is not valid.
+     */
     protected void placeLine(ColoredLine line) throws InvalidInputException {
         if(line == null){
             throw new InvalidInputException("Line is invalid.");
@@ -61,6 +72,11 @@ public class Board {
                 line.p2().y() < 0 || line.p2().y() >= height;
     }
 
+    /**
+     * @param p1 the "first" endpoint.
+     * @param p2 the "second" endpoint.
+     * @return if a line occupies the two endpoints.
+     */
     public boolean lineSitsBetween(Point p1, Point p2) {
         synchronized (lines){
             return lines.parallelStream().anyMatch(l -> {

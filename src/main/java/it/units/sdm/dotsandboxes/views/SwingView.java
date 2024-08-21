@@ -57,6 +57,9 @@ public class SwingView extends IGameView implements Runnable {
         return true;
     }
 
+    /**
+     * Begins displaying the game's UI.
+     */
     @Override
     protected void displayGameUI() {
         SwingUtilities.invokeLater(() -> frame.setVisible(true));
@@ -388,7 +391,7 @@ public class SwingView extends IGameView implements Runnable {
             updateTurn();
         }
 
-        public void updateScore() {
+        private void updateScore() {
             StringBuilder scores = new StringBuilder("<html>");
             for (int i = 1; i <= gameStateReference.players().size(); i++) {
                 String player = gameStateReference.players().get(i - 1);
@@ -399,7 +402,7 @@ public class SwingView extends IGameView implements Runnable {
             scoreLabels.setText(scores.toString());
         }
 
-        public void updateTurn() {
+        private void updateTurn() {
             String currentPlayer = gameStateReference.currentPlayer();
             turnLabel.setText("Current player: " + currentPlayer);
             Color playerColor = gameStateReference.playerColorLUT().get(currentPlayer).toAwtColor();

@@ -5,18 +5,20 @@ import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Class that models the state of a single game of Dots and Boxes.
+ */
 public class Game {
 
     private final List<String> players = new ArrayList<>();
     private final Map<String, Color> playerColorLUT;
     private final Map<String, Integer> scoreBoard;
-
     private final Board board;
     private final Set<Point> completedBoxes;
 
-    public Game(int boardLength, int boardHeight, SequencedCollection<String> players) throws InvalidInputException {
+    public Game(int boardHeight, int boardWidth, SequencedCollection<String> players) throws InvalidInputException {
         if (Set.copyOf(players).size() != players.size()) {
-            // allows with a single line to throw a NullPointerException if either players is null or has a null element
+            // allows, with a single line, to throw a NullPointerException if either players is null or has a null element
             throw new InvalidInputException("Two players have the same name.");
         }
         this.players.addAll(players);
@@ -31,17 +33,20 @@ public class Game {
             playerColorLUT.put(p, Color.values()[c++]);
         }
         try {
-            board = new Board(boardLength, boardHeight);
+            board = new Board(boardHeight, boardWidth);
         } catch (IllegalArgumentException e) {
             throw new InvalidInputException(e.getMessage());
         }
         completedBoxes = new HashSet<>();
     }
 
-    public Game(int boardLength, int boardHeight, String... players) throws InvalidInputException {
-        this(boardLength, boardHeight, Arrays.asList(players));
+    public Game(int boardHeight, int boardWidth, String... players) throws InvalidInputException {
+        this(boardHeight, boardWidth,  Arrays.asList(players));
     }
 
+    /**
+     * @return the index of the previous player.
+     */
     public int getLastPlayerIndex() {
         synchronized (board.lines()) {
             if (board.lines().isEmpty()) {
@@ -51,10 +56,16 @@ public class Game {
         }
     }
 
+    /**
+     * @return the index of the current player.
+     */
     public int getCurrentPlayerIndex() {
         return (getLastPlayerIndex() + 1) % players.size();
     }
 
+    /**
+     * @return the name of the current player.
+     */
     public String currentPlayer() {
         // we chose to make the player1 start first every time
         synchronized (board.lines()) {
@@ -65,6 +76,9 @@ public class Game {
 
     }
 
+    /**
+     * @return the name of the previous player.
+     */
     public String getLastPlayer() {
         // we chose to make the player1 start first every time
         synchronized (board.lines()) {
@@ -75,10 +89,18 @@ public class Game {
 
     }
 
+    /**
+     * @param p the name of the player.
+     * @return the player's score.
+     */
     public int getPlayerScore(String p) {
         return scoreBoard.get(p);
     }
 
+    /**
+     * @param p the name of the player.
+     * @return the player's color.
+     */
     public Color getPlayerColor(String p) {
         return playerColorLUT.get(p);
     }
@@ -88,14 +110,23 @@ public class Game {
         board.placeLine(lineCandidate);
     }
 
+    /**
+     * @return the state of the board.
+     */
     public final Board board() {
         return board;
     }
 
+    /**
+     * @return if the board is full.
+     */
     public boolean hasEnded() {
         return board.isBoardFull();
     }
 
+    /**
+     * Checks the lines on the board to compute the scores.
+     */
     public synchronized void updateScore() {
         for (int i = 0; i < board.width(); i++) {
             for (int j = 0; j < board.height(); j++) {
@@ -114,18 +145,30 @@ public class Game {
         scoreBoard.replace(p, newScore);
     }
 
+    /**
+     * @return the list of players.
+     */
     public List<String> players() {
         return players;
     }
 
+    /**
+     * @return the score board.
+     */
     public Map<String, Integer> scoreBoard() {
         return scoreBoard;
     }
 
+    /**
+     * @return the LUT of the players' colors.
+     */
     public Map<String, Color> playerColorLUT() {
         return playerColorLUT;
     }
 
+    /**
+     * @return the winners, in descending score order.
+     */
     public SequencedCollection<String> winners() {
         if (!hasEnded()) {
             return null;
