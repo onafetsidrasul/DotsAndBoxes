@@ -8,16 +8,6 @@ import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 public class ColoredLine extends Line {
     private final Color color;
 
-    public ColoredLine(Point p1, Point p2, Color color) throws InvalidInputException {
-        super(p1, p2);
-        this.color = color;
-    }
-
-    public ColoredLine(int x1, int y1, int x2, int y2, Color color) throws InvalidInputException {
-        super(x1, y1, x2, y2);
-        this.color = color;
-    }
-
     public ColoredLine(Line l, Color color) throws InvalidInputException {
         super(l.p1(), l.p2());
         this.color = color;
