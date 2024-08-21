@@ -14,7 +14,7 @@ public class Main {
                 case "tui" -> new GameSession(new IGameController(new ShellView()));
                 case "gui" -> new GameSession(new IGameController(new SwingView()));
                 default -> {
-                    System.out.println("Invalid game mode!.");
+                    System.out.println("Invalid game mode.");
                     yield null;
                 }
             };
