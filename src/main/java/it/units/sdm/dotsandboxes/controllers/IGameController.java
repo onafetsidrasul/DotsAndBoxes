@@ -189,50 +189,10 @@ public class IGameController {
          * If it does, the game must crash, as it means the computer-generation algorithm is wrong and should be fixed.
          */
         try {
-            makeMove(generateMove());
+            makeMove(ComputerAgent.generateMove(computerMoveStrategy, game.board()));
         } catch (InvalidInputException e) {
             throw new RuntimeException("The CPU generated an invalid move. " + e);
         }
-    }
-
-    private Line generateMove() {
-        return switch (computerMoveStrategy) {
-            case RANDOM -> generateRandomMove();
-        };
-    }
-
-    private Line generateRandomMove() {
-        Line candidate;
-        boolean lineAlreadyExists;
-        do {
-            candidate = generateRandomCandidate();
-            final Line finalCandidate = candidate;
-            lineAlreadyExists = game.board().lines().parallelStream().anyMatch(l -> l.hasSameEndpointsAs(finalCandidate));
-        } while (lineAlreadyExists);
-        return candidate;
-    }
-
-    private Line generateRandomCandidate() {
-        Line candidate;
-        Point p1 = new Point((int) Math.floor(Math.random() * (game.board().width())), (int) Math.floor(Math.random() * (game.board().height())));
-        Point p2;
-        do {
-            if (Math.random() >= 0.5) {
-                p2 = new Point(p1.x(), p1.y() + (Math.random() >= 0.5 ? 1 : -1));
-            } else {
-                p2 = new Point(p1.x() + (Math.random() >= 0.5 ? 1 : -1), p1.y());
-            }
-        } while (!isValidPoint(p2.x(), p2.y()));
-        try {
-            candidate = new Line(p1.x(), p1.y(), p2.x(), p2.y());
-        } catch (InvalidInputException e) {
-            throw new RuntimeException(e);
-        }
-        return candidate;
-    }
-
-    private boolean isValidPoint(int x, int y) {
-        return x >= 0 && x < game.board().width() && y >= 0 && y < game.board().height();
     }
 
     /**
@@ -389,6 +349,53 @@ public class IGameController {
             throw new RuntimeException(e);
         }
         
+    }
+
+
+}
+
+class ComputerAgent {
+
+    private ComputerAgent(){}
+
+    public static Line generateMove(ComputerMoveStrategy strategy, Board board) {
+        return switch (strategy) {
+            case RANDOM -> generateRandomMove(board);
+        };
+    }
+
+    private static Line generateRandomMove(Board board) {
+        Line candidate;
+        boolean lineAlreadyExists;
+        do {
+            candidate = generateRandomCandidate(board);
+            final Line finalCandidate = candidate;
+            lineAlreadyExists = board.lines().parallelStream().anyMatch(l -> l.hasSameEndpointsAs(finalCandidate));
+        } while (lineAlreadyExists);
+        return candidate;
+    }
+
+    private static Line generateRandomCandidate(Board board) {
+        Line candidate;
+        Point p1 = new Point((int) Math.floor(Math.random() * (board.width())), (int) Math.floor(Math.random() * (board.height())));
+        Point p2;
+        do {
+            if (Math.random() >= 0.5) {
+                p2 = new Point(p1.x(), p1.y() + (Math.random() >= 0.5 ? 1 : -1));
+            } else {
+                p2 = new Point(p1.x() + (Math.random() >= 0.5 ? 1 : -1), p1.y());
+            }
+        } while (!isValidPoint(p2.x(), p2.y(), board));
+        try {
+            candidate = new Line(p1.x(), p1.y(), p2.x(), p2.y());
+        } catch (InvalidInputException e) {
+            throw new RuntimeException(e);
+        }
+        return candidate;
+    }
+
+    private static boolean isValidPoint(int x, int y, Board board) {
+        return x >= 0 && x < board.width() && y >= 0 && y < board.height();
     }
 }
 
