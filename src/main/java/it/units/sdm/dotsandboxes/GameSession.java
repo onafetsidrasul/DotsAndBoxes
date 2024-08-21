@@ -2,10 +2,14 @@ package it.units.sdm.dotsandboxes;
 
 import it.units.sdm.dotsandboxes.controllers.IGameController;
 import it.units.sdm.dotsandboxes.controllers.PostGameIntent;
+import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 import it.units.sdm.dotsandboxes.exceptions.UserHasRequestedQuit;
 
 import java.io.IOException;
 
+/**
+ * Class representing an entire game session, which can consist of multiple games.
+ */
 public class GameSession{
 
     private final IGameController controller;
@@ -14,6 +18,10 @@ public class GameSession{
         this.controller = controller;
     }
 
+    /**
+     * Begins a game session.
+     * @throws IOException
+     */
     public void begin() throws IOException {
         PostGameIntent intent;
         do {
@@ -25,7 +33,7 @@ public class GameSession{
             }
             try {
                 controller.startGame();
-            } catch (IOException e) {
+            } catch (InvalidInputException e) {
                 throw new IOException("Game controller could not start game.", e);
             } catch (UserHasRequestedQuit e) {
                 break;

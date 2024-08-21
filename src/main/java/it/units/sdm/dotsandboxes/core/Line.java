@@ -6,7 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.SequencedSet;
 
 /**
- * Class that models a  line.
+ * Class that models a line.
  * Lines do not formally have a direction as it's not required by the game,
  * although it can be inferred from the implicit order of the endpoints.
  */

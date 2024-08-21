@@ -3,6 +3,9 @@ package it.units.sdm.dotsandboxes.core;
 import com.diogonunes.jcolor.AnsiFormat;
 import com.diogonunes.jcolor.Attribute;
 
+/**
+ * Enum class modeling colors using their ANSI format.
+ */
 public enum Color {
     RED(new AnsiFormat(Attribute.RED_TEXT())),
     BLUE(new AnsiFormat(Attribute.BLUE_TEXT())),
@@ -21,6 +24,9 @@ public enum Color {
         return format;
     }
 
+    /**
+     * @return the ANSI color converted to its AWT counterpart.
+     */
     public java.awt.Color toAwtColor() {
         return switch (this) {
             case RED -> java.awt.Color.RED;

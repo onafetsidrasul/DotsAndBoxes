@@ -3,7 +3,7 @@ package it.units.sdm.dotsandboxes.core;
 import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 
 /**
- * Class that models a colored line on a Dots And Boxes board. *
+ * Class that models a colored line on a Dots And Boxes board.
  */
 public class ColoredLine extends Line {
     private final Color color;
@@ -27,6 +27,10 @@ public class ColoredLine extends Line {
         return color + ", " + super.toString();
     }
 
+    /**
+     * @param other a line.
+     * @return if a colored line shares the same endpoints as the given line.
+     */
     public boolean hasSameEndpointsAs(Line other) {
         try {
             return (new Line(p1(), p2())).equals(new Line(other.p1(), other.p2()));
