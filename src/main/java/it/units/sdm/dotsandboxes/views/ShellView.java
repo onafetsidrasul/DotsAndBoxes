@@ -126,7 +126,6 @@ public class ShellView extends TextView {
     }
 
     /** Displays a yellow prompt to the user.
-     * @param message
      */
     @Override
     public void displayPrompt(String message) {

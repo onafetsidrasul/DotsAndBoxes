@@ -20,7 +20,6 @@ public class GameSession{
 
     /**
      * Begins a game session.
-     * @throws IOException
      */
     public void begin() throws IOException {
         PostGameIntent intent;

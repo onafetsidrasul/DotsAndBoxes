@@ -4,7 +4,6 @@ import it.units.sdm.dotsandboxes.controllers.IGameController;
 import it.units.sdm.dotsandboxes.core.Game;
 import it.units.sdm.dotsandboxes.exceptions.InvalidInputException;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.Semaphore;
 

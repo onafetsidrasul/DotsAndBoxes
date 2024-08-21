@@ -323,7 +323,6 @@ public class IGameController {
 
     /**
      * @return the intent of the player after the game has ended.
-     * @throws IOException
      */
     public PostGameIntent getPostGameIntent() throws IOException {
         return view.promptForPostGameIntent().equals("NEW") ? PostGameIntent.NEW_GAME : PostGameIntent.END_GAME;
