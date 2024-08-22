@@ -10,5 +10,5 @@ The game can be played in 3 modes:
 2. a TUI mode, that enriches the previous one with colors, that can be entered using `tui` as argument while running the Main;
 3. a GUI mode, that can be entered using `gui` as argument while running the Main.
 ## Disclaimer
-The code is meant to work with Java 21 and works without problems on Unix. To make it work on Windows, you need to enable UTF-8 in Windows Terminal:
+The code is meant to work with Java 21 and works without problems on Unix terminals. To make it work on Windows Terminal, you need to enable UTF-8:
 `powershell.exe -NoExit -Command chcp 65001` .
