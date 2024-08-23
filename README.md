@@ -13,4 +13,4 @@ The game can be played with 3 UIs:
 To run the program, the syntax is `java -jar DotsandBoxes-1.0.jar text|tui|gui`.
 ## Disclaimer
 The code is meant to work with Java 21 and the console UIs work without problems on Unix terminals. To make UTF-8 work on Windows Terminal, you need to enable it with:
-`powershell.exe -NoExit -Command chcp 65001` .
+`powershell.exe -NoExit -Command chcp 65001` before running the program.
