@@ -46,7 +46,7 @@ public class ShellView extends TextView {
             eraseScreen();
             printPlayers(gameStateReference.players(), gameStateReference.scoreBoard(), gameStateReference.playerColorLUT());
             printBoard(gameStateReference.board());
-            printCurrentPlayer(gameStateReference.currentPlayer(), gameStateReference.playerColorLUT().get(gameStateReference.currentPlayer()));
+            printCurrentPlayer(gameStateReference.getCurrentPlayer(), gameStateReference.playerColorLUT().get(gameStateReference.getCurrentPlayer()));
             signalUIHasRefreshed();
             controllerReference.writeInput(promptForAction());
             controllerReference.resumeAfterInputReception();

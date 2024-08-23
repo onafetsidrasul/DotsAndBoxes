@@ -66,7 +66,7 @@ public class Game {
     /**
      * @return the name of the current player.
      */
-    public String currentPlayer() {
+    public String getCurrentPlayer() {
         // we chose to make the player1 start first every time
         synchronized (board.lines()) {
             if (board.lines().isEmpty())
@@ -106,7 +106,7 @@ public class Game {
     }
 
     public void makeNextMove(Line line) throws InvalidInputException {
-        ColoredLine lineCandidate = line == null ? null : new ColoredLine(line, getPlayerColor(currentPlayer()));
+        ColoredLine lineCandidate = line == null ? null : new ColoredLine(line, getPlayerColor(getCurrentPlayer()));
         board.placeLine(lineCandidate);
     }
 

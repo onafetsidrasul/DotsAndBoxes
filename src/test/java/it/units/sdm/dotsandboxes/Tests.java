@@ -41,7 +41,7 @@ public class Tests {
     }
 
     @Test
-    void upperLeftBoxIsCompleted() throws InvalidInputException {
+    void UpperLeftBoxIsCompleted() throws InvalidInputException {
         Game testGame = new Game(5, 5, "A", "B");
         testGame.makeNextMove(new Line(0, 0, 1, 0));
         testGame.makeNextMove(new Line(0, 1, 1, 1));
@@ -51,20 +51,20 @@ public class Tests {
     }
 
     @Test
-    void player1StartsFirst() throws InvalidInputException {
+    void Player1StartsFirst() throws InvalidInputException {
         Game testGame = new Game(5, 5, "A", "B");
-        assertEquals("A", testGame.currentPlayer());
+        assertEquals("A", testGame.getCurrentPlayer());
     }
 
     @Test
-    void playersCorrectlySwitch() throws InvalidInputException {
+    void PlayersCorrectlySwitch() throws InvalidInputException {
         Game testGame = new Game(5, 5, "A", "B");
         testGame.makeNextMove(new Line(0, 0, 0, 1));
-        assertEquals("B", testGame.currentPlayer());
+        assertEquals("B", testGame.getCurrentPlayer());
     }
 
     @Test
-    void TwoBoxesCompletedByTwoPlayers() throws InvalidInputException {
+    void TwoBoxesCompletedByTwoPlayersMeansTheirScoresAre1() throws InvalidInputException {
         Game testGame = new Game(5, 5, "A", "B");
         testGame.makeNextMove(new Line(0, 0, 1, 0));
         testGame.makeNextMove(new Line(0, 1, 1, 1));
@@ -80,7 +80,7 @@ public class Tests {
     }
 
     @Test
-    void boardFullMeansGameHasEnded() throws InvalidInputException {
+    void BoardFullMeansGameHasEnded() throws InvalidInputException {
         Game testGame = new Game(5, 5, "A", "B");
         testGame.makeNextMove(new Line(0, 0, 1, 0));
         testGame.makeNextMove(new Line(0, 1, 1, 1));
@@ -126,7 +126,7 @@ public class Tests {
     }
 
     @Test
-    void tie() throws InvalidInputException {
+    void TieMeansBothPlayersAreWinners() throws InvalidInputException {
         Game testGame = new Game(5, 5, "A", "B");
         testGame.makeNextMove(new Line(0, 0, 1, 0));
         testGame.makeNextMove(new Line(0, 1, 1, 1));
@@ -172,7 +172,7 @@ public class Tests {
     }
 
     @Test
-    void player1wins() throws InvalidInputException {
+    void Player1wins() throws InvalidInputException {
         Game testGame = new Game(5, 5, "A", "B");
         testGame.makeNextMove(new Line(0, 0, 1, 0));
         testGame.makeNextMove(new Line(0, 1, 1, 1));
@@ -234,7 +234,7 @@ public class Tests {
     }
 
     @Test
-    void equals() throws InvalidInputException {
+    void LinesWithSwappedEndpointsAreEqual() throws InvalidInputException {
         Line a = new Line(0, 1, 0, 0);
         Line b = new Line(0, 0, 0, 1);
         assertEquals(a, b);
