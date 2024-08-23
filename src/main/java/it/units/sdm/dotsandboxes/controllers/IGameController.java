@@ -307,6 +307,10 @@ public class IGameController {
         view.displayWarning(message);
     }
 
+    public boolean sendEndGameWarning(){
+        return view.promptForPostGameIntent().equals("END");
+    }
+
     /**
      * @return if the game is over.
      */

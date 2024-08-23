@@ -25,10 +25,16 @@ public class GameSession{
         PostGameIntent intent;
         do {
             if(!controller.initialize()){
+                // initialization failure is considered a critical error
                 throw new IOException("Could not initialize game");
             }
-            if(!controller.setUpGame()){
-                throw new IOException("Could not set up game");
+            boolean userWantsToQuit = false;
+            while(!userWantsToQuit && !controller.setUpGame()){
+                controller.sendWarning("Could not set up game");
+                userWantsToQuit = controller.sendEndGameWarning();
+            }
+            if(userWantsToQuit){
+                break;
             }
             try {
                 controller.startGame();
