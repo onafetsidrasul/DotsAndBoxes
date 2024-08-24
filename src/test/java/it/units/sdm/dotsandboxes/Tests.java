@@ -9,40 +9,46 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class Tests {
+
+    private final String player1Name = "A";
+    private final String player2Name = "B";
+    private final int boardHeight = 5;
+    private final int boardWidth = 5;
+
     @Test
-    void LinesLongerThan1AreNotAllowed() throws InvalidInputException {
-        Game testGame = new Game(5, 5, "A", "B");
+    void linesLongerThan1AreNotAllowed() throws InvalidInputException {
+        Game testGame = new Game(boardHeight, boardWidth, player1Name, player2Name);
         assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(0, 0, 0, 2)));
     }
 
     @Test
-    void DiagonalLinesAreNotAllowed() throws InvalidInputException {
-        Game testGame = new Game(5, 5, "A", "B");
+    void diagonalLinesAreNotAllowed() throws InvalidInputException {
+        Game testGame = new Game(boardHeight, boardWidth, player1Name, player2Name);
         assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(0, 0, 1, 2)));
     }
 
     @Test
-    void LinesThatStartOutOfBoundsAreNotAllowed() throws InvalidInputException {
-        Game testGame = new Game(5, 5, "A", "B");
+    void linesThatStartOutOfBoundsAreNotAllowed() throws InvalidInputException {
+        Game testGame = new Game(boardHeight, boardWidth, player1Name, player2Name);
         assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(6, 5, 5, 5)));
     }
 
     @Test
-    void LinesThatEndOutOfBoundsAreNotAllowed() throws InvalidInputException {
-        Game testGame = new Game(5, 5, "A", "B");
+    void linesThatEndOutOfBoundsAreNotAllowed() throws InvalidInputException {
+        Game testGame = new Game(boardHeight, boardWidth, player1Name, player2Name);
         assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(0, 0, -1, 0)));
     }
 
     @Test
-    void OverwritingLinesIsNotAllowed() throws InvalidInputException {
-        Game testGame = new Game(5, 5, "A", "B");
+    void overwritingLinesIsNotAllowed() throws InvalidInputException {
+        Game testGame = new Game(boardHeight, boardWidth, player1Name, player2Name);
         testGame.makeNextMove(new Line(0, 0, 1, 0));
         assertThrows(Exception.class, () -> testGame.makeNextMove(new Line(0, 0, 1, 0)));
     }
 
     @Test
     void upperLeftBoxIsCompleted() throws InvalidInputException {
-        Game testGame = new Game(5, 5, "A", "B");
+        Game testGame = new Game(boardHeight, boardWidth, player1Name, player2Name);
         testGame.makeNextMove(new Line(0, 0, 1, 0));
         testGame.makeNextMove(new Line(0, 1, 1, 1));
         testGame.makeNextMove(new Line(0, 0, 0, 1));
@@ -52,20 +58,20 @@ public class Tests {
 
     @Test
     void player1StartsFirst() throws InvalidInputException {
-        Game testGame = new Game(5, 5, "A", "B");
+        Game testGame = new Game(boardHeight, boardWidth, player1Name, player2Name);
         assertEquals("A", testGame.currentPlayer());
     }
 
     @Test
     void playersCorrectlySwitch() throws InvalidInputException {
-        Game testGame = new Game(5, 5, "A", "B");
+        Game testGame = new Game(boardHeight, boardWidth, player1Name, player2Name);
         testGame.makeNextMove(new Line(0, 0, 0, 1));
         assertEquals("B", testGame.currentPlayer());
     }
 
     @Test
-    void TwoBoxesCompletedByTwoPlayers() throws InvalidInputException {
-        Game testGame = new Game(5, 5, "A", "B");
+    void twoBoxesCompletedByTwoPlayers() throws InvalidInputException {
+        Game testGame = new Game(boardHeight, boardWidth, player1Name, player2Name);
         testGame.makeNextMove(new Line(0, 0, 1, 0));
         testGame.makeNextMove(new Line(0, 1, 1, 1));
         testGame.makeNextMove(new Line(0, 0, 0, 1));
@@ -81,7 +87,7 @@ public class Tests {
 
     @Test
     void boardFullMeansGameHasEnded() throws InvalidInputException {
-        Game testGame = new Game(5, 5, "A", "B");
+        Game testGame = new Game(boardHeight, boardWidth, player1Name, player2Name);
         testGame.makeNextMove(new Line(0, 0, 1, 0));
         testGame.makeNextMove(new Line(0, 1, 1, 1));
         testGame.makeNextMove(new Line(0, 0, 0, 1));
@@ -126,8 +132,8 @@ public class Tests {
     }
 
     @Test
-    void tie() throws InvalidInputException {
-        Game testGame = new Game(5, 5, "A", "B");
+    void moreThanOneWinnerWhenGameTies() throws InvalidInputException {
+        Game testGame = new Game(boardHeight, boardWidth, player1Name, player2Name);
         testGame.makeNextMove(new Line(0, 0, 1, 0));
         testGame.makeNextMove(new Line(0, 1, 1, 1));
         testGame.makeNextMove(new Line(0, 0, 0, 1));
@@ -172,8 +178,8 @@ public class Tests {
     }
 
     @Test
-    void player1wins() throws InvalidInputException {
-        Game testGame = new Game(5, 5, "A", "B");
+    void aPlayerCanWin() throws InvalidInputException {
+        Game testGame = new Game(boardHeight, boardWidth, player1Name, player2Name);
         testGame.makeNextMove(new Line(0, 0, 1, 0));
         testGame.makeNextMove(new Line(0, 1, 1, 1));
         testGame.makeNextMove(new Line(0, 0, 0, 1));
@@ -234,7 +240,7 @@ public class Tests {
     }
 
     @Test
-    void equals() throws InvalidInputException {
+    void linesAreEqualDespiteEndpointsOrder() throws InvalidInputException {
         Line a = new Line(0, 1, 0, 0);
         Line b = new Line(0, 0, 0, 1);
         assertEquals(a, b);
