@@ -59,14 +59,14 @@ public class Tests {
     @Test
     void player1StartsFirst() throws InvalidInputException {
         Game testGame = new Game(boardHeight, boardWidth, player1Name, player2Name);
-        assertEquals("A", testGame.currentPlayer());
+        assertEquals("A", testGame.getCurrentPlayer());
     }
 
     @Test
     void playersCorrectlySwitch() throws InvalidInputException {
         Game testGame = new Game(boardHeight, boardWidth, player1Name, player2Name);
         testGame.makeNextMove(new Line(0, 0, 0, 1));
-        assertEquals("B", testGame.currentPlayer());
+        assertEquals("B", testGame.getCurrentPlayer());
     }
 
     @Test
