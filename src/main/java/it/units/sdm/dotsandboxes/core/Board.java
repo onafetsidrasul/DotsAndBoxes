@@ -13,7 +13,7 @@ public class Board {
 
     public Board(int height, int width) {
         if (width < 2 || height < 2) {
-            throw new IllegalArgumentException("Board width and height must be greater than 2");
+            throw new IllegalArgumentException("Board width and height must be greater or equal than 2");
         }
         this.height = height;
         this.width = width;

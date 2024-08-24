@@ -47,7 +47,7 @@ public class TextView extends IGameView {
             eraseScreen();
             printPlayers(gameStateReference.players(), gameStateReference.scoreBoard());
             printBoard(gameStateReference.board());
-            printCurrentPlayer(gameStateReference.currentPlayer());
+            printCurrentPlayer(gameStateReference.getCurrentPlayer());
             signalUIHasRefreshed();
             controllerReference.writeInput(promptForAction());
             controllerReference.resumeAfterInputReception();

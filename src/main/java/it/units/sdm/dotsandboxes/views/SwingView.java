@@ -403,7 +403,7 @@ public class SwingView extends IGameView implements Runnable {
         }
 
         private void updateTurn() {
-            String currentPlayer = gameStateReference.currentPlayer();
+            String currentPlayer = gameStateReference.getCurrentPlayer();
             turnLabel.setText("Current player: " + currentPlayer);
             Color playerColor = gameStateReference.playerColorLUT().get(currentPlayer).toAwtColor();
             turnLabel.setForeground(playerColor);
